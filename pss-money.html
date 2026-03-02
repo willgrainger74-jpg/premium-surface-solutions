@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Owed - Premium Surface Solutions</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: 'Segoe UI', sans-serif; }</style>
+</head>
+<body class="min-h-screen" style="background: linear-gradient(135deg, #f0f7f0 0%, #e8f5e8 100%);">
+<div class="p-4" style="max-width: 1400px; margin: 0 auto;">
+
+    <div class="text-white p-6 rounded-2xl shadow-2xl mb-6" style="background: linear-gradient(135deg, #1a2e1a 0%, #2a4a2a 100%);">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-black mb-1">💵 Money Owed</h1>
+                <p class="opacity-80">Outstanding balances & payment tracking</p>
+            </div>
+            <a href="index.html" class="px-5 py-3 rounded-xl font-bold" style="background:rgba(255,255,255,0.15);">← Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="p-5 rounded-xl border-2 border-red-300 bg-red-50">
+            <p class="text-xs font-bold text-red-700">Total Owed (All)</p>
+            <p id="totalOwedAll" class="text-3xl font-bold text-red-900">$0</p>
+            <p class="text-xs text-gray-500">all time outstanding</p>
+        </div>
+        <div class="p-5 rounded-xl border-2 border-orange-300 bg-orange-50">
+            <p class="text-xs font-bold text-orange-700">This Month Owed</p>
+            <p id="totalOwedMonth" class="text-3xl font-bold text-orange-900">$0</p>
+            <p class="text-xs text-gray-500">current month</p>
+        </div>
+        <div class="p-5 rounded-xl border-2 border-yellow-300 bg-yellow-50">
+            <p class="text-xs font-bold text-yellow-700">Open Jobs</p>
+            <p id="openJobs" class="text-3xl font-bold text-yellow-900">0</p>
+            <p class="text-xs text-gray-500">with balance remaining</p>
+        </div>
+        <div class="p-5 rounded-xl border-2 border-green-300 bg-green-50">
+            <p class="text-xs font-bold text-green-700">Total Contracts</p>
+            <p id="totalContracts" class="text-3xl font-bold text-green-900">$0</p>
+            <p class="text-xs text-gray-500">total sold value</p>
+        </div>
+    </div>
+
+    <!-- Filter Controls -->
+    <div class="bg-white p-5 rounded-2xl shadow-xl mb-6 border border-green-100">
+        <div class="flex flex-wrap gap-3 items-center">
+            <div>
+                <label class="text-sm font-bold text-gray-700 block mb-1">Filter by Rep</label>
+                <select id="repFilter" class="px-4 py-2 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-green-500">
+                    <option value="all">All Reps</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-sm font-bold text-gray-700 block mb-1">Filter by Project Type</label>
+                <select id="courtFilter" class="px-4 py-2 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-green-500">
+                    <option value="all">All Types</option>
+                    <option value="courtPickleball">🏓 Pickleball</option>
+                    <option value="courtTennis">🎾 Tennis</option>
+                    <option value="courtBasketball">🏀 Basketball</option>
+                    <option value="courtPadel">🎾 Padel</option>
+                    <option value="courtMulti">🏟️ Multi-Sport</option>
+                    <option value="projectConcrete">🪨 Concrete</option>
+                    <option value="projectCoatings">🎨 Coatings</option>
+                    <option value="projectLandscape">🌿 Landscape</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-sm font-bold text-gray-700 block mb-1">Sort by</label>
+                <select id="sortFilter" class="px-4 py-2 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-green-500">
+                    <option value="owed_desc">Owed: High → Low</option>
+                    <option value="owed_asc">Owed: Low → High</option>
+                    <option value="date_desc">Date: Newest First</option>
+                    <option value="date_asc">Date: Oldest First</option>
+                </select>
+            </div>
+            <div class="self-end">
+                <button onclick="renderOwed()" class="px-6 py-2 text-white rounded-xl font-bold" style="background:linear-gradient(135deg,#1a5c2a,#2d8a47);">Apply</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Owed by Rep Summary -->
+    <div class="bg-white p-6 rounded-2xl shadow-xl mb-6 border border-green-100">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">💰 Outstanding by Rep</h3>
+        <div id="owedByRep" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- Individual Owed Entries -->
+    <div class="bg-white p-6 rounded-2xl shadow-xl border border-green-100">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">📋 All Outstanding Jobs</h3>
+        <div id="owedList" class="space-y-3"></div>
+    </div>
+</div>
+
+<script>
+    // *** REPLACE WITH YOUR FIREBASE CONFIG ***
+    firebase.initializeApp({
+        apiKey: "AIzaSyApDY-q8JID_TBtIchcWfDsKqVRt679ALY",
+        authDomain: "premium-surface-solutions.firebaseapp.com",
+        databaseURL: "https://premium-surface-solutions-default-rtdb.firebaseio.com",
+        projectId: "premium-surface-solutions",
+        storageBucket: "premium-surface-solutions.firebasestorage.app",
+        messagingSenderId: "447806728696",
+        appId: "1:447806728696:web:cbd1fee9128d20d1a34e0d"
+    });
+
+    var db = firebase.database();
+    var people = [], logs = {};
+    var dataReady = { people: false, logs: false };
+
+    function tryRender() { if (dataReady.people && dataReady.logs) { populateRepFilter(); renderOwed(); } }
+
+    db.ref('salespeople').on('value', function(s) {
+        var d = s.val();
+        people = d ? Object.keys(d).map(function(k) { return { id:k, name:d[k].name }; }) : [];
+        dataReady.people = true; tryRender();
+    });
+    db.ref('callLogs').on('value', function(s) {
+        logs = s.val()||{}; dataReady.logs = true; tryRender();
+    });
+
+    function populateRepFilter() {
+        var sel = document.getElementById('repFilter');
+        var current = sel.value;
+        sel.innerHTML = '<option value="all">All Reps</option>';
+        people.forEach(function(p) {
+            sel.innerHTML += '<option value="'+p.id+'">'+p.name+'</option>';
+        });
+        sel.value = current;
+    }
+
+    function dk(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+    var courtLabels = {
+        courtPickleball:'🏓 Pickleball', courtTennis:'🎾 Tennis', courtBasketball:'🏀 Basketball',
+        courtPadel:'🎾 Padel', courtMulti:'🏟️ Multi-Sport', projectConcrete:'🪨 Concrete',
+        projectCoatings:'🎨 Coatings', projectLandscape:'🌿 Landscape'
+    };
+
+    function getProjectType(lead) {
+        var types = [];
+        Object.keys(courtLabels).forEach(function(k) { if (lead[k]) types.push(courtLabels[k]); });
+        return types.length > 0 ? types.join(', ') : '—';
+    }
+
+    function renderOwed() {
+        var repFilter = document.getElementById('repFilter').value;
+        var courtFilter = document.getElementById('courtFilter').value;
+        var sortFilter = document.getElementById('sortFilter').value;
+        var today = new Date();
+        var monthKey = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
+
+        // Collect all owed entries
+        var owedEntries = [];
+        Object.keys(logs).forEach(function(key) {
+            // key format: personId_YYYY-MM-DD
+            var parts = key.split('_');
+            if (parts.length < 2) return;
+            var personId = parts[0];
+            var dateStr = parts[1];
+            if (!personId || !dateStr) return;
+
+            var person = people.find(function(p) { return p.id === personId; });
+            if (!person) return;
+            if (repFilter !== 'all' && personId !== repFilter) return;
+
+            var dayLogs = logs[key];
+            if (!dayLogs) return;
+
+            Object.keys(dayLogs).forEach(function(leadId) {
+                var lead = dayLogs[leadId];
+                if (!lead.jobSold) return;
+                var owed = parseFloat(lead.moneyOwed) || 0;
+                if (owed <= 0) return;
+                if (courtFilter !== 'all' && !lead[courtFilter]) return;
+
+                owedEntries.push({
+                    id: leadId, key: key, personId: personId, personName: person.name,
+                    dateStr: dateStr, customerName: lead.customerName || 'Unknown Customer',
+                    customerPhone: lead.customerPhone || '',
+                    customerAddress: lead.customerAddress || '',
+                    jobNumber: lead.jobNumber || '',
+                    amountSold: parseFloat(lead.amountSold)||0,
+                    amountCollected: parseFloat(lead.amountCollected)||0,
+                    moneyOwed: owed,
+                    projectType: getProjectType(lead),
+                    notes: lead.notes || '',
+                    isThisMonth: dateStr.indexOf(monthKey) > -1
+                });
+            });
+        });
+
+        // Sort
+        owedEntries.sort(function(a,b) {
+            if (sortFilter === 'owed_desc') return b.moneyOwed - a.moneyOwed;
+            if (sortFilter === 'owed_asc') return a.moneyOwed - b.moneyOwed;
+            if (sortFilter === 'date_desc') return b.dateStr.localeCompare(a.dateStr);
+            return a.dateStr.localeCompare(b.dateStr);
+        });
+
+        // Summary stats
+        var totalOwed = owedEntries.reduce(function(s,e) { return s+e.moneyOwed; }, 0);
+        var monthOwed = owedEntries.filter(function(e) { return e.isThisMonth; }).reduce(function(s,e) { return s+e.moneyOwed; }, 0);
+        var totalContracts = owedEntries.reduce(function(s,e) { return s+e.amountSold; }, 0);
+        document.getElementById('totalOwedAll').textContent = '$'+totalOwed.toLocaleString();
+        document.getElementById('totalOwedMonth').textContent = '$'+monthOwed.toLocaleString();
+        document.getElementById('openJobs').textContent = owedEntries.length;
+        document.getElementById('totalContracts').textContent = '$'+totalContracts.toLocaleString();
+
+        // By rep
+        var repTotals = {};
+        owedEntries.forEach(function(e) {
+            if (!repTotals[e.personId]) repTotals[e.personId] = { name:e.personName, owed:0, jobs:0 };
+            repTotals[e.personId].owed += e.moneyOwed;
+            repTotals[e.personId].jobs++;
+        });
+        var repHTML = '';
+        Object.values(repTotals).sort(function(a,b) { return b.owed-a.owed; }).forEach(function(r) {
+            repHTML += '<div class="p-4 rounded-xl border-2 border-orange-200 bg-orange-50">' +
+                '<p class="font-bold text-gray-800">'+r.name+'</p>' +
+                '<p class="text-2xl font-black text-red-700">$'+r.owed.toLocaleString()+'</p>' +
+                '<p class="text-xs text-gray-500">'+r.jobs+' open jobs</p></div>';
+        });
+        document.getElementById('owedByRep').innerHTML = repHTML || '<p class="text-gray-400 col-span-3">No outstanding balances</p>';
+
+        // Individual entries
+        if (!owedEntries.length) {
+            document.getElementById('owedList').innerHTML = '<p class="text-center text-gray-400 py-10">🎉 No outstanding balances found!</p>';
+            return;
+        }
+
+        document.getElementById('owedList').innerHTML = owedEntries.map(function(e) {
+            var ageDays = Math.floor((new Date() - new Date(e.dateStr)) / (1000*60*60*24));
+            var ageColor = ageDays > 60 ? 'red' : ageDays > 30 ? 'orange' : 'yellow';
+            return '<div class="p-5 rounded-xl border-2 border-gray-200 bg-white hover:border-green-300 transition-all">' +
+                '<div class="flex flex-wrap justify-between gap-3 mb-3">' +
+                    '<div>' +
+                        '<p class="text-lg font-black text-gray-800">'+e.customerName+'</p>' +
+                        '<p class="text-sm text-gray-500">'+e.personName+' • '+e.dateStr+(e.jobNumber?' • Job #'+e.jobNumber:'')+'</p>' +
+                        (e.customerPhone?'<p class="text-sm text-blue-600">📞 '+e.customerPhone+'</p>':'')+
+                        (e.customerAddress?'<p class="text-sm text-gray-500">📍 '+e.customerAddress+'</p>':'')+
+                    '</div>' +
+                    '<div class="text-right">' +
+                        '<p class="text-3xl font-black text-red-700">$'+e.moneyOwed.toLocaleString()+'</p>' +
+                        '<p class="text-xs text-gray-500">of $'+e.amountSold.toLocaleString()+' contract</p>' +
+                        '<p class="text-xs text-gray-500">$'+e.amountCollected.toLocaleString()+' collected</p>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="flex flex-wrap gap-2 items-center">' +
+                    '<span class="px-3 py-1 text-xs font-bold rounded-full bg-green-100 text-green-800">'+e.projectType+'</span>' +
+                    '<span class="px-3 py-1 text-xs font-bold rounded-full bg-'+ageColor+'-100 text-'+ageColor+'-800">'+ageDays+' days old</span>' +
+                    (e.notes?'<span class="px-3 py-1 text-xs font-bold rounded-full bg-gray-100 text-gray-700">📝 '+e.notes.substring(0,40)+(e.notes.length>40?'...':'')+'</span>':'') +
+                '</div>' +
+                '<div class="mt-3 flex gap-2">' +
+                    '<button onclick="markPaid(\''+e.key+'\',\''+e.id+'\')" class="px-4 py-2 bg-green-600 text-white rounded-xl text-sm font-bold hover:bg-green-700">✅ Mark Paid</button>' +
+                    '<button onclick="updatePartialPayment(\''+e.key+'\',\''+e.id+'\','+e.amountCollected+','+e.amountSold+')" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700">💳 Record Payment</button>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    function markPaid(key, leadId) {
+        if (confirm('Mark this job as fully paid?')) {
+            db.ref('callLogs/'+key+'/'+leadId).update({ amountCollected: db.ref('callLogs/'+key+'/'+leadId+'/amountSold'), moneyOwed: 0 });
+            // Simpler: just set moneyOwed to 0 and amountCollected = amountSold
+            db.ref('callLogs/'+key+'/'+leadId+'/moneyOwed').set(0);
+            db.ref('callLogs/'+key+'/'+leadId+'/amountSold').once('value', function(s) {
+                db.ref('callLogs/'+key+'/'+leadId+'/amountCollected').set(s.val()||0);
+            });
+        }
+    }
+
+    function updatePartialPayment(key, leadId, currentCollected, totalSold) {
+        var amount = parseFloat(prompt('Enter payment amount received:', ''));
+        if (!isNaN(amount) && amount > 0) {
+            var newCollected = currentCollected + amount;
+            var newOwed = Math.max(0, totalSold - newCollected);
+            db.ref('callLogs/'+key+'/'+leadId).update({ amountCollected: newCollected, moneyOwed: newOwed });
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Report - Premium Surface Solutions</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>body { font-family: 'Segoe UI', sans-serif; }</style>
+</head>
+<body class="min-h-screen" style="background: linear-gradient(135deg, #f0f7f0 0%, #e8f5e8 100%);">
+<div class="p-4" style="max-width: 1400px; margin: 0 auto;">
+
+    <div class="text-white p-6 rounded-2xl shadow-2xl mb-6" style="background: linear-gradient(135deg, #1a2e1a 0%, #2a4a2a 100%);">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-black mb-1">📊 Team Report</h1>
+                <p class="opacity-80">Premium Surface Solutions – Full Team Performance</p>
+            </div>
+            <a href="index.html" class="px-5 py-3 rounded-xl font-bold" style="background:rgba(255,255,255,0.15);">← Dashboard</a>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-2xl shadow-xl mb-6 border border-green-100">
+        <div class="flex items-center justify-between mb-6">
+            <button id="prevMonth" class="px-5 py-3 text-white rounded-xl font-bold" style="background:linear-gradient(135deg,#1a5c2a,#2d8a47);">← Prev</button>
+            <h2 id="monthYear" class="text-2xl font-bold text-gray-800"></h2>
+            <button id="nextMonth" class="px-5 py-3 text-white rounded-xl font-bold" style="background:linear-gradient(135deg,#1a5c2a,#2d8a47);">Next →</button>
+        </div>
+
+        <!-- Team Totals -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="p-5 rounded-xl border-2 border-green-300 bg-green-50">
+                <p class="text-xs font-bold text-green-700">Team Revenue</p>
+                <p id="teamRevenue" class="text-3xl font-bold text-green-900">$0</p>
+                <p class="text-xs text-gray-500">this month</p>
+            </div>
+            <div class="p-5 rounded-xl border-2 border-blue-300 bg-blue-50">
+                <p class="text-xs font-bold text-blue-700">Total Leads</p>
+                <p id="teamLeads" class="text-3xl font-bold text-blue-900">0</p>
+                <p class="text-xs text-gray-500">this month</p>
+            </div>
+            <div class="p-5 rounded-xl border-2 border-purple-300 bg-purple-50">
+                <p class="text-xs font-bold text-purple-700">Jobs Closed</p>
+                <p id="teamClosed" class="text-3xl font-bold text-purple-900">0</p>
+                <p class="text-xs text-gray-500">this month</p>
+            </div>
+            <div class="p-5 rounded-xl border-2 border-orange-300 bg-orange-50">
+                <p class="text-xs font-bold text-orange-700">Team Close Rate</p>
+                <p id="teamCloseRate" class="text-3xl font-bold text-orange-900">0%</p>
+                <p class="text-xs text-gray-500">overall</p>
+            </div>
+        </div>
+
+        <!-- Team Goal -->
+        <div class="p-5 rounded-xl border-2 border-green-300 bg-green-50 mb-8">
+            <div class="flex items-center gap-4 mb-3">
+                <h3 class="font-bold text-green-900 text-lg">🎯 Team Monthly Goal</h3>
+                <input id="teamGoalInput" type="number" placeholder="Set team goal ($)" class="px-4 py-2 border-2 border-green-400 rounded-xl font-bold focus:outline-none" />
+            </div>
+            <div id="teamGoalProgress"></div>
+        </div>
+
+        <!-- Leaderboard -->
+        <h3 class="text-xl font-bold text-gray-800 mb-4">🏆 Leaderboard – This Month</h3>
+        <div id="leaderboard" class="space-y-3 mb-8"></div>
+
+        <!-- Court Type Team Breakdown -->
+        <h3 class="text-xl font-bold text-gray-800 mb-4">🏓 Project Type – Team Totals</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8" id="teamCourtBreakdown"></div>
+
+        <!-- Lead Source Team Breakdown -->
+        <h3 class="text-xl font-bold text-gray-800 mb-4">📡 Lead Sources – Team Totals</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8" id="teamSourceBreakdown"></div>
+
+        <!-- Rep Detail Table -->
+        <h3 class="text-xl font-bold text-gray-800 mb-4">📋 Rep Performance Detail</h3>
+        <div class="overflow-x-auto rounded-xl border-2 border-gray-200">
+            <table class="w-full text-sm">
+                <thead style="background: linear-gradient(135deg, #1a2e1a, #2a4a2a);" class="text-white">
+                    <tr>
+                        <th class="p-3 text-left">Rep</th>
+                        <th class="p-3 text-center">Leads</th>
+                        <th class="p-3 text-center">Sold</th>
+                        <th class="p-3 text-center">Close%</th>
+                        <th class="p-3 text-center">Revenue</th>
+                        <th class="p-3 text-center">Avg Sale</th>
+                        <th class="p-3 text-center">Estimates</th>
+                        <th class="p-3 text-center">Reviews</th>
+                        <th class="p-3 text-center">Site Visits</th>
+                    </tr>
+                </thead>
+                <tbody id="repTable"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // *** REPLACE WITH YOUR FIREBASE CONFIG ***
+    firebase.initializeApp({
+        apiKey: "AIzaSyApDY-q8JID_TBtIchcWfDsKqVRt679ALY",
+        authDomain: "premium-surface-solutions.firebaseapp.com",
+        databaseURL: "https://premium-surface-solutions-default-rtdb.firebaseio.com",
+        projectId: "premium-surface-solutions",
+        storageBucket: "premium-surface-solutions.firebasestorage.app",
+        messagingSenderId: "447806728696",
+        appId: "1:447806728696:web:cbd1fee9128d20d1a34e0d"
+    });
+
+    var db = firebase.database();
+    var currentDate = new Date();
+    var people = [], logs = {}, teamGoals = {};
+    var dataReady = { people: false, logs: false, goals: false };
+
+    function tryRender() {
+        if (dataReady.people && dataReady.logs && dataReady.goals) renderAll();
+    }
+
+    db.ref('salespeople').on('value', function(s) {
+        var d = s.val();
+        people = d ? Object.keys(d).map(function(k) { return { id:k, name:d[k].name }; }) : [];
+        dataReady.people = true; tryRender();
+    });
+    db.ref('callLogs').on('value', function(s) { logs = s.val()||{}; dataReady.logs = true; tryRender(); });
+    db.ref('teamMonthlyGoals').on('value', function(s) { teamGoals = s.val()||{}; dataReady.goals = true; tryRender(); });
+
+    document.getElementById('prevMonth').onclick = function() { currentDate = new Date(currentDate.getFullYear(),currentDate.getMonth()-1,1); renderAll(); };
+    document.getElementById('nextMonth').onclick = function() { currentDate = new Date(currentDate.getFullYear(),currentDate.getMonth()+1,1); renderAll(); };
+
+    document.getElementById('teamGoalInput').onchange = function(e) {
+        var mk = currentDate.getFullYear()+'-'+String(currentDate.getMonth()+1).padStart(2,'0');
+        db.ref('teamMonthlyGoals/'+mk).set(parseFloat(e.target.value)||0);
+    };
+
+    function dk(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+    function getMDates(date) {
+        var y=date.getFullYear(), m=date.getMonth(), arr=[], last=new Date(y,m+1,0).getDate();
+        for (var i=1;i<=last;i++) arr.push(new Date(y,m,i));
+        return arr;
+    }
+
+    function getCalls(pid, d) {
+        var l = logs[pid+'_'+dk(d)]; return l ? Object.values(l) : [];
+    }
+
+    function calcRep(pid, dates) {
+        var t = { totalLeads:0, jobsSold:0, amountSold:0, estimatesOut:0, reviewsCompleted:0, siteVisits:0, courts:{}, sources:{} };
+        var courtKeys = ['courtPickleball','courtTennis','courtBasketball','courtPadel','courtMulti','projectConcrete','projectCoatings','projectLandscape'];
+        courtKeys.forEach(function(k) { t.courts[k] = 0; });
+        dates.forEach(function(d) {
+            getCalls(pid,d).forEach(function(c) {
+                t.totalLeads++;
+                if (c.jobSold) { t.jobsSold++; t.amountSold += parseFloat(c.amountSold)||0; }
+                if (c.leftEstimate) t.estimatesOut++;
+                if (c.reviewCompleted) t.reviewsCompleted++;
+                if (c.siteVisitCompleted) t.siteVisits++;
+                if (c.leadSource) t.sources[c.leadSource] = (t.sources[c.leadSource]||0)+1;
+                courtKeys.forEach(function(k) { if (c[k]) t.courts[k]++; });
+            });
+        });
+        return t;
+    }
+
+    function renderAll() {
+        var month = getMDates(currentDate);
+        var mk = currentDate.getFullYear()+'-'+String(currentDate.getMonth()+1).padStart(2,'0');
+        document.getElementById('monthYear').textContent = currentDate.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+
+        var teamGoal = teamGoals[mk]||0;
+        document.getElementById('teamGoalInput').value = teamGoal||'';
+
+        var repStats = people.map(function(p) { return Object.assign({ id:p.id, name:p.name }, calcRep(p.id,month)); });
+        repStats.sort(function(a,b) { return b.amountSold - a.amountSold; });
+
+        var totalRev=0, totalLeads=0, totalSold=0;
+        repStats.forEach(function(r) { totalRev+=r.amountSold; totalLeads+=r.totalLeads; totalSold+=r.jobsSold; });
+
+        document.getElementById('teamRevenue').textContent = '$'+totalRev.toLocaleString();
+        document.getElementById('teamLeads').textContent = totalLeads;
+        document.getElementById('teamClosed').textContent = totalSold;
+        document.getElementById('teamCloseRate').textContent = (totalLeads>0?((totalSold/totalLeads)*100).toFixed(1):0)+'%';
+
+        // Team goal progress
+        if (teamGoal>0) {
+            var pct = Math.min((totalRev/teamGoal)*100,100);
+            var c = pct>=100?'#16a34a':pct>=50?'#ca8a04':'#dc2626';
+            document.getElementById('teamGoalProgress').innerHTML =
+                '<div class="flex justify-between text-sm mb-1"><span>Team Progress</span><span class="font-bold">'+pct.toFixed(1)+'%</span></div>' +
+                '<div class="w-full bg-gray-200 rounded-full h-6"><div style="width:'+pct.toFixed(0)+'%;background:'+c+';" class="h-full rounded-full flex items-center justify-center text-white text-xs font-bold">'+pct.toFixed(0)+'%</div></div>' +
+                '<div class="flex justify-between text-xs mt-1"><span>$'+totalRev.toLocaleString()+'</span><span>Goal: $'+teamGoal.toLocaleString()+'</span></div>';
+        } else {
+            document.getElementById('teamGoalProgress').innerHTML = '<p class="text-sm text-gray-500">Set a team goal above</p>';
+        }
+
+        // Leaderboard
+        var medals = ['🥇','🥈','🥉'];
+        document.getElementById('leaderboard').innerHTML = repStats.map(function(r,i) {
+            var pct = totalRev>0?(r.amountSold/totalRev*100):0;
+            var barColor = i===0?'linear-gradient(90deg,#16a34a,#22c55e)':i===1?'linear-gradient(90deg,#2563eb,#60a5fa)':'linear-gradient(90deg,#9333ea,#c084fc)';
+            return '<div class="p-4 rounded-xl border-2 '+(i===0?'border-green-400 bg-green-50':'border-gray-200 bg-white')+'">' +
+                '<div class="flex items-center justify-between mb-2">' +
+                '<div class="flex items-center gap-3"><span class="text-2xl">'+(medals[i]||'#'+(i+1))+'</span><span class="font-bold text-lg text-gray-800">'+r.name+'</span></div>' +
+                '<div class="text-right"><p class="text-xl font-black text-green-800">$'+r.amountSold.toLocaleString()+'</p><p class="text-xs text-gray-500">'+r.jobsSold+' sold / '+r.totalLeads+' leads</p></div>' +
+                '</div>' +
+                '<div class="w-full bg-gray-200 rounded-full h-3"><div style="width:'+pct.toFixed(0)+'%;background:'+barColor+';" class="h-full rounded-full"></div></div>' +
+                '<p class="text-xs text-gray-500 mt-1">'+pct.toFixed(1)+'% of team revenue</p></div>';
+        }).join('');
+
+        // Court type team totals
+        var courtLabels = {courtPickleball:'🏓 Pickleball',courtTennis:'🎾 Tennis',courtBasketball:'🏀 Basketball',courtPadel:'🎾 Padel',courtMulti:'🏟️ Multi-Sport',projectConcrete:'🪨 Concrete',projectCoatings:'🎨 Coatings',projectLandscape:'🌿 Landscape'};
+        var courtTotals = {};
+        Object.keys(courtLabels).forEach(function(k) { courtTotals[k] = 0; });
+        repStats.forEach(function(r) { Object.keys(courtLabels).forEach(function(k) { courtTotals[k] += r.courts[k]||0; }); });
+        var ctHTML = '';
+        Object.keys(courtLabels).forEach(function(k) {
+            ctHTML += '<div class="p-4 bg-white rounded-xl border-2 border-green-200 text-center">' +
+                '<p class="text-sm font-bold text-green-800">'+courtLabels[k]+'</p>' +
+                '<p class="text-3xl font-black text-green-900">'+courtTotals[k]+'</p>' +
+                '<p class="text-xs text-gray-500">total leads</p></div>';
+        });
+        document.getElementById('teamCourtBreakdown').innerHTML = ctHTML;
+
+        // Lead source team totals
+        var sources = ['Referral','Website','Canvass','Social Media','Trade Show','Cold Call','Repeat Customer','Other'];
+        var srcTotals = {};
+        sources.forEach(function(s) { srcTotals[s] = 0; });
+        repStats.forEach(function(r) { sources.forEach(function(s) { srcTotals[s] += r.sources[s]||0; }); });
+        document.getElementById('teamSourceBreakdown').innerHTML = sources.map(function(s) {
+            return '<div class="p-3 bg-white rounded-xl border-2 border-blue-200 flex justify-between items-center">' +
+                '<span class="text-sm font-semibold text-gray-700">'+s+'</span>' +
+                '<span class="text-xl font-bold text-blue-900">'+srcTotals[s]+'</span></div>';
+        }).join('');
+
+        // Rep table
+        document.getElementById('repTable').innerHTML = repStats.map(function(r, i) {
+            var closeR = r.totalLeads>0?((r.jobsSold/r.totalLeads)*100).toFixed(1):0;
+            var avgSale = r.jobsSold>0?Math.round(r.amountSold/r.jobsSold):0;
+            return '<tr class="'+(i%2===0?'bg-white':'bg-gray-50')+' hover:bg-green-50 border-b">' +
+                '<td class="p-3 font-bold text-gray-800">'+r.name+'</td>' +
+                '<td class="p-3 text-center">'+r.totalLeads+'</td>' +
+                '<td class="p-3 text-center font-bold text-green-700">'+r.jobsSold+'</td>' +
+                '<td class="p-3 text-center">'+closeR+'%</td>' +
+                '<td class="p-3 text-center font-bold text-green-800">$'+r.amountSold.toLocaleString()+'</td>' +
+                '<td class="p-3 text-center">$'+avgSale.toLocaleString()+'</td>' +
+                '<td class="p-3 text-center">'+r.estimatesOut+'</td>' +
+                '<td class="p-3 text-center">'+r.reviewsCompleted+'</td>' +
+                '<td class="p-3 text-center">'+r.siteVisits+'</td>' +
+                '</tr>';
+        }).join('');
+    }
+</script>
+</body>
+</html>
