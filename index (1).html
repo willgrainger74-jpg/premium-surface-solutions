@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Surface Solutions - Sales Tracker</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy:      #0d1b2a;
+            --navy-mid:  #162236;
+            --navy-light:#1e3250;
+            --red:       #c0281c;
+            --red-hover: #a81f15;
+            --red-light: #e03020;
+            --gold:      #d4a843;
+            --white:     #ffffff;
+            --gray-bg:   #f4f6f9;
+            --gray-border:#dde2ea;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--gray-bg);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(13,27,42,0.06) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(192,40,28,0.04) 0%, transparent 50%);
+            min-height: 100vh;
+        }
+
+        h1, h2, h3 { font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.01em; }
+
+        /* Header */
+        .pss-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+            border-bottom: 4px solid var(--red);
+            position: relative;
+            overflow: hidden;
+        }
+        .pss-header::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(192,40,28,0.18) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .pss-header::after {
+            content: '';
+            position: absolute;
+            bottom: -40px; left: 40%;
+            width: 160px; height: 160px;
+            background: radial-gradient(circle, rgba(212,168,67,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Logo bar */
+        .logo-stripe {
+            display: inline-flex;
+            align-items: center;
+            gap: 0;
+        }
+        .logo-stripe .bar-red  { width: 6px; height: 44px; background: var(--red); border-radius: 3px; margin-right: 14px; }
+        .logo-stripe .bar-gold { width: 3px; height: 30px; background: var(--gold); border-radius: 2px; margin-right: 14px; }
+
+        /* Stat cards */
+        .stat-card {
+            border-radius: 14px;
+            padding: 1.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            bottom: -20px; right: -20px;
+            width: 80px; height: 80px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 32px rgba(0,0,0,0.18); }
+
+        .stat-navy  { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); border: 1px solid rgba(255,255,255,0.08); }
+        .stat-red   { background: linear-gradient(135deg, var(--red) 0%, var(--red-light) 100%); }
+        .stat-gold  { background: linear-gradient(135deg, #8a6a1a 0%, var(--gold) 100%); }
+        .stat-deep  { background: linear-gradient(135deg, #1a0d2e 0%, #2d1a50 100%); border: 1px solid rgba(255,255,255,0.08); }
+
+        /* Section cards */
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-border);
+            box-shadow: 0 2px 12px rgba(13,27,42,0.07);
+        }
+
+        /* Person buttons */
+        .person-btn-selected {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%) !important;
+            border-color: var(--red) !important;
+            color: white !important;
+            box-shadow: 0 8px 20px rgba(13,27,42,0.35) !important;
+        }
+        .person-btn-default {
+            background: white;
+            border: 2px solid var(--gray-border);
+            color: #374151;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        }
+        .person-btn-default:hover { border-color: var(--red); color: var(--navy); }
+
+        /* Add Rep button */
+        .btn-primary {
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .btn-primary:hover { background: var(--red-hover); transform: translateY(-1px); }
+
+        .btn-save {
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 10px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-save:hover { background: var(--navy-light); }
+
+        .btn-cancel {
+            background: #9ca3af;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 10px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-cancel:hover { background: #6b7280; }
+
+        /* Nav action cards */
+        .nav-card {
+            display: block;
+            border-radius: 16px;
+            padding: 1.75rem;
+            color: white;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            border-top: 4px solid rgba(255,255,255,0.15);
+        }
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0);
+            transition: background 0.2s;
+        }
+        .nav-card:hover { transform: translateY(-6px); box-shadow: 0 24px 48px rgba(13,27,42,0.28); }
+        .nav-card:hover::before { background: rgba(255,255,255,0.04); }
+        .nav-card .bg-icon { position: absolute; bottom: -10px; right: -10px; font-size: 5rem; opacity: 0.1; }
+
+        .nc-navy  { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); border-top-color: var(--red); }
+        .nc-red   { background: linear-gradient(135deg, var(--red) 0%, #8a1a10 100%); }
+        .nc-deep  { background: linear-gradient(135deg, #1a0d2e 0%, #3a1a5c 100%); }
+        .nc-gold  { background: linear-gradient(135deg, #5a3a0a 0%, #8a6a1a 100%); border-top-color: var(--gold); }
+
+        /* Add form */
+        .add-form-wrap {
+            background: #f0f4f8;
+            border: 2px solid var(--gray-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .add-form-wrap input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-border);
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Barlow', sans-serif;
+            outline: none;
+        }
+        .add-form-wrap input:focus { border-color: var(--red); }
+
+        /* Select message */
+        .select-msg {
+            background: linear-gradient(135deg, #f0f4f8, #e8edf5);
+            border: 2px dashed var(--navy-light);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            color: var(--navy);
+        }
+
+        /* Section header accent */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 24px;
+            background: var(--red);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="p-6" style="max-width: 1400px; margin: 0 auto;">
+
+        <!-- Header -->
+        <div class="pss-header text-white p-8 rounded-2xl shadow-2xl mb-8">
+            <div class="flex items-center justify-between relative" style="z-index:1;">
+                <div>
+                    <div class="logo-stripe mb-1">
+                        <div class="bar-red"></div>
+                        <div class="bar-gold"></div>
+                        <div>
+                            <h1 style="font-size:2.6rem; font-weight:900; line-height:1; letter-spacing:0.02em;">PREMIUM SURFACE SOLUTIONS</h1>
+                            <p style="font-family:'Barlow',sans-serif; font-size:0.95rem; opacity:0.65; letter-spacing:0.08em; text-transform:uppercase; margin-top:2px;">Sales Performance Tracker</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p style="font-size:0.75rem; opacity:0.5; text-transform:uppercase; letter-spacing:0.1em;">Today</p>
+                    <p id="currentDate" style="font-family:'Barlow Condensed',sans-serif; font-size:1.2rem; font-weight:700; opacity:0.9;"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="stat-card stat-navy">
+                <p style="font-size:0.8rem; font-weight:600; opacity:0.7; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">📋 Today's Leads</p>
+                <p id="todayCalls" style="font-family:'Barlow Condensed',sans-serif; font-size:3.2rem; font-weight:900; line-height:1;">0</p>
+                <p style="font-size:0.72rem; opacity:0.5; margin-top:4px;">All reps</p>
+                <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.12;">📋</div>
+            </div>
+            <div class="stat-card stat-red">
+                <p style="font-size:0.8rem; font-weight:600; opacity:0.85; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">💰 Today's Revenue</p>
+                <p id="todayRevenue" style="font-family:'Barlow Condensed',sans-serif; font-size:3.2rem; font-weight:900; line-height:1;">$0</p>
+                <p style="font-size:0.72rem; opacity:0.7; margin-top:4px;">Closed today</p>
+                <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.15;">💰</div>
+            </div>
+            <div class="stat-card stat-gold">
+                <p style="font-size:0.8rem; font-weight:600; opacity:0.85; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">🏗️ Courts Sold</p>
+                <p id="todayCourts" style="font-family:'Barlow Condensed',sans-serif; font-size:3.2rem; font-weight:900; line-height:1;">0</p>
+                <p style="font-size:0.72rem; opacity:0.7; margin-top:4px;">Today</p>
+                <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.15;">🏗️</div>
+            </div>
+            <div class="stat-card stat-deep">
+                <p style="font-size:0.8rem; font-weight:600; opacity:0.7; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">📊 Month Revenue</p>
+                <p id="monthRevenue" style="font-family:'Barlow Condensed',sans-serif; font-size:3rem; font-weight:900; line-height:1;">$0</p>
+                <p style="font-size:0.72rem; opacity:0.5; margin-top:4px;">All reps</p>
+                <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.12;">📊</div>
+            </div>
+        </div>
+
+        <!-- Select Rep -->
+        <div class="section-card p-8 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 section-title" style="font-family:'Barlow Condensed',sans-serif; font-size:1.7rem;">Select Sales Rep</h2>
+                <button id="addBtn" class="btn-primary">+ Add Rep</button>
+            </div>
+
+            <div id="addForm" class="add-form-wrap" style="display:none;">
+                <div class="flex gap-3">
+                    <input id="nameInput" type="text" placeholder="Enter rep name" />
+                    <button id="saveBtn" class="btn-save">Add</button>
+                    <button id="cancelBtn" class="btn-cancel">Cancel</button>
+                </div>
+            </div>
+
+            <div id="peopleList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+            <div id="emptyMsg" style="display:none;" class="text-center py-12 text-gray-400 font-semibold text-xl">Loading reps...</div>
+        </div>
+
+        <!-- Navigation -->
+        <div id="navigation" style="display:none;">
+            <h2 class="mb-5 section-title" style="font-family:'Barlow Condensed',sans-serif; font-size:1.7rem; font-weight:700; color:#1a1a2e;">Quick Actions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <a href="pss-calls.html" class="nav-card nc-navy">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 style="font-size:1.6rem; font-weight:800;">📋 Log Leads</h3>
+                    </div>
+                    <p style="opacity:0.75; margin-bottom:0.75rem; font-size:0.95rem;">Track daily leads, estimates &amp; sales</p>
+                    <div style="font-size:0.8rem; opacity:0.5;">✓ Calendar view &nbsp;•&nbsp; ✓ Court types &nbsp;•&nbsp; ✓ Lead source</div>
+                    <div class="bg-icon">📋</div>
+                </a>
+                <a href="pss-goals.html" class="nav-card nc-red">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 style="font-size:1.6rem; font-weight:800;">🎯 My Report</h3>
+                    </div>
+                    <p style="opacity:0.8; margin-bottom:0.75rem; font-size:0.95rem;">Personal metrics, goals &amp; forecasts</p>
+                    <div style="font-size:0.8rem; opacity:0.6;">✓ Weekly/Monthly/Yearly &nbsp;•&nbsp; ✓ Close rate</div>
+                    <div class="bg-icon">🎯</div>
+                </a>
+                <a href="pss-reports.html" class="nav-card nc-deep">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 style="font-size:1.6rem; font-weight:800;">📊 Team Report</h3>
+                    </div>
+                    <p style="opacity:0.75; margin-bottom:0.75rem; font-size:0.95rem;">Leaderboard &amp; team performance</p>
+                    <div style="font-size:0.8rem; opacity:0.5;">✓ Leaderboard &nbsp;•&nbsp; ✓ Court breakdown &nbsp;•&nbsp; ✓ Team goals</div>
+                    <div class="bg-icon">📊</div>
+                </a>
+                <a href="pss-money.html" class="nav-card nc-gold">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 style="font-size:1.6rem; font-weight:800;">💵 Money Owed</h3>
+                    </div>
+                    <p style="opacity:0.8; margin-bottom:0.75rem; font-size:0.95rem;">Outstanding payments &amp; follow-ups</p>
+                    <div style="font-size:0.8rem; opacity:0.6;">✓ By rep &nbsp;•&nbsp; ✓ By court type &nbsp;•&nbsp; ✓ Aging</div>
+                    <div class="bg-icon">💵</div>
+                </a>
+            </div>
+        </div>
+
+        <div id="selectMsg" style="display:none;" class="select-msg mt-6">
+            <p style="font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:700; color:var(--navy);">👆 Select a sales rep above to continue</p>
+        </div>
+
+    </div>
+
+    <script>
+        firebase.initializeApp({
+            apiKey: "AIzaSyApDY-q8JID_TBtIchcWfDsKqVRt679ALY",
+            authDomain: "premium-surface-solutions.firebaseapp.com",
+            databaseURL: "https://premium-surface-solutions-default-rtdb.firebaseio.com",
+            projectId: "premium-surface-solutions",
+            storageBucket: "premium-surface-solutions.firebasestorage.app",
+            messagingSenderId: "447806728696",
+            appId: "1:447806728696:web:cbd1fee9128d20d1a34e0d"
+        });
+
+        var db = firebase.database();
+        var people = [];
+        var selected = localStorage.getItem('selectedPerson') || null;
+        var logs = {};
+
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+        document.getElementById('addBtn').onclick = function() {
+            document.getElementById('addForm').style.display = 'block';
+            document.getElementById('nameInput').focus();
+        };
+        document.getElementById('cancelBtn').onclick = function() {
+            document.getElementById('addForm').style.display = 'none';
+            document.getElementById('nameInput').value = '';
+        };
+        document.getElementById('saveBtn').onclick = function() {
+            var name = document.getElementById('nameInput').value.trim();
+            if (name) {
+                db.ref('salespeople').push().set({ name: name });
+                document.getElementById('nameInput').value = '';
+                document.getElementById('addForm').style.display = 'none';
+            }
+        };
+        document.getElementById('nameInput').onkeypress = function(e) {
+            if (e.key === 'Enter') document.getElementById('saveBtn').click();
+        };
+
+        db.ref('salespeople').on('value', function(snapshot) {
+            var data = snapshot.val();
+            people = data ? Object.keys(data).map(function(k) { return { id: k, name: data[k].name }; }) : [];
+            if (!selected && people.length) {
+                selected = people[0].id;
+                localStorage.setItem('selectedPerson', selected);
+            }
+            renderPeople();
+            renderNavigation();
+            renderStats();
+        });
+
+        db.ref('callLogs').on('value', function(snapshot) {
+            logs = snapshot.val() || {};
+            renderStats();
+        });
+
+        function renderStats() {
+            var today = new Date();
+            var todayKey = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+            var monthKey = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0');
+            var totalLeads = 0, totalRevenue = 0, totalCourts = 0, monthRev = 0;
+
+            people.forEach(function(p) {
+                var dayData = logs[p.id + '_' + todayKey];
+                if (dayData) {
+                    var arr = Object.values(dayData);
+                    totalLeads += arr.length;
+                    arr.forEach(function(c) {
+                        if (c.jobSold) {
+                            totalRevenue += parseFloat(c.amountSold) || 0;
+                            totalCourts++;
+                        }
+                    });
+                }
+                Object.keys(logs).forEach(function(key) {
+                    if (key.startsWith(p.id + '_') && key.indexOf(monthKey) > -1) {
+                        var mData = logs[key];
+                        if (mData) {
+                            Object.values(mData).forEach(function(c) {
+                                if (c.jobSold) monthRev += parseFloat(c.amountSold) || 0;
+                            });
+                        }
+                    }
+                });
+            });
+
+            document.getElementById('todayCalls').textContent = totalLeads;
+            document.getElementById('todayRevenue').textContent = '$' + totalRevenue.toLocaleString();
+            document.getElementById('todayCourts').textContent = totalCourts;
+            document.getElementById('monthRevenue').textContent = '$' + Math.round(monthRev/1000) + 'k';
+        }
+
+        function renderPeople() {
+            if (!people.length) {
+                document.getElementById('peopleList').style.display = 'none';
+                document.getElementById('emptyMsg').style.display = 'block';
+                return;
+            }
+            document.getElementById('peopleList').style.display = 'grid';
+            document.getElementById('emptyMsg').style.display = 'none';
+
+            document.getElementById('peopleList').innerHTML = people.map(function(p) {
+                var isSel = selected === p.id;
+                return '<div style="position:relative;" class="person-container">' +
+                    '<button class="person-btn" data-id="' + p.id + '" style="width:100%;padding:1.1rem 1rem;border-radius:12px;font-weight:700;font-size:1rem;cursor:pointer;border:2px solid ' + (isSel ? '#c0281c' : '#dde2ea') + ';background:' + (isSel ? 'linear-gradient(135deg,#0d1b2a,#1e3250)' : 'white') + ';color:' + (isSel ? 'white' : '#374151') + ';transition:all 0.2s;box-shadow:' + (isSel ? '0 8px 20px rgba(13,27,42,0.3)' : '0 2px 6px rgba(0,0,0,0.06)') + ';font-family:Barlow,sans-serif;">' +
+                    '🏗️ ' + p.name +
+                    (isSel ? '<div style="margin-top:0.35rem;font-size:0.75rem;opacity:0.7;letter-spacing:0.05em;">✓ SELECTED</div>' : '') +
+                    '</button>' +
+                    '<button class="delete-btn" data-id="' + p.id + '" style="position:absolute;top:-8px;right:-8px;background:#c0281c;color:white;border-radius:50%;width:26px;height:26px;font-size:0.9rem;border:2px solid white;cursor:pointer;opacity:0;transition:opacity 0.2s;line-height:1;">×</button>' +
+                    '</div>';
+            }).join('');
+
+            document.querySelectorAll('.person-btn').forEach(function(btn) {
+                btn.onclick = function() {
+                    selected = btn.dataset.id;
+                    localStorage.setItem('selectedPerson', selected);
+                    renderPeople();
+                    renderNavigation();
+                };
+            });
+            document.querySelectorAll('.person-container').forEach(function(c) {
+                var del = c.querySelector('.delete-btn');
+                c.onmouseenter = function() { del.style.opacity = '1'; };
+                c.onmouseleave = function() { del.style.opacity = '0'; };
+                del.onclick = function(e) {
+                    e.stopPropagation();
+                    var p = people.find(function(x) { return x.id === del.dataset.id; });
+                    if (confirm('Remove ' + p.name + ' from the team?')) {
+                        db.ref('salespeople/' + del.dataset.id).remove();
+                        if (selected === del.dataset.id) { selected = null; localStorage.removeItem('selectedPerson'); }
+                    }
+                };
+            });
+        }
+
+        function renderNavigation() {
+            if (!selected) {
+                document.getElementById('navigation').style.display = 'none';
+                document.getElementById('selectMsg').style.display = people.length > 0 ? 'block' : 'none';
+                return;
+            }
+            document.getElementById('navigation').style.display = 'block';
+            document.getElementById('selectMsg').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
