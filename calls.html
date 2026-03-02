@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Leads - Premium Surface Solutions</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy:      #0d1b2a;
+            --navy-mid:  #162236;
+            --navy-light:#1e3250;
+            --red:       #c0281c;
+            --red-hover: #a81f15;
+            --gold:      #d4a843;
+            --gray-bg:   #f4f6f9;
+            --gray-border:#dde2ea;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--gray-bg);
+            min-height: 100vh;
+        }
+        h1,h2,h3,h4 { font-family: 'Barlow Condensed', sans-serif; }
+
+        .pss-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+            border-bottom: 4px solid var(--red);
+            position: relative; overflow: hidden;
+        }
+        .pss-header::before {
+            content:''; position:absolute; top:-60px; right:-60px;
+            width:220px; height:220px;
+            background: radial-gradient(circle, rgba(192,40,28,0.18) 0%, transparent 70%);
+            pointer-events:none;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.22); }
+
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            border: 1px solid var(--gray-border);
+            box-shadow: 0 2px 12px rgba(13,27,42,0.07);
+        }
+        .section-title {
+            display: flex; align-items: center; gap: 10px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.5rem; font-weight: 700; color: var(--navy);
+        }
+        .section-title::before {
+            content:''; display:inline-block;
+            width:4px; height:22px;
+            background: var(--red); border-radius:2px;
+        }
+
+        /* Calendar nav buttons */
+        .cal-btn {
+            background: linear-gradient(135deg, var(--navy), var(--navy-light));
+            color: white; border: none;
+            padding: 0.8rem 1.4rem;
+            border-radius: 10px;
+            font-size: 1.2rem; font-weight: 700;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        .cal-btn:hover { opacity: 0.85; }
+
+        /* Calendar day */
+        .calendar-day { transition: all 0.2s ease; cursor: pointer; border-radius: 12px; }
+        .calendar-day:hover { transform: translateY(-3px); box-shadow: 0 8px 16px rgba(13,27,42,0.12); }
+        .cal-day-empty   { border: 2px solid var(--gray-border); background: white; }
+        .cal-day-today   { border: 2px solid var(--red); background: white; box-shadow: 0 2px 8px rgba(192,40,28,0.1); }
+        .cal-day-has     { border: 2px solid var(--navy-light); background: #eef2f8; }
+        .cal-day-selected{ border: 2px solid var(--red); background: linear-gradient(135deg, #1e3250, #0d1b2a); color: white; }
+
+        /* Add Lead button */
+        .btn-primary {
+            background: var(--red); color: white; border: none;
+            padding: 0.7rem 1.5rem; border-radius: 10px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.05rem; font-weight: 700;
+            cursor: pointer; transition: background 0.2s, transform 0.15s;
+        }
+        .btn-primary:hover { background: var(--red-hover); transform: translateY(-1px); }
+
+        /* Lead card */
+        .lead-card {
+            background: white;
+            border: 2px solid var(--gray-border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: box-shadow 0.2s;
+        }
+        .lead-card:hover { box-shadow: 0 4px 16px rgba(13,27,42,0.1); }
+
+        /* Section panels inside lead card */
+        .panel-blue   { background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 12px; padding: 1rem; }
+        .panel-navy   { background: #f0f4f8; border: 2px solid #c7d2e8; border-radius: 12px; padding: 1rem; }
+        .panel-red    { background: #fff5f5; border: 2px solid #fecaca; border-radius: 12px; padding: 1rem; }
+        .panel-green  { background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 1rem; }
+        .panel-orange { background: #fff7ed; border: 2px solid #fed7aa; border-radius: 12px; padding: 1rem; }
+        .panel-purple { background: #faf5ff; border: 2px solid #e9d5ff; border-radius: 12px; padding: 1rem; }
+
+        input[type=text], input[type=tel], input[type=number], select, textarea {
+            font-family: 'Barlow', sans-serif;
+            border: 2px solid var(--gray-border);
+            border-radius: 10px;
+            padding: 0.65rem 1rem;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.2s;
+            font-size: 0.95rem;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--red); }
+
+        .label-sm { font-family: 'Barlow Condensed', sans-serif; font-size: 0.85rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; display: block; }
+
+        .checkbox-row { display:flex; align-items:center; gap:10px; padding:0.6rem 0.8rem; background:white; border-radius:8px; border:1px solid var(--gray-border); cursor:pointer; transition: border-color 0.2s; }
+        .checkbox-row:hover { border-color: var(--red); }
+
+        .tag-sold   { background: #dcfce7; color: #166534; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.8rem; padding:3px 12px; border-radius:20px; }
+        .tag-lead   { background: #dbeafe; color: #1e40af; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.8rem; padding:3px 12px; border-radius:20px; }
+        .delete-btn { background: #fee2e2; color: #dc2626; border:none; padding:4px 14px; border-radius:20px; font-weight:700; font-size:0.85rem; cursor:pointer; }
+        .delete-btn:hover { background: #fecaca; }
+    </style>
+</head>
+<body>
+    <div class="p-6" style="max-width: 1400px; margin: 0 auto;">
+
+        <!-- Header -->
+        <div class="pss-header text-white p-6 rounded-2xl shadow-2xl mb-6">
+            <div class="flex items-center justify-between" style="position:relative;z-index:1;">
+                <div>
+                    <h1 style="font-size:2rem;font-weight:900;line-height:1;">📋 LOG LEADS</h1>
+                    <p id="personName" style="opacity:0.65;font-size:0.9rem;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;"></p>
+                </div>
+                <a href="index.html" class="back-btn">← Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Calendar -->
+        <div class="section-card p-6 mb-6">
+            <div class="flex items-center justify-between mb-6">
+                <button id="prevWeek" class="cal-btn">←</button>
+                <h2 id="weekRange" class="section-title"></h2>
+                <button id="nextWeek" class="cal-btn">→</button>
+            </div>
+            <div id="calendarContainer"></div>
+        </div>
+
+        <!-- Leads Section -->
+        <div id="leadsSection" style="display:none;" class="section-card p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="section-title">Lead Entries</h3>
+                <button id="addLeadBtn" class="btn-primary">+ Add Lead</button>
+            </div>
+            <div id="leadsList" class="space-y-4"></div>
+        </div>
+    </div>
+
+    <script>
+        firebase.initializeApp({
+            apiKey: "AIzaSyApDY-q8JID_TBtIchcWfDsKqVRt679ALY",
+            authDomain: "premium-surface-solutions.firebaseapp.com",
+            databaseURL: "https://premium-surface-solutions-default-rtdb.firebaseio.com",
+            projectId: "premium-surface-solutions",
+            storageBucket: "premium-surface-solutions.firebasestorage.app",
+            messagingSenderId: "447806728696",
+            appId: "1:447806728696:web:cbd1fee9128d20d1a34e0d"
+        });
+
+        var db = firebase.database();
+        var selected = localStorage.getItem('selectedPerson');
+        var currentDate = new Date();
+        var selectedDate = null;
+        var people = [];
+
+        if (!selected) { window.location.href = 'index.html'; }
+
+        db.ref('salespeople').on('value', function(snapshot) {
+            var data = snapshot.val();
+            people = data ? Object.keys(data).map(function(k) { return { id: k, name: data[k].name }; }) : [];
+            var person = people.find(function(p) { return p.id === selected; });
+            if (person) { document.getElementById('personName').textContent = 'Logging leads for: ' + person.name; }
+        });
+
+        function dk(d) {
+            return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        }
+        function dataKey(d) { return selected + '_' + dk(d); }
+
+        function getWeek(date) {
+            var day = date.getDay();
+            var diff = date.getDate() - day + (day === 0 ? -6 : 1);
+            var monday = new Date(date);
+            monday.setDate(diff);
+            var week = [];
+            for (var i = 0; i < 7; i++) {
+                var d = new Date(monday);
+                d.setDate(monday.getDate() + i);
+                week.push(d);
+            }
+            return week;
+        }
+
+        function renderCalendar() {
+            var week = getWeek(currentDate);
+            document.getElementById('weekRange').textContent =
+                week[0].toLocaleDateString('en-US', {month:'short', day:'numeric'}) + ' – ' +
+                week[6].toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+
+            var container = document.getElementById('calendarContainer');
+            var html = '<div class="grid grid-cols-7 gap-3 mb-3">';
+            ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(function(d) {
+                html += '<div class="text-center text-xs font-bold text-gray-500" style="font-family:\'Barlow Condensed\',sans-serif;letter-spacing:0.05em;">' + d + '</div>';
+            });
+            html += '</div><div id="calendarDays" class="grid grid-cols-7 gap-3">';
+            for (var i = 0; i < 7; i++) {
+                html += '<div id="calDay_' + i + '" class="calendar-day p-3 min-h-16 cal-day-empty"></div>';
+            }
+            html += '</div>';
+            container.innerHTML = html;
+
+            week.forEach(function(d, idx) {
+                (function(fd, fidx) {
+                    db.ref('callLogs/' + dataKey(fd)).once('value', function(snapshot) {
+                        var calls = snapshot.val();
+                        var arr = calls ? Object.values(calls) : [];
+                        var sold = arr.filter(function(c) { return c.jobSold; });
+                        var total = arr.reduce(function(s, c) { return s + (parseFloat(c.amountSold) || 0); }, 0);
+                        var dateKey = dk(fd);
+                        var isToday = dk(new Date()) === dateKey;
+                        var isSel = selectedDate === dateKey;
+
+                        var slot = document.getElementById('calDay_' + fidx);
+                        if (!slot) return;
+
+                        slot.className = 'calendar-day p-3 rounded-xl ' + (
+                            isSel ? 'cal-day-selected' :
+                            arr.length > 0 ? 'cal-day-has' :
+                            isToday ? 'cal-day-today' :
+                            'cal-day-empty'
+                        );
+
+                        slot.onclick = (function(cfd, cdk, cisSel) {
+                            return function() {
+                                selectedDate = cisSel ? null : cdk;
+                                renderCalendar();
+                                if (selectedDate) renderLeads(cfd);
+                                else document.getElementById('leadsSection').style.display = 'none';
+                            };
+                        })(fd, dateKey, isSel);
+
+                        var textColor = isSel ? 'color:white;' : 'color:#0d1b2a;';
+                        var subColor = isSel ? 'color:rgba(255,255,255,0.75);' : '';
+                        slot.innerHTML =
+                            '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.4rem;font-weight:900;' + textColor + '">' + fd.getDate() + '</div>' +
+                            (arr.length > 0 ?
+                                '<div style="font-size:0.75rem;font-weight:700;' + (isSel ? 'color:rgba(255,255,255,0.85);' : 'color:#c0281c;') + 'margin-top:2px;">' + sold.length + ' sold</div>' +
+                                '<div style="font-size:0.75rem;font-weight:700;' + (isSel ? 'color:rgba(255,255,255,0.7);' : 'color:#162236;') + '">$' + total.toLocaleString() + '</div>' :
+                                '<div style="font-size:0.72rem;' + (isSel ? 'color:rgba(255,255,255,0.5);' : 'color:#9ca3af;') + 'margin-top:2px;">No leads</div>');
+                    });
+                })(d, idx);
+            });
+        }
+
+        function calcOwed(sold, collected) {
+            return Math.max(0, (parseFloat(sold) || 0) - (parseFloat(collected) || 0));
+        }
+
+        function renderLeads(date) {
+            document.getElementById('leadsSection').style.display = 'block';
+            var key = dataKey(date);
+
+            db.ref('callLogs/' + key).on('value', function(snapshot) {
+                var data = snapshot.val();
+                var arr = data ? Object.keys(data).map(function(id) { return Object.assign({ id: id }, data[id]); }) : [];
+                var container = document.getElementById('leadsList');
+
+                if (!arr.length) {
+                    container.innerHTML = '<p class="text-center text-gray-400 py-10" style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.1rem;">No leads logged for this day. Click "+ Add Lead" to start.</p>';
+                    return;
+                }
+
+                container.innerHTML = arr.map(function(lead) {
+                    return '<div class="lead-card">' +
+                        '<div class="flex justify-between mb-4">' +
+                            '<span class="tag-lead">🏗️ Lead Entry</span>' +
+                            '<button onclick="deleteLead(\'' + lead.id + '\')" class="delete-btn">🗑️ Delete</button>' +
+                        '</div>' +
+
+                        '<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">' +
+                            '<input type="text" value="' + (lead.customerName || '') + '" onchange="updateLead(\'' + lead.id + '\',\'customerName\',this.value)" placeholder="Customer Name" style="font-size:1rem;font-weight:600;" />' +
+                            '<input type="tel" value="' + (lead.customerPhone || '') + '" onchange="updateLead(\'' + lead.id + '\',\'customerPhone\',this.value)" placeholder="Customer Phone" />' +
+                            '<input type="text" value="' + (lead.customerAddress || '') + '" onchange="updateLead(\'' + lead.id + '\',\'customerAddress\',this.value)" placeholder="Property Address" />' +
+                            '<input type="text" value="' + (lead.jobNumber || '') + '" onchange="updateLead(\'' + lead.id + '\',\'jobNumber\',this.value)" placeholder="Job / Quote Number" />' +
+                        '</div>' +
+
+                        '<div class="panel-blue mb-4">' +
+                            '<p class="label-sm" style="color:#1e40af;">📡 Lead Source</p>' +
+                            '<div class="grid grid-cols-2 md:grid-cols-4 gap-2">' +
+                                ['Referral','Website','Canvass','Social Media','Trade Show','Cold Call','Repeat Customer','Other'].map(function(src) {
+                                    return '<label class="checkbox-row">' +
+                                        '<input type="radio" name="leadSrc_' + lead.id + '" value="' + src + '" ' + (lead.leadSource === src ? 'checked' : '') + ' onchange="updateLead(\'' + lead.id + '\',\'leadSource\',this.value)" style="width:16px;height:16px;accent-color:#1e40af;" />' +
+                                        '<span style="font-size:0.82rem;font-weight:600;">' + src + '</span></label>';
+                                }).join('') +
+                            '</div>' +
+                        '</div>' +
+
+                        '<div class="panel-navy mb-4">' +
+                            '<p class="label-sm" style="color:#0d1b2a;">🏓 Project Type</p>' +
+                            '<div class="grid grid-cols-2 md:grid-cols-4 gap-2">' +
+                                [
+                                    {key:'courtPickleball', label:'🏓 Pickleball Court'},
+                                    {key:'courtTennis', label:'🎾 Tennis Court'},
+                                    {key:'courtBasketball', label:'🏀 Basketball Court'},
+                                    {key:'courtPadel', label:'🎾 Padel Court'},
+                                    {key:'courtMulti', label:'🏟️ Multi-Sport'},
+                                    {key:'projectConcrete', label:'🪨 Concrete Work'},
+                                    {key:'projectCoatings', label:'🎨 Coatings'},
+                                    {key:'projectLandscape', label:'🌿 Landscaping'}
+                                ].map(function(item) {
+                                    return '<label class="checkbox-row">' +
+                                        '<input type="checkbox" ' + (lead[item.key] ? 'checked' : '') + ' onchange="updateLead(\'' + lead.id + '\',\'' + item.key + '\',this.checked)" style="width:16px;height:16px;accent-color:#0d1b2a;" />' +
+                                        '<span style="font-size:0.82rem;font-weight:600;">' + item.label + '</span></label>';
+                                }).join('') +
+                            '</div>' +
+                        '</div>' +
+
+                        '<label class="checkbox-row mb-3" style="border:2px solid #dde2ea;padding:1rem;">' +
+                            '<input type="checkbox" ' + (lead.jobSold ? 'checked' : '') + ' onchange="updateLead(\'' + lead.id + '\',\'jobSold\',this.checked)" style="width:22px;height:22px;accent-color:#c0281c;" />' +
+                            '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.2rem;font-weight:700;">💰 Job Sold / Closed</span>' +
+                        '</label>' +
+
+                        (lead.jobSold ?
+                            '<div class="panel-green mb-3">' +
+                                '<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">' +
+                                    '<div><label class="label-sm" style="color:#166534;">Contract Value ($)</label>' +
+                                    '<input id="amtSold_' + lead.id + '" type="number" value="' + (lead.amountSold || '') + '" onchange="handleAmtChange(\'' + lead.id + '\')" style="font-size:1.2rem;font-weight:700;border-color:#86efac;" placeholder="0.00" /></div>' +
+                                    '<div><label class="label-sm" style="color:#1e40af;">Deposit Collected ($)</label>' +
+                                    '<input id="amtCollected_' + lead.id + '" type="number" value="' + (lead.amountCollected || '') + '" onchange="handleAmtChange(\'' + lead.id + '\')" style="font-size:1.2rem;font-weight:700;border-color:#93c5fd;" placeholder="0.00" /></div>' +
+                                '</div>' +
+                                '<div class="panel-orange mb-3">' +
+                                    '<label class="label-sm" style="color:#9a3412;">💵 Balance Remaining</label>' +
+                                    '<p id="moneyOwed_' + lead.id + '" style="font-family:\'Barlow Condensed\',sans-serif;font-size:2rem;font-weight:900;color:#7c2d12;">$' + calcOwed(lead.amountSold, lead.amountCollected).toLocaleString() + '</p>' +
+                                '</div>' +
+                                '<div class="mb-3"><label class="label-sm" style="color:#166534;">Number of Courts / Units</label>' +
+                                '<input type="number" value="' + (lead.numCourts || 1) + '" min="1" onchange="updateLead(\'' + lead.id + '\',\'numCourts\',parseInt(this.value)||1)" style="border-color:#86efac;" /></div>' +
+                                '<div class="panel-purple">' +
+                                    '<label class="checkbox-row mb-2" style="border:none;padding:0;">' +
+                                        '<input type="checkbox" ' + (lead.soldFromReferral ? 'checked' : '') + ' onchange="updateLead(\'' + lead.id + '\',\'soldFromReferral\',this.checked)" style="width:18px;height:18px;accent-color:#7c3aed;" />' +
+                                        '<span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:700;color:#4c1d95;">🔄 Sold from Internal Referral/Turnover</span>' +
+                                    '</label>' +
+                                    (lead.soldFromReferral ?
+                                        '<select onchange="updateLead(\'' + lead.id + '\',\'referralFrom\',this.value)" style="border-color:#c4b5fd;">' +
+                                            '<option value="">Select rep...</option>' +
+                                            people.filter(function(p) { return p.id !== selected; }).map(function(p) {
+                                                return '<option value="' + p.id + '" ' + (lead.referralFrom === p.id ? 'selected' : '') + '>' + p.name + '</option>';
+                                            }).join('') +
+                                        '</select>' : '') +
+                                '</div>' +
+                            '</div>' : '') +
+
+                        '<label class="checkbox-row mb-3" style="border:2px solid #dde2ea;padding:1rem;">' +
+                            '<input type="checkbox" ' + (lead.leftEstimate ? 'checked' : '') + ' onchange="updateLead(\'' + lead.id + '\',\'leftEstimate\',this.checked)" style="width:22px;height:22px;accent-color:#d97706;" />' +
+                            '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.1rem;font-weight:700;">📐 Estimate / Quote Left</span>' +
+                        '</label>' +
+                        (lead.leftEstimate ?
+                            '<input type="number" value="' + (lead.estimateAmount || '') + '" onchange="updateLead(\'' + lead.id + '\',\'estimateAmount\',parseFloat(this.value)||0)" class="mb-3" style="border-color:#fcd34d;" placeholder="Estimate Amount ($)" />' : '') +
+
+                        '<label class="checkbox-row mb-3" style="border:2px solid #dde2ea;padding:1rem;">' +
+                            '<input type="checkbox" ' + (lead.jobCancelled ? 'checked' : '') + ' onchange="updateLead(\'' + lead.id + '\',\'jobCancelled\',this.checked)" style="width:22px;height:22px;accent-color:#c0281c;" />' +
+                            '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.1rem;font-weight:700;">❌ Lead Dead / Cancelled</span>' +
+                        '</label>' +
+                        (lead.jobCancelled ?
+                            '<textarea onchange="updateLead(\'' + lead.id + '\',\'cancelReason\',this.value)" class="mb-3" style="border-color:#fca5a5;" placeholder="Reason..." rows="2">' + (lead.cancelReason || '') + '</textarea>' : '') +
+
+                        '<div style="border-top:2px solid var(--gray-border);padding-top:1rem;margin-top:0.5rem;">' +
+                            '<p class="label-sm" style="color:#374151;">📈 Performance Metrics</p>' +
+                            '<div class="grid grid-cols-2 md:grid-cols-3 gap-2">' +
+                                [
+                                    {key:'siteVisitCompleted', label:'🏠 Site Visit Done'},
+                                    {key:'reviewRequested', label:'⭐ Review Requested'},
+                                    {key:'reviewCompleted', label:'✅ Review Left'},
+                                    {key:'followUpScheduled', label:'📅 Follow-Up Set'},
+                                    {key:'contractSigned', label:'✍️ Contract Signed'},
+                                    {key:'depositCollected', label:'💳 Deposit Collected'},
+                                    {key:'permitRequired', label:'📋 Permit Required'},
+                                    {key:'referralGiven', label:'🔄 Referral Given'},
+                                    {key:'upsellAttempted', label:'⬆️ Upsell Attempted'},
+                                    {key:'upsellCompleted', label:'✔️ Upsell Closed'},
+                                    {key:'jobScheduled', label:'🗓️ Job Scheduled'},
+                                    {key:'jobComplete', label:'🏁 Job Complete'},
+                                ].map(function(item) {
+                                    return '<label class="checkbox-row">' +
+                                        '<input type="checkbox" ' + (lead[item.key] ? 'checked' : '') + ' onchange="updateLead(\'' + lead.id + '\',\'' + item.key + '\',this.checked)" style="width:16px;height:16px;accent-color:#0d1b2a;" />' +
+                                        '<span style="font-size:0.82rem;font-weight:600;">' + item.label + '</span></label>';
+                                }).join('') +
+                            '</div>' +
+                            (lead.upsellCompleted ?
+                                '<input type="number" value="' + (lead.upsellAmount || '') + '" onchange="updateLead(\'' + lead.id + '\',\'upsellAmount\',parseFloat(this.value)||0)" class="mt-3" placeholder="Upsell Amount ($)" />' : '') +
+                        '</div>' +
+
+                        '<div style="border-top:2px solid var(--gray-border);padding-top:1rem;margin-top:0.75rem;">' +
+                            '<p class="label-sm" style="color:#374151;">🚫 Objection (if any)</p>' +
+                            '<select onchange="updateLead(\'' + lead.id + '\',\'objection\',this.value)">' +
+                                '<option value="">No objection</option>' +
+                                [
+                                    ['price','💰 Price too high'],
+                                    ['budget','💸 No budget right now'],
+                                    ['think','🤔 Need to think about it'],
+                                    ['spouse','💑 Need spouse approval'],
+                                    ['someone','👷 Already have someone'],
+                                    ['quotes','📋 Want multiple quotes'],
+                                    ['timing','⏰ Not now / bad timing'],
+                                    ['trust','⚠️ Trust / bad reviews'],
+                                    ['permit','📋 Permit concerns'],
+                                    ['hoa','🏘️ HOA restrictions']
+                                ].map(function(o) {
+                                    return '<option value="' + o[0] + '" ' + (lead.objection === o[0] ? 'selected' : '') + '>' + o[1] + '</option>';
+                                }).join('') +
+                            '</select>' +
+                        '</div>' +
+
+                        '<div style="border-top:2px solid var(--gray-border);padding-top:1rem;margin-top:0.75rem;">' +
+                            '<p class="label-sm" style="color:#374151;">📝 Notes</p>' +
+                            '<textarea onchange="updateLead(\'' + lead.id + '\',\'notes\',this.value)" rows="3" placeholder="Any notes about this lead...">' + (lead.notes || '') + '</textarea>' +
+                        '</div>' +
+
+                    '</div>';
+                }).join('');
+            });
+
+            document.getElementById('addLeadBtn').onclick = function() {
+                db.ref('callLogs/' + key).push().set({
+                    customerName: '', customerPhone: '', customerAddress: '', jobNumber: '',
+                    leadSource: '', courtPickleball: false, courtTennis: false, courtBasketball: false,
+                    courtPadel: false, courtMulti: false, projectConcrete: false, projectCoatings: false,
+                    projectLandscape: false, jobSold: false, amountSold: 0, amountCollected: 0, moneyOwed: 0,
+                    numCourts: 1, leftEstimate: false, estimateAmount: 0, jobCancelled: false, cancelReason: '',
+                    siteVisitCompleted: false, reviewRequested: false, reviewCompleted: false,
+                    followUpScheduled: false, contractSigned: false, depositCollected: false,
+                    permitRequired: false, referralGiven: false, upsellAttempted: false,
+                    upsellCompleted: false, upsellAmount: 0, jobScheduled: false, jobComplete: false,
+                    soldFromReferral: false, referralFrom: '', objection: '', notes: '',
+                    timestamp: Date.now()
+                });
+            };
+        }
+
+        function handleAmtChange(leadId) {
+            var d = getWeek(currentDate).find(function(d) { return dk(d) === selectedDate; });
+            var key = dataKey(d);
+            var sold = parseFloat(document.getElementById('amtSold_' + leadId).value) || 0;
+            var collected = parseFloat(document.getElementById('amtCollected_' + leadId).value) || 0;
+            var owed = calcOwed(sold, collected);
+            db.ref('callLogs/' + key + '/' + leadId).update({ amountSold: sold, amountCollected: collected, moneyOwed: owed });
+            document.getElementById('moneyOwed_' + leadId).textContent = '$' + owed.toLocaleString();
+        }
+
+        function updateLead(leadId, field, value) {
+            var d = getWeek(currentDate).find(function(d) { return dk(d) === selectedDate; });
+            db.ref('callLogs/' + dataKey(d) + '/' + leadId + '/' + field).set(value);
+        }
+
+        function deleteLead(leadId) {
+            if (confirm('Delete this lead entry?')) {
+                var d = getWeek(currentDate).find(function(d) { return dk(d) === selectedDate; });
+                db.ref('callLogs/' + dataKey(d) + '/' + leadId).remove();
+            }
+        }
+
+        document.getElementById('prevWeek').onclick = function() {
+            currentDate = new Date(currentDate.getTime() - 7*24*60*60*1000);
+            selectedDate = null;
+            document.getElementById('leadsSection').style.display = 'none';
+            renderCalendar();
+        };
+        document.getElementById('nextWeek').onclick = function() {
+            currentDate = new Date(currentDate.getTime() + 7*24*60*60*1000);
+            selectedDate = null;
+            document.getElementById('leadsSection').style.display = 'none';
+            renderCalendar();
+        };
+
+        renderCalendar();
+    </script>
+</body>
+</html>
