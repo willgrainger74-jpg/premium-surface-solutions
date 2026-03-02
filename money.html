@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Owed - Premium Surface Solutions</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy:      #0d1b2a;
+            --navy-mid:  #162236;
+            --navy-light:#1e3250;
+            --red:       #c0281c;
+            --red-hover: #a81f15;
+            --gold:      #d4a843;
+            --gray-bg:   #f4f6f9;
+            --gray-border:#dde2ea;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Barlow', sans-serif; background: var(--gray-bg); min-height: 100vh; }
+        h1,h2,h3,h4 { font-family: 'Barlow Condensed', sans-serif; }
+
+        .pss-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+            border-bottom: 4px solid var(--red);
+            position: relative; overflow: hidden;
+        }
+        .pss-header::before {
+            content:''; position:absolute; top:-60px; right:-60px;
+            width:220px; height:220px;
+            background: radial-gradient(circle, rgba(192,40,28,0.18) 0%, transparent 70%);
+            pointer-events:none;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.12); color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.6rem 1.2rem; border-radius: 10px;
+            font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700;
+            text-decoration: none; transition: background 0.2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.22); }
+
+        .section-card { background: white; border-radius: 16px; border: 1px solid var(--gray-border); box-shadow: 0 2px 12px rgba(13,27,42,0.07); }
+        .section-title { display:flex; align-items:center; gap:10px; font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:700; color:var(--navy); }
+        .section-title::before { content:''; display:inline-block; width:4px; height:22px; background:var(--red); border-radius:2px; }
+
+        .stat-card { border-radius: 14px; padding: 1.25rem; border: 2px solid; }
+        .sc-red    { background: #fff5f5; border-color: #fecaca; }
+        .sc-orange { background: #fff7ed; border-color: #fed7aa; }
+        .sc-gold   { background: #fefce8; border-color: #fde68a; }
+        .sc-navy   { background: #f0f4f8; border-color: #c7d2e8; }
+
+        .stat-val { font-family: 'Barlow Condensed', sans-serif; font-size: 2.2rem; font-weight: 900; }
+        .stat-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+        .stat-sub { font-size: 0.74rem; color: #6b7280; margin-top: 2px; }
+
+        select {
+            font-family: 'Barlow', sans-serif;
+            border: 2px solid var(--gray-border); border-radius: 10px;
+            padding: 0.55rem 1rem; outline: none; font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+        select:focus { border-color: var(--red); }
+
+        .btn-apply {
+            background: var(--red); color: white; border: none;
+            padding: 0.6rem 1.4rem; border-radius: 10px;
+            font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn-apply:hover { background: var(--red-hover); }
+
+        .btn-paid {
+            background: #16a34a; color: white; border: none;
+            padding: 0.5rem 1rem; border-radius: 8px;
+            font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn-paid:hover { background: #15803d; }
+
+        .btn-payment {
+            background: var(--navy); color: white; border: none;
+            padding: 0.5rem 1rem; border-radius: 8px;
+            font-family: 'Barlow Condensed', sans-serif; font-size: 0.9rem; font-weight: 700;
+            cursor: pointer; transition: background 0.2s;
+        }
+        .btn-payment:hover { background: var(--navy-light); }
+
+        .owed-entry {
+            background: white; border: 2px solid var(--gray-border); border-radius: 14px;
+            padding: 1.25rem; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .owed-entry:hover { border-color: var(--red); box-shadow: 0 4px 16px rgba(192,40,28,0.08); }
+
+        .rep-card {
+            background: #fff5f5; border: 2px solid #fecaca; border-radius: 12px; padding: 1rem;
+        }
+
+        .tag { display:inline-block; padding:3px 10px; border-radius:20px; font-family:'Barlow Condensed',sans-serif; font-size:0.78rem; font-weight:700; }
+        .tag-navy   { background: #dbeafe; color: #1e3a8a; }
+        .tag-red    { background: #fee2e2; color: #991b1b; }
+        .tag-orange { background: #ffedd5; color: #9a3412; }
+        .tag-gold   { background: #fef9c3; color: #854d0e; }
+        .tag-green  { background: #dcfce7; color: #166534; }
+    </style>
+</head>
+<body>
+<div class="p-4" style="max-width: 1400px; margin: 0 auto;">
+
+    <!-- Header -->
+    <div class="pss-header text-white p-6 rounded-2xl shadow-2xl mb-6">
+        <div class="flex items-center justify-between" style="position:relative;z-index:1;">
+            <div>
+                <h1 style="font-size:2rem;font-weight:900;line-height:1;">💵 MONEY OWED</h1>
+                <p style="opacity:0.65;font-size:0.9rem;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;">Outstanding Balances & Payment Tracking</p>
+            </div>
+            <a href="index.html" class="back-btn">← Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="stat-card sc-red">
+            <p class="stat-label" style="color:var(--red);">Total Owed (All)</p>
+            <p id="totalOwedAll" class="stat-val" style="color:#7f1d1d;">$0</p>
+            <p class="stat-sub">all time outstanding</p>
+        </div>
+        <div class="stat-card sc-orange">
+            <p class="stat-label" style="color:#c2410c;">This Month Owed</p>
+            <p id="totalOwedMonth" class="stat-val" style="color:#7c2d12;">$0</p>
+            <p class="stat-sub">current month</p>
+        </div>
+        <div class="stat-card sc-gold">
+            <p class="stat-label" style="color:#92400e;">Open Jobs</p>
+            <p id="openJobs" class="stat-val" style="color:#78350f;">0</p>
+            <p class="stat-sub">with balance remaining</p>
+        </div>
+        <div class="stat-card sc-navy">
+            <p class="stat-label" style="color:var(--navy);">Total Contracts</p>
+            <p id="totalContracts" class="stat-val" style="color:var(--navy);">$0</p>
+            <p class="stat-sub">total sold value</p>
+        </div>
+    </div>
+
+    <!-- Filter Controls -->
+    <div class="section-card p-5 mb-6">
+        <div class="flex flex-wrap gap-4 items-end">
+            <div>
+                <label class="stat-label" style="color:#374151;display:block;margin-bottom:6px;">Filter by Rep</label>
+                <select id="repFilter">
+                    <option value="all">All Reps</option>
+                </select>
+            </div>
+            <div>
+                <label class="stat-label" style="color:#374151;display:block;margin-bottom:6px;">Filter by Project Type</label>
+                <select id="courtFilter">
+                    <option value="all">All Types</option>
+                    <option value="courtPickleball">🏓 Pickleball</option>
+                    <option value="courtTennis">🎾 Tennis</option>
+                    <option value="courtBasketball">🏀 Basketball</option>
+                    <option value="courtPadel">🎾 Padel</option>
+                    <option value="courtMulti">🏟️ Multi-Sport</option>
+                    <option value="projectConcrete">🪨 Concrete</option>
+                    <option value="projectCoatings">🎨 Coatings</option>
+                    <option value="projectLandscape">🌿 Landscape</option>
+                </select>
+            </div>
+            <div>
+                <label class="stat-label" style="color:#374151;display:block;margin-bottom:6px;">Sort by</label>
+                <select id="sortFilter">
+                    <option value="owed_desc">Owed: High → Low</option>
+                    <option value="owed_asc">Owed: Low → High</option>
+                    <option value="date_desc">Date: Newest First</option>
+                    <option value="date_asc">Date: Oldest First</option>
+                </select>
+            </div>
+            <div>
+                <button onclick="renderOwed()" class="btn-apply">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Owed by Rep Summary -->
+    <div class="section-card p-6 mb-6">
+        <h3 class="section-title mb-4">💰 Outstanding by Rep</h3>
+        <div id="owedByRep" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- Individual Owed Entries -->
+    <div class="section-card p-6">
+        <h3 class="section-title mb-4">📋 All Outstanding Jobs</h3>
+        <div id="owedList" class="space-y-3"></div>
+    </div>
+</div>
+
+<script>
+    firebase.initializeApp({
+        apiKey: "AIzaSyApDY-q8JID_TBtIchcWfDsKqVRt679ALY",
+        authDomain: "premium-surface-solutions.firebaseapp.com",
+        databaseURL: "https://premium-surface-solutions-default-rtdb.firebaseio.com",
+        projectId: "premium-surface-solutions",
+        storageBucket: "premium-surface-solutions.firebasestorage.app",
+        messagingSenderId: "447806728696",
+        appId: "1:447806728696:web:cbd1fee9128d20d1a34e0d"
+    });
+
+    var db = firebase.database();
+    var people = [], logs = {};
+    var dataReady = { people: false, logs: false };
+
+    function tryRender() { if (dataReady.people && dataReady.logs) { populateRepFilter(); renderOwed(); } }
+
+    db.ref('salespeople').on('value', function(s) {
+        var d = s.val();
+        people = d ? Object.keys(d).map(function(k) { return { id:k, name:d[k].name }; }) : [];
+        dataReady.people = true; tryRender();
+    });
+    db.ref('callLogs').on('value', function(s) {
+        logs = s.val()||{}; dataReady.logs = true; tryRender();
+    });
+
+    function populateRepFilter() {
+        var sel = document.getElementById('repFilter');
+        var current = sel.value;
+        sel.innerHTML = '<option value="all">All Reps</option>';
+        people.forEach(function(p) {
+            sel.innerHTML += '<option value="'+p.id+'">'+p.name+'</option>';
+        });
+        sel.value = current;
+    }
+
+    function dk(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+    var courtLabels = {
+        courtPickleball:'🏓 Pickleball', courtTennis:'🎾 Tennis', courtBasketball:'🏀 Basketball',
+        courtPadel:'🎾 Padel', courtMulti:'🏟️ Multi-Sport', projectConcrete:'🪨 Concrete',
+        projectCoatings:'🎨 Coatings', projectLandscape:'🌿 Landscape'
+    };
+
+    function getProjectType(lead) {
+        var types = [];
+        Object.keys(courtLabels).forEach(function(k) { if (lead[k]) types.push(courtLabels[k]); });
+        return types.length > 0 ? types.join(', ') : '—';
+    }
+
+    function renderOwed() {
+        var repFilter = document.getElementById('repFilter').value;
+        var courtFilter = document.getElementById('courtFilter').value;
+        var sortFilter = document.getElementById('sortFilter').value;
+        var today = new Date();
+        var monthKey = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
+
+        var owedEntries = [];
+        Object.keys(logs).forEach(function(key) {
+            var parts = key.split('_');
+            if (parts.length < 2) return;
+            var personId = parts[0];
+            var dateStr = parts[1];
+            if (!personId || !dateStr) return;
+
+            var person = people.find(function(p) { return p.id === personId; });
+            if (!person) return;
+            if (repFilter !== 'all' && personId !== repFilter) return;
+
+            var dayLogs = logs[key];
+            if (!dayLogs) return;
+
+            Object.keys(dayLogs).forEach(function(leadId) {
+                var lead = dayLogs[leadId];
+                if (!lead.jobSold) return;
+                var owed = parseFloat(lead.moneyOwed) || 0;
+                if (owed <= 0) return;
+                if (courtFilter !== 'all' && !lead[courtFilter]) return;
+
+                owedEntries.push({
+                    id: leadId, key: key, personId: personId, personName: person.name,
+                    dateStr: dateStr, customerName: lead.customerName || 'Unknown Customer',
+                    customerPhone: lead.customerPhone || '',
+                    customerAddress: lead.customerAddress || '',
+                    jobNumber: lead.jobNumber || '',
+                    amountSold: parseFloat(lead.amountSold)||0,
+                    amountCollected: parseFloat(lead.amountCollected)||0,
+                    moneyOwed: owed,
+                    projectType: getProjectType(lead),
+                    notes: lead.notes || '',
+                    isThisMonth: dateStr.indexOf(monthKey) > -1
+                });
+            });
+        });
+
+        owedEntries.sort(function(a,b) {
+            if (sortFilter === 'owed_desc') return b.moneyOwed - a.moneyOwed;
+            if (sortFilter === 'owed_asc') return a.moneyOwed - b.moneyOwed;
+            if (sortFilter === 'date_desc') return b.dateStr.localeCompare(a.dateStr);
+            return a.dateStr.localeCompare(b.dateStr);
+        });
+
+        var totalOwed = owedEntries.reduce(function(s,e) { return s+e.moneyOwed; }, 0);
+        var monthOwed = owedEntries.filter(function(e) { return e.isThisMonth; }).reduce(function(s,e) { return s+e.moneyOwed; }, 0);
+        var totalContracts = owedEntries.reduce(function(s,e) { return s+e.amountSold; }, 0);
+        document.getElementById('totalOwedAll').textContent = '$'+totalOwed.toLocaleString();
+        document.getElementById('totalOwedMonth').textContent = '$'+monthOwed.toLocaleString();
+        document.getElementById('openJobs').textContent = owedEntries.length;
+        document.getElementById('totalContracts').textContent = '$'+totalContracts.toLocaleString();
+
+        var repTotals = {};
+        owedEntries.forEach(function(e) {
+            if (!repTotals[e.personId]) repTotals[e.personId] = { name:e.personName, owed:0, jobs:0 };
+            repTotals[e.personId].owed += e.moneyOwed;
+            repTotals[e.personId].jobs++;
+        });
+        var repHTML = '';
+        Object.values(repTotals).sort(function(a,b) { return b.owed-a.owed; }).forEach(function(r) {
+            repHTML += '<div class="rep-card">' +
+                '<p style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;font-size:1.1rem;color:var(--navy);">'+r.name+'</p>' +
+                '<p style="font-family:\'Barlow Condensed\',sans-serif;font-size:2rem;font-weight:900;color:var(--red);">$'+r.owed.toLocaleString()+'</p>' +
+                '<p style="font-size:0.75rem;color:#6b7280;">'+r.jobs+' open jobs</p></div>';
+        });
+        document.getElementById('owedByRep').innerHTML = repHTML || '<p style="color:#9ca3af;grid-column:span 3;">No outstanding balances</p>';
+
+        if (!owedEntries.length) {
+            document.getElementById('owedList').innerHTML = '<p style="text-align:center;color:#9ca3af;padding:2.5rem;font-family:\'Barlow Condensed\',sans-serif;font-size:1.2rem;">🎉 No outstanding balances found!</p>';
+            return;
+        }
+
+        document.getElementById('owedList').innerHTML = owedEntries.map(function(e) {
+            var ageDays = Math.floor((new Date() - new Date(e.dateStr)) / (1000*60*60*24));
+            var ageTag = ageDays > 60 ? 'tag-red' : ageDays > 30 ? 'tag-orange' : 'tag-gold';
+            return '<div class="owed-entry">' +
+                '<div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-bottom:12px;">' +
+                    '<div>' +
+                        '<p style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.3rem;font-weight:800;color:var(--navy);">'+e.customerName+'</p>' +
+                        '<p style="font-size:0.85rem;color:#6b7280;margin-top:2px;">'+e.personName+' &bull; '+e.dateStr+(e.jobNumber?' &bull; Job #'+e.jobNumber:'')+'</p>' +
+                        (e.customerPhone?'<p style="font-size:0.85rem;color:#2563eb;margin-top:2px;">📞 '+e.customerPhone+'</p>':'')+
+                        (e.customerAddress?'<p style="font-size:0.85rem;color:#6b7280;">📍 '+e.customerAddress+'</p>':'')+
+                    '</div>' +
+                    '<div style="text-align:right;">' +
+                        '<p style="font-family:\'Barlow Condensed\',sans-serif;font-size:2.2rem;font-weight:900;color:var(--red);line-height:1;">$'+e.moneyOwed.toLocaleString()+'</p>' +
+                        '<p style="font-size:0.75rem;color:#6b7280;">of $'+e.amountSold.toLocaleString()+' contract</p>' +
+                        '<p style="font-size:0.75rem;color:#6b7280;">$'+e.amountCollected.toLocaleString()+' collected</p>' +
+                    '</div>' +
+                '</div>' +
+                '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px;">' +
+                    '<span class="tag tag-navy">'+e.projectType+'</span>' +
+                    '<span class="tag '+ageTag+'">'+ageDays+' days old</span>' +
+                    (e.notes?'<span class="tag" style="background:#f3f4f6;color:#374151;">📝 '+e.notes.substring(0,40)+(e.notes.length>40?'...':'')+'</span>':'') +
+                '</div>' +
+                '<div style="display:flex;gap:8px;">' +
+                    '<button onclick="markPaid(\''+e.key+'\',\''+e.id+'\')" class="btn-paid">✅ Mark Paid</button>' +
+                    '<button onclick="updatePartialPayment(\''+e.key+'\',\''+e.id+'\','+e.amountCollected+','+e.amountSold+')" class="btn-payment">💳 Record Payment</button>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    function markPaid(key, leadId) {
+        if (confirm('Mark this job as fully paid?')) {
+            db.ref('callLogs/'+key+'/'+leadId+'/moneyOwed').set(0);
+            db.ref('callLogs/'+key+'/'+leadId+'/amountSold').once('value', function(s) {
+                db.ref('callLogs/'+key+'/'+leadId+'/amountCollected').set(s.val()||0);
+            });
+        }
+    }
+
+    function updatePartialPayment(key, leadId, currentCollected, totalSold) {
+        var amount = parseFloat(prompt('Enter payment amount received:', ''));
+        if (!isNaN(amount) && amount > 0) {
+            var newCollected = currentCollected + amount;
+            var newOwed = Math.max(0, totalSold - newCollected);
+            db.ref('callLogs/'+key+'/'+leadId).update({ amountCollected: newCollected, moneyOwed: newOwed });
+        }
+    }
+</script>
+</body>
+</html>
