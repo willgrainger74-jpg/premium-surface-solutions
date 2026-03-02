@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Report - Premium Surface Solutions</title>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy:      #0d1b2a;
+            --navy-mid:  #162236;
+            --navy-light:#1e3250;
+            --red:       #c0281c;
+            --red-hover: #a81f15;
+            --gold:      #d4a843;
+            --gray-bg:   #f4f6f9;
+            --gray-border:#dde2ea;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Barlow', sans-serif; background: var(--gray-bg); min-height: 100vh; }
+        h1,h2,h3,h4 { font-family: 'Barlow Condensed', sans-serif; }
+
+        .pss-header {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+            border-bottom: 4px solid var(--red);
+            position: relative; overflow: hidden;
+        }
+        .pss-header::before {
+            content:''; position:absolute; top:-60px; right:-60px;
+            width:220px; height:220px;
+            background: radial-gradient(circle, rgba(192,40,28,0.18) 0%, transparent 70%);
+            pointer-events:none;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.12); color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.6rem 1.2rem; border-radius: 10px;
+            font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700;
+            text-decoration: none; transition: background 0.2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.22); }
+
+        .section-card { background: white; border-radius: 16px; border: 1px solid var(--gray-border); box-shadow: 0 2px 12px rgba(13,27,42,0.07); }
+        .section-title { display:flex; align-items:center; gap:10px; font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:700; color:var(--navy); }
+        .section-title::before { content:''; display:inline-block; width:4px; height:22px; background:var(--red); border-radius:2px; }
+
+        .cal-btn {
+            background: linear-gradient(135deg, var(--navy), var(--navy-light));
+            color: white; border: none; padding: 0.65rem 1.4rem; border-radius: 10px;
+            font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        .cal-btn:hover { opacity: 0.85; }
+
+        /* Goal panels */
+        .goal-panel { border-radius: 14px; padding: 1.1rem; border: 2px solid; }
+        .goal-navy  { background: #f0f4f8; border-color: #c7d2e8; }
+        .goal-red   { background: #fff5f5; border-color: #fecaca; }
+        .goal-gold  { background: #fefce8; border-color: #fde68a; }
+
+        /* Metric cards */
+        .metric-card { border-radius: 12px; padding: 1rem; border: 2px solid; }
+        .mc-navy   { background: #f0f4f8; border-color: #c7d2e8; }
+        .mc-red    { background: #fff5f5; border-color: #fecaca; }
+        .mc-gold   { background: #fefce8; border-color: #fde68a; }
+        .mc-purple { background: #faf5ff; border-color: #e9d5ff; }
+        .mc-teal   { background: #f0fdfa; border-color: #99f6e4; }
+        .mc-blue   { background: #eff6ff; border-color: #bfdbfe; }
+        .mc-orange { background: #fff7ed; border-color: #fed7aa; }
+        .mc-gray   { background: #f9fafb; border-color: #e5e7eb; }
+
+        .metric-val { font-family: 'Barlow Condensed', sans-serif; font-size: 2.2rem; font-weight: 900; color: var(--navy); }
+        .metric-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+        .metric-sub { font-size: 0.75rem; color: #6b7280; margin-top: 2px; }
+
+        input[type=number] {
+            font-family: 'Barlow', sans-serif;
+            border: 2px solid var(--gray-border); border-radius: 10px;
+            padding: 0.6rem 1rem; width: 100%; outline: none;
+            transition: border-color 0.2s; font-size: 0.95rem; font-weight: 600;
+        }
+        input[type=number]:focus { border-color: var(--red); }
+
+        /* Breakdown panels */
+        .breakdown-panel { border-radius: 14px; padding: 1.25rem; border: 2px solid; }
+        .bp-navy   { background: linear-gradient(135deg, #f0f4f8, #e8edf5); border-color: #c7d2e8; }
+        .bp-blue   { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-color: #bfdbfe; }
+        .bp-indigo { background: linear-gradient(135deg, #f5f3ff, #ede9fe); border-color: #c4b5fd; }
+    </style>
+</head>
+<body>
+<div class="p-4" style="max-width: 1400px; margin: 0 auto;">
+
+    <!-- Header -->
+    <div class="pss-header text-white p-6 rounded-2xl shadow-2xl mb-6">
+        <div class="flex items-center justify-between" style="position:relative;z-index:1;">
+            <div>
+                <h1 style="font-size:2rem;font-weight:900;line-height:1;">🎯 MY PERFORMANCE REPORT</h1>
+                <p id="personName" style="opacity:0.65;font-size:0.9rem;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;"></p>
+            </div>
+            <a href="index.html" class="back-btn">← Dashboard</a>
+        </div>
+    </div>
+
+    <div class="section-card p-6 mb-6">
+        <!-- Month Nav -->
+        <div class="flex items-center justify-between mb-6">
+            <button id="prevMonth" class="cal-btn">← Prev</button>
+            <h2 id="monthYear" style="font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:800;color:var(--navy);"></h2>
+            <button id="nextMonth" class="cal-btn">Next →</button>
+        </div>
+
+        <!-- Goals -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+            <div class="goal-panel goal-navy">
+                <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;color:var(--navy);margin-bottom:8px;">📅 Weekly Goal</h3>
+                <input id="weeklyGoalInput" type="number" placeholder="Set weekly goal ($)" class="mb-2" />
+                <div id="weeklyProgress"></div>
+                <div class="mt-2 p-3 bg-white rounded-xl border border-gray-200">
+                    <p class="metric-label" style="color:#4b5563;">Weekly Forecast</p>
+                    <p id="weeklyForecast" style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:900;color:var(--navy);">$0</p>
+                    <p id="weeklyForecastNote" class="metric-sub">Based on pace</p>
+                </div>
+            </div>
+            <div class="goal-panel goal-red">
+                <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;color:var(--red);margin-bottom:8px;">📊 Monthly Goal</h3>
+                <input id="monthlyGoalInput" type="number" placeholder="Set monthly goal ($)" class="mb-2" style="border-color:#fca5a5;" />
+                <div id="monthlyProgress"></div>
+                <div class="mt-2 p-3 bg-white rounded-xl border border-gray-200">
+                    <p class="metric-label" style="color:#4b5563;">Monthly Forecast</p>
+                    <p id="monthlyForecast" style="font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:900;color:var(--red);">$0</p>
+                    <p id="monthlyForecastNote" class="metric-sub">Based on pace</p>
+                </div>
+            </div>
+            <div class="goal-panel goal-gold">
+                <h3 style="font-family:'Barlow Condensed',sans-serif;font-weight:800;color:#92400e;margin-bottom:8px;">🏆 Yearly Goal – <span id="yearDisplay"></span></h3>
+                <input id="yearlyGoalInput" type="number" placeholder="Set yearly goal ($)" class="mb-2" style="border-color:#fde68a;" />
+                <div id="yearlyProgress"></div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <h3 class="section-title mb-4">📈 Performance Metrics</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="metric-card mc-navy">
+                <p class="metric-label" style="color:var(--navy-light);">Close Rate</p>
+                <p id="closeRate" class="metric-val">0%</p>
+                <p id="closeDetails" class="metric-sub">0 / 0 leads</p>
+            </div>
+            <div class="metric-card mc-blue">
+                <p class="metric-label" style="color:#1e40af;">Leads This Month</p>
+                <p id="leadsTotal" class="metric-val" style="color:#1e3a8a;">0</p>
+                <p class="metric-sub">logged</p>
+            </div>
+            <div class="metric-card mc-purple">
+                <p class="metric-label" style="color:#6d28d9;">Jobs Sold</p>
+                <p id="jobsSold" class="metric-val" style="color:#4c1d95;">0</p>
+                <p class="metric-sub">this month</p>
+            </div>
+            <div class="metric-card mc-orange">
+                <p class="metric-label" style="color:#c2410c;">Estimates Out</p>
+                <p id="estimatesOut" class="metric-val" style="color:#7c2d12;">0</p>
+                <p id="estimateValue" class="metric-sub">$0 potential</p>
+            </div>
+            <div class="metric-card mc-teal">
+                <p class="metric-label" style="color:#0f766e;">Avg Contract Value</p>
+                <p id="avgSale" class="metric-val" style="color:#134e4a;">$0</p>
+                <p class="metric-sub">per sale</p>
+            </div>
+            <div class="metric-card mc-navy">
+                <p class="metric-label" style="color:var(--navy-light);">Week Revenue</p>
+                <p id="weekRevenue" class="metric-val">$0</p>
+                <p class="metric-sub">last 7 days</p>
+            </div>
+            <div class="metric-card mc-red">
+                <p class="metric-label" style="color:var(--red);">Month Revenue</p>
+                <p id="monthRevenue" class="metric-val" style="color:var(--red);">$0</p>
+                <p class="metric-sub">this month</p>
+            </div>
+            <div class="metric-card mc-gold">
+                <p class="metric-label" style="color:#92400e;">Year Revenue</p>
+                <p id="yearRevenue" class="metric-val" style="color:#78350f;">$0</p>
+                <p class="metric-sub">YTD</p>
+            </div>
+            <div class="metric-card mc-gold">
+                <p class="metric-label" style="color:#92400e;">Reviews Rate</p>
+                <p id="reviewRate" class="metric-val" style="color:#78350f;">0%</p>
+                <p id="reviewCount" class="metric-sub">0 reviews</p>
+            </div>
+            <div class="metric-card mc-teal">
+                <p class="metric-label" style="color:#0f766e;">Site Visits</p>
+                <p id="siteVisits" class="metric-val" style="color:#134e4a;">0</p>
+                <p class="metric-sub">this month</p>
+            </div>
+            <div class="metric-card mc-red">
+                <p class="metric-label" style="color:var(--red);">Days Since Sale</p>
+                <p id="daysSinceSale" class="metric-val" style="color:var(--red);">0</p>
+                <p class="metric-sub">keep it low!</p>
+            </div>
+            <div class="metric-card mc-gray">
+                <p class="metric-label" style="color:#374151;">🔥 Sales Streak</p>
+                <p id="streakDays" class="metric-val" style="color:#111827;">0</p>
+                <p class="metric-sub">consecutive days</p>
+            </div>
+        </div>
+
+        <!-- Court Type Breakdown -->
+        <div class="breakdown-panel bp-navy mb-6">
+            <h3 class="section-title mb-4">🏓 Project Type Breakdown</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="courtBreakdown"></div>
+        </div>
+
+        <!-- Lead Source Breakdown -->
+        <div class="breakdown-panel bp-blue mb-6">
+            <h3 class="section-title mb-4">📡 Lead Source Breakdown</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="sourceBreakdown"></div>
+        </div>
+
+        <!-- Yearly Contribution -->
+        <div class="breakdown-panel bp-indigo">
+            <h3 class="section-title mb-4">🏆 Yearly Contribution – <span id="yearContribDisplay"></span></h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="bg-white p-4 rounded-xl border-2 border-gray-200">
+                    <p class="metric-label" style="color:var(--navy);">Your Year Total</p>
+                    <p id="yourYearTotal" style="font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:900;color:var(--navy);">$0</p>
+                    <p id="yourYearJobs" class="metric-sub">0 jobs</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl border-2 border-gray-200">
+                    <p class="metric-label" style="color:var(--red);">Team Year Total</p>
+                    <p id="teamYearTotal" style="font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:900;color:var(--red);">$0</p>
+                    <p id="teamYearJobs" class="metric-sub">0 jobs</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-xl border-2 border-gray-200">
+                <div class="flex justify-between mb-2">
+                    <p class="metric-label" style="color:var(--navy);">Your % of Team Revenue</p>
+                    <p id="yourTeamPercent" style="font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;color:var(--navy);">0%</p>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div id="yourTeamPercentBar" class="h-full rounded-full" style="width:0%;background:linear-gradient(90deg,var(--navy),var(--red));"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    firebase.initializeApp({
+        apiKey: "AIzaSyApDY-q8JID_TBtIchcWfDsKqVRt679ALY",
+        authDomain: "premium-surface-solutions.firebaseapp.com",
+        databaseURL: "https://premium-surface-solutions-default-rtdb.firebaseio.com",
+        projectId: "premium-surface-solutions",
+        storageBucket: "premium-surface-solutions.firebasestorage.app",
+        messagingSenderId: "447806728696",
+        appId: "1:447806728696:web:cbd1fee9128d20d1a34e0d"
+    });
+
+    var db = firebase.database();
+    var selected = localStorage.getItem('selectedPerson');
+    var currentDate = new Date();
+    var people = [], logs = {}, weeklyGoals = {}, monthlyGoals = {}, yearlyGoals = {};
+    var currentWeekKey = '', currentMonthKey = '', currentYearKey = '';
+    var dataReady = { people: false, logs: false, weekly: false, monthly: false, yearly: false };
+
+    if (!selected) { window.location.href = 'index.html'; }
+
+    function tryRender() {
+        if (dataReady.people && dataReady.logs && dataReady.weekly && dataReady.monthly && dataReady.yearly) loadGoals();
+    }
+
+    db.ref('salespeople').on('value', function(s) {
+        var d = s.val();
+        people = d ? Object.keys(d).map(function(k) { return { id: k, name: d[k].name }; }) : [];
+        var p = people.find(function(p) { return p.id === selected; });
+        if (p) document.getElementById('personName').textContent = 'Report for: ' + p.name;
+        dataReady.people = true; tryRender();
+    });
+    db.ref('callLogs').on('value', function(s) { logs = s.val() || {}; dataReady.logs = true; tryRender(); });
+    db.ref('weeklyGoals').on('value', function(s) { weeklyGoals = s.val() || {}; dataReady.weekly = true; tryRender(); });
+    db.ref('monthlyGoals').on('value', function(s) { monthlyGoals = s.val() || {}; dataReady.monthly = true; tryRender(); });
+    db.ref('yearlyGoals').on('value', function(s) { yearlyGoals = s.val() || {}; dataReady.yearly = true; tryRender(); });
+
+    function dk(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+    function wk(d) { var w = getWeek(d); return dk(w[0]) + '_' + dk(w[6]); }
+    function mk(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
+    function yk(d) { return String(d.getFullYear()); }
+
+    function getWeek(date) {
+        var day = date.getDay(), diff = date.getDate() - day + (day === 0 ? -6 : 1);
+        var mon = new Date(date); mon.setDate(diff);
+        var w = [];
+        for (var i = 0; i < 7; i++) { var d = new Date(mon); d.setDate(mon.getDate() + i); w.push(d); }
+        return w;
+    }
+    function getMDates(date) {
+        var y = date.getFullYear(), m = date.getMonth(), arr = [], last = new Date(y,m+1,0).getDate();
+        for (var i = 1; i <= last; i++) arr.push(new Date(y,m,i));
+        return arr;
+    }
+    function getYDates(year) {
+        var arr = [];
+        for (var m = 0; m < 12; m++) { getMDates(new Date(year,m,1)).forEach(function(d) { arr.push(d); }); }
+        return arr;
+    }
+    function getCalls(pid, d) {
+        var key = pid + '_' + dk(d), l = logs[key];
+        return l ? Object.values(l) : [];
+    }
+
+    function calc(pid, dates) {
+        var t = { totalLeads:0, jobsSold:0, amountSold:0, estimatesOut:0, estimateValue:0,
+            reviewsCompleted:0, siteVisits:0, courts:{}, sources:{} };
+        var courtKeys = ['courtPickleball','courtTennis','courtBasketball','courtPadel','courtMulti','projectConcrete','projectCoatings','projectLandscape'];
+        courtKeys.forEach(function(k) { t.courts[k] = { leads:0, sold:0, revenue:0 }; });
+        dates.forEach(function(d) {
+            getCalls(pid, d).forEach(function(c) {
+                t.totalLeads++;
+                if (c.jobSold) { t.jobsSold++; t.amountSold += parseFloat(c.amountSold)||0; }
+                if (c.leftEstimate) { t.estimatesOut++; t.estimateValue += parseFloat(c.estimateAmount)||0; }
+                if (c.reviewCompleted) t.reviewsCompleted++;
+                if (c.siteVisitCompleted) t.siteVisits++;
+                if (c.leadSource) { t.sources[c.leadSource] = (t.sources[c.leadSource]||0) + 1; }
+                courtKeys.forEach(function(k) {
+                    if (c[k]) {
+                        t.courts[k].leads++;
+                        if (c.jobSold) { t.courts[k].sold++; t.courts[k].revenue += parseFloat(c.amountSold)||0; }
+                    }
+                });
+            });
+        });
+        return t;
+    }
+
+    function calcTeam(dates) {
+        var total = 0, jobs = 0;
+        people.forEach(function(p) {
+            dates.forEach(function(d) {
+                getCalls(p.id, d).forEach(function(c) { if (c.jobSold) { total += parseFloat(c.amountSold)||0; jobs++; } });
+            });
+        });
+        return { total:total, jobs:jobs };
+    }
+
+    function getStreak() {
+        var streak = 0, today = new Date();
+        for (var i = 0; i < 365; i++) {
+            var d = new Date(today); d.setDate(today.getDate()-i);
+            if (getCalls(selected,d).some(function(c){return c.jobSold;})) streak++;
+            else if (i > 0) break;
+        }
+        return streak;
+    }
+
+    function getDaysSinceSale() {
+        var today = new Date();
+        for (var i = 0; i < 365; i++) {
+            var d = new Date(today); d.setDate(today.getDate()-i);
+            if (getCalls(selected,d).some(function(c){return c.jobSold;})) return i;
+        }
+        return 365;
+    }
+
+    function progressBar(cur, goal) {
+        var pct = Math.min((cur/goal)*100, 100);
+        var barColor = pct>=100 ? '#16a34a' : pct>=50 ? 'var(--gold)' : 'var(--red)';
+        return '<div class="mb-1">' +
+            '<div style="display:flex;justify-content:space-between;font-size:0.75rem;margin-bottom:4px;"><span>Progress</span><span style="font-weight:700;">' + pct.toFixed(1) + '%</span></div>' +
+            '<div style="width:100%;background:#e5e7eb;border-radius:99px;height:18px;">' +
+            '<div style="width:' + pct.toFixed(0) + '%;background:' + barColor + ';height:100%;border-radius:99px;display:flex;align-items:center;justify-content:center;color:white;font-size:0.72rem;font-weight:700;font-family:\'Barlow Condensed\',sans-serif;">' + pct.toFixed(0) + '%</div></div>' +
+            '<div style="display:flex;justify-content:space-between;font-size:0.72rem;margin-top:4px;color:#6b7280;"><span>$' + Math.round(cur).toLocaleString() + '</span><span>$' + Math.round(goal).toLocaleString() + '</span></div></div>';
+    }
+
+    function loadGoals() {
+        currentWeekKey = wk(currentDate);
+        currentMonthKey = mk(currentDate);
+        currentYearKey = yk(currentDate);
+        document.getElementById('weeklyGoalInput').value = weeklyGoals[selected+'_'+currentWeekKey] || '';
+        document.getElementById('monthlyGoalInput').value = monthlyGoals[selected+'_'+currentMonthKey] || '';
+        document.getElementById('yearlyGoalInput').value = yearlyGoals[selected+'_'+currentYearKey] || '';
+        renderAll();
+    }
+
+    document.getElementById('weeklyGoalInput').onchange = function(e) {
+        db.ref('weeklyGoals/'+selected+'_'+currentWeekKey).set(parseFloat(e.target.value)||0); renderAll();
+    };
+    document.getElementById('monthlyGoalInput').onchange = function(e) {
+        db.ref('monthlyGoals/'+selected+'_'+currentMonthKey).set(parseFloat(e.target.value)||0); renderAll();
+    };
+    document.getElementById('yearlyGoalInput').onchange = function(e) {
+        db.ref('yearlyGoals/'+selected+'_'+currentYearKey).set(parseFloat(e.target.value)||0); renderAll();
+    };
+    document.getElementById('prevMonth').onclick = function() {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth()-1, 1); loadGoals();
+    };
+    document.getElementById('nextMonth').onclick = function() {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth()+1, 1); loadGoals();
+    };
+
+    function renderAll() {
+        var week = getWeek(currentDate), month = getMDates(currentDate), year = getYDates(currentDate.getFullYear());
+        var wS = calc(selected,week), mS = calc(selected,month), yS = calc(selected,year);
+        var teamY = calcTeam(year);
+        var today = new Date();
+
+        document.getElementById('monthYear').textContent = currentDate.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+        document.getElementById('yearDisplay').textContent = currentDate.getFullYear();
+        document.getElementById('yearContribDisplay').textContent = currentDate.getFullYear();
+
+        var wGoal = weeklyGoals[selected+'_'+currentWeekKey]||0;
+        document.getElementById('weeklyProgress').innerHTML = wGoal>0 ? progressBar(wS.amountSold,wGoal) : '<p style="font-size:0.78rem;color:#9ca3af;">Set a goal above</p>';
+        var wDays = week.filter(function(d){return d<=today;}).length;
+        var wAvg = wDays>0?wS.amountSold/wDays:0;
+        document.getElementById('weeklyForecast').textContent = '$'+Math.round(wAvg*7).toLocaleString();
+        document.getElementById('weeklyForecastNote').textContent = '$'+Math.round(wAvg).toLocaleString()+'/day';
+
+        var mGoal = monthlyGoals[selected+'_'+currentMonthKey]||0;
+        document.getElementById('monthlyProgress').innerHTML = mGoal>0 ? progressBar(mS.amountSold,mGoal) : '<p style="font-size:0.78rem;color:#9ca3af;">Set a goal above</p>';
+        var dInMonth = new Date(currentDate.getFullYear(),currentDate.getMonth()+1,0).getDate();
+        var mDaysPassed = (currentDate.getMonth()===today.getMonth()&&currentDate.getFullYear()===today.getFullYear())?today.getDate():dInMonth;
+        var mAvg = mDaysPassed>0?mS.amountSold/mDaysPassed:0;
+        document.getElementById('monthlyForecast').textContent = '$'+Math.round(mAvg*dInMonth).toLocaleString();
+        document.getElementById('monthlyForecastNote').textContent = '$'+Math.round(mAvg).toLocaleString()+'/day';
+
+        var yGoal = yearlyGoals[selected+'_'+currentYearKey]||0;
+        document.getElementById('yearlyProgress').innerHTML = yGoal>0 ? progressBar(yS.amountSold,yGoal) : '<p style="font-size:0.78rem;color:#9ca3af;">Set a goal above</p>';
+
+        var closeRate = mS.totalLeads>0?((mS.jobsSold/mS.totalLeads)*100).toFixed(1):0;
+        document.getElementById('closeRate').textContent = closeRate+'%';
+        document.getElementById('closeDetails').textContent = mS.jobsSold+' / '+mS.totalLeads+' leads';
+        document.getElementById('leadsTotal').textContent = mS.totalLeads;
+        document.getElementById('jobsSold').textContent = mS.jobsSold;
+        document.getElementById('estimatesOut').textContent = mS.estimatesOut;
+        document.getElementById('estimateValue').textContent = '$'+mS.estimateValue.toLocaleString()+' potential';
+        document.getElementById('avgSale').textContent = '$'+(mS.jobsSold>0?Math.round(mS.amountSold/mS.jobsSold).toLocaleString():0);
+        document.getElementById('weekRevenue').textContent = '$'+wS.amountSold.toLocaleString();
+        document.getElementById('monthRevenue').textContent = '$'+mS.amountSold.toLocaleString();
+        document.getElementById('yearRevenue').textContent = '$'+yS.amountSold.toLocaleString();
+        var rRate = mS.totalLeads>0?((mS.reviewsCompleted/mS.totalLeads)*100).toFixed(1):0;
+        document.getElementById('reviewRate').textContent = rRate+'%';
+        document.getElementById('reviewCount').textContent = mS.reviewsCompleted+' reviews';
+        document.getElementById('siteVisits').textContent = mS.siteVisits;
+        document.getElementById('daysSinceSale').textContent = getDaysSinceSale();
+        document.getElementById('streakDays').textContent = getStreak();
+
+        var courtLabels = {courtPickleball:'🏓 Pickleball',courtTennis:'🎾 Tennis',courtBasketball:'🏀 Basketball',courtPadel:'🎾 Padel',courtMulti:'🏟️ Multi-Sport',projectConcrete:'🪨 Concrete',projectCoatings:'🎨 Coatings',projectLandscape:'🌿 Landscape'};
+        var cbHTML = '';
+        Object.keys(courtLabels).forEach(function(k) {
+            var d = mS.courts[k];
+            cbHTML += '<div style="background:white;border:2px solid var(--gray-border);border-radius:12px;padding:0.85rem;">' +
+                '<p style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.78rem;font-weight:700;color:var(--navy-light);letter-spacing:0.04em;">'+courtLabels[k]+'</p>' +
+                '<p style="font-family:\'Barlow Condensed\',sans-serif;font-size:2rem;font-weight:900;color:var(--navy);">'+d.sold+'</p>' +
+                '<p style="font-size:0.73rem;color:#6b7280;">'+d.leads+' leads • $'+d.revenue.toLocaleString()+'</p></div>';
+        });
+        document.getElementById('courtBreakdown').innerHTML = cbHTML;
+
+        var sources = ['Referral','Website','Canvass','Social Media','Trade Show','Cold Call','Repeat Customer','Other'];
+        var sbHTML = '';
+        sources.forEach(function(src) {
+            var count = mS.sources[src]||0;
+            sbHTML += '<div style="background:white;border:2px solid var(--gray-border);border-radius:12px;padding:0.75rem;display:flex;justify-content:space-between;align-items:center;">' +
+                '<span style="font-size:0.9rem;font-weight:600;color:#374151;">'+src+'</span>' +
+                '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.6rem;font-weight:900;color:var(--navy);">'+count+'</span></div>';
+        });
+        document.getElementById('sourceBreakdown').innerHTML = sbHTML;
+
+        document.getElementById('yourYearTotal').textContent = '$'+yS.amountSold.toLocaleString();
+        document.getElementById('yourYearJobs').textContent = yS.jobsSold+' jobs';
+        document.getElementById('teamYearTotal').textContent = '$'+teamY.total.toLocaleString();
+        document.getElementById('teamYearJobs').textContent = teamY.jobs+' jobs';
+        var yPct = teamY.total>0?(yS.amountSold/teamY.total*100).toFixed(1):0;
+        document.getElementById('yourTeamPercent').textContent = yPct+'%';
+        document.getElementById('yourTeamPercentBar').style.width = Math.min(yPct,100)+'%';
+    }
+</script>
+</body>
+</html>
