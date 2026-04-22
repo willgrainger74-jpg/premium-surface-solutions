@@ -149,6 +149,7 @@
                 <div>
                     <h1 style="font-size:2rem;font-weight:900;line-height:1;">📋 LOG LEADS</h1>
                     <p id="personName" style="opacity:0.65;font-size:0.9rem;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;"></p>
+                    <div id="stateBadge" style="display:none;margin-top:4px;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:3px 12px;font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;font-weight:700;color:white;"></div>
                 </div>
                 <a href="index.html" class="back-btn">← Dashboard</a>
             </div>
@@ -187,13 +188,27 @@
 
         var db = firebase.database();
         var selected = localStorage.getItem('selectedPerson');
+        var selectedState = localStorage.getItem('selectedState');
         var currentDate = new Date();
         var selectedDate = null;
         var people = [];
 
-        if (!selected) { window.location.href = 'index.html'; }
+        var stateInfo = {
+            utah:     { emoji: '🏔️', label: 'Utah',     abbr: 'UT' },
+            idaho:    { emoji: '🥔', label: 'Idaho',    abbr: 'ID' },
+            colorado: { emoji: '⛰️', label: 'Colorado', abbr: 'CO' }
+        };
 
-        db.ref('salespeople').on('value', function(snapshot) {
+        if (!selected || !selectedState) { window.location.href = 'index.html'; }
+
+        // Show state badge in header
+        if (selectedState && stateInfo[selectedState]) {
+            var _info = stateInfo[selectedState];
+            var _badge = document.getElementById('stateBadge');
+            if (_badge) { _badge.style.display = 'inline-flex'; _badge.textContent = _info.emoji + ' ' + _info.label + ' (' + _info.abbr + ')'; }
+        }
+
+        db.ref('salespeople/' + selectedState).on('value', function(snapshot) {
             var data = snapshot.val();
             people = data ? Object.keys(data).map(function(k) { return { id: k, name: data[k].name }; }) : [];
             var person = people.find(function(p) { return p.id === selected; });
@@ -203,7 +218,8 @@
         function dk(d) {
             return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
         }
-        function dataKey(d) { return selected + '_' + dk(d); }
+        // Key format: state_personId_YYYY-MM-DD
+        function dataKey(d) { return selectedState + '_' + selected + '_' + dk(d); }
 
         function getWeek(date) {
             var day = date.getDay();
