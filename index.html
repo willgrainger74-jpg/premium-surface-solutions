@@ -1502,8 +1502,7 @@ function renderAdminLogins() {
       var isActive = l.active !== false;
       var stateLabel = l.state ? (stateInfo[l.state]||{emoji:'',label:l.state}).emoji+' '+(stateInfo[l.state]||{label:l.state}).label : '—';
       return '<tr>'+
-        '<td style="padding:0.6rem
- 0.8rem;"><span class="code-pill">'+l.code+'</span></td>'+
+        '<td style="padding:0.6rem 0.8rem;"><span class="code-pill">'+l.code+'</span></td>'+
         '<td style="padding:0.6rem 0.8rem;font-size:0.88rem;font-weight:600;">'+(l.name||'—')+'</td>'+
         '<td style="padding:0.6rem 0.8rem;"><span style="font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:12px;background:'+(l.role==='manager'?'rgba(59,130,246,0.15)':'rgba(34,197,94,0.12)')+';color:'+(l.role==='manager'?'var(--blue)':'var(--green)')+';">'+(l.role||'tech')+'</span></td>'+
         '<td style="padding:0.6rem 0.8rem;font-size:0.82rem;color:var(--muted);">'+(l.repName||'—')+'</td>'+
