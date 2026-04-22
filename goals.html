@@ -100,6 +100,7 @@
             <div>
                 <h1 style="font-size:2rem;font-weight:900;line-height:1;">🎯 MY PERFORMANCE REPORT</h1>
                 <p id="personName" style="opacity:0.65;font-size:0.9rem;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;"></p>
+                <div id="stateBadge" style="display:none;margin-top:4px;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:3px 12px;font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;font-weight:700;color:white;"></div>
             </div>
             <a href="index.html" class="back-btn">← Dashboard</a>
         </div>
@@ -260,18 +261,32 @@
 
     var db = firebase.database();
     var selected = localStorage.getItem('selectedPerson');
+    var selectedState = localStorage.getItem('selectedState');
     var currentDate = new Date();
     var people = [], logs = {}, weeklyGoals = {}, monthlyGoals = {}, yearlyGoals = {};
     var currentWeekKey = '', currentMonthKey = '', currentYearKey = '';
     var dataReady = { people: false, logs: false, weekly: false, monthly: false, yearly: false };
 
-    if (!selected) { window.location.href = 'index.html'; }
+    var stateInfo = {
+        utah:     { emoji: '🏔️', label: 'Utah',     abbr: 'UT' },
+        idaho:    { emoji: '🥔', label: 'Idaho',    abbr: 'ID' },
+        colorado: { emoji: '⛰️', label: 'Colorado', abbr: 'CO' }
+    };
+
+    if (!selected || !selectedState) { window.location.href = 'index.html'; }
+
+    // Show state badge
+    if (selectedState && stateInfo[selectedState]) {
+        var _si = stateInfo[selectedState];
+        var _sb = document.getElementById('stateBadge');
+        if (_sb) { _sb.style.display = 'inline-flex'; _sb.textContent = _si.emoji + ' ' + _si.label + ' (' + _si.abbr + ')'; }
+    }
 
     function tryRender() {
         if (dataReady.people && dataReady.logs && dataReady.weekly && dataReady.monthly && dataReady.yearly) loadGoals();
     }
 
-    db.ref('salespeople').on('value', function(s) {
+    db.ref('salespeople/' + selectedState).on('value', function(s) {
         var d = s.val();
         people = d ? Object.keys(d).map(function(k) { return { id: k, name: d[k].name }; }) : [];
         var p = people.find(function(p) { return p.id === selected; });
@@ -279,9 +294,9 @@
         dataReady.people = true; tryRender();
     });
     db.ref('callLogs').on('value', function(s) { logs = s.val() || {}; dataReady.logs = true; tryRender(); });
-    db.ref('weeklyGoals').on('value', function(s) { weeklyGoals = s.val() || {}; dataReady.weekly = true; tryRender(); });
-    db.ref('monthlyGoals').on('value', function(s) { monthlyGoals = s.val() || {}; dataReady.monthly = true; tryRender(); });
-    db.ref('yearlyGoals').on('value', function(s) { yearlyGoals = s.val() || {}; dataReady.yearly = true; tryRender(); });
+    db.ref('weeklyGoals/' + selectedState).on('value', function(s) { weeklyGoals = s.val() || {}; dataReady.weekly = true; tryRender(); });
+    db.ref('monthlyGoals/' + selectedState).on('value', function(s) { monthlyGoals = s.val() || {}; dataReady.monthly = true; tryRender(); });
+    db.ref('yearlyGoals/' + selectedState).on('value', function(s) { yearlyGoals = s.val() || {}; dataReady.yearly = true; tryRender(); });
 
     function dk(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
     function wk(d) { var w = getWeek(d); return dk(w[0]) + '_' + dk(w[6]); }
@@ -306,7 +321,8 @@
         return arr;
     }
     function getCalls(pid, d) {
-        var key = pid + '_' + dk(d), l = logs[key];
+        // Key: state_personId_YYYY-MM-DD
+        var key = selectedState + '_' + pid + '_' + dk(d), l = logs[key];
         return l ? Object.values(l) : [];
     }
 
@@ -384,13 +400,13 @@
     }
 
     document.getElementById('weeklyGoalInput').onchange = function(e) {
-        db.ref('weeklyGoals/'+selected+'_'+currentWeekKey).set(parseFloat(e.target.value)||0); renderAll();
+        db.ref('weeklyGoals/'+selectedState+'/'+selected+'_'+currentWeekKey).set(parseFloat(e.target.value)||0); renderAll();
     };
     document.getElementById('monthlyGoalInput').onchange = function(e) {
-        db.ref('monthlyGoals/'+selected+'_'+currentMonthKey).set(parseFloat(e.target.value)||0); renderAll();
+        db.ref('monthlyGoals/'+selectedState+'/'+selected+'_'+currentMonthKey).set(parseFloat(e.target.value)||0); renderAll();
     };
     document.getElementById('yearlyGoalInput').onchange = function(e) {
-        db.ref('yearlyGoals/'+selected+'_'+currentYearKey).set(parseFloat(e.target.value)||0); renderAll();
+        db.ref('yearlyGoals/'+selectedState+'/'+selected+'_'+currentYearKey).set(parseFloat(e.target.value)||0); renderAll();
     };
     document.getElementById('prevMonth').onclick = function() {
         currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth()-1, 1); loadGoals();
