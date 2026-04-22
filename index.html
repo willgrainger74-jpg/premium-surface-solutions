@@ -15,6 +15,7 @@
   --gold:#d4a843;--gold-light:#f0c060;
   --bg:#0a0e1a;--card:#12182a;--card2:#1a2238;--border:#2a3350;
   --text:#e8eaf0;--muted:#7a8aaa;--green:#22c55e;--blue:#3b82f6;
+  --purple:#7c3aed;
 }
 body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
@@ -71,6 +72,15 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
 .sidebar-logo-text .accent{color:var(--red);}
 .sidebar-logo-sub{font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px;}
 
+.role-badge{
+  display:inline-flex;align-items:center;gap:0.3rem;
+  padding:0.2rem 0.6rem;border-radius:20px;font-size:0.62rem;font-weight:700;
+  letter-spacing:0.08em;text-transform:uppercase;margin-top:0.4rem;
+}
+.role-badge.admin{background:rgba(212,168,67,0.2);color:var(--gold);border:1px solid rgba(212,168,67,0.4);}
+.role-badge.manager{background:rgba(59,130,246,0.2);color:var(--blue);border:1px solid rgba(59,130,246,0.4);}
+.role-badge.tech{background:rgba(34,197,94,0.15);color:var(--green);border:1px solid rgba(34,197,94,0.35);}
+
 .sidebar-section{padding:0.5rem 0;}
 .sidebar-section-label{
   font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
@@ -83,6 +93,7 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
 }
 .sidebar-link:hover{color:var(--text);background:rgba(255,255,255,0.04);}
 .sidebar-link.active{color:var(--text);background:rgba(192,40,28,0.12);border-left-color:var(--red);}
+.sidebar-link.admin-link.active{background:rgba(212,168,67,0.12);border-left-color:var(--gold);}
 .sidebar-link .icon{font-size:0.9rem;width:16px;text-align:center;}
 
 .sidebar-state-section{padding:0.6rem 0.8rem;border-bottom:1px solid var(--border);}
@@ -152,11 +163,11 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
   display:flex;align-items:center;gap:0.5rem;margin-bottom:1rem;
 }
 .section-title::before{content:'';display:inline-block;width:3px;height:18px;background:var(--red);border-radius:2px;}
+.section-title.gold-bar::before{background:var(--gold);}
 
 .progress-bar-bg{background:var(--card2);border-radius:4px;height:6px;overflow:hidden;margin-top:0.4rem;}
 .progress-bar-fill{height:100%;border-radius:4px;background:var(--red);transition:width 0.5s;}
 
-/* Quick action cards */
 .quick-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem;}
 .quick-card{
   background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;
@@ -168,7 +179,6 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
 .quick-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;letter-spacing:0.03em;}
 .quick-sub{font-size:0.72rem;color:var(--muted);}
 
-/* Week cards */
 .week-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:0.8rem;margin-bottom:1.5rem;}
 .week-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.8rem;text-align:center;}
 .week-card.current{border-color:var(--red);}
@@ -177,44 +187,25 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
 .week-revenue{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:900;color:var(--gold);}
 .week-meta{font-size:0.68rem;color:var(--muted);}
 
-/* Leaderboard */
-.lb-row{
-  display:flex;align-items:center;gap:0.8rem;padding:0.7rem 0;
-  border-bottom:1px solid var(--border);
-}
+.lb-row{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 0;border-bottom:1px solid var(--border);}
 .lb-row:last-child{border-bottom:none;}
-.lb-rank{
-  font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:900;
-  width:28px;text-align:center;color:var(--muted);
-}
+.lb-rank{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:900;width:28px;text-align:center;color:var(--muted);}
 .lb-rank.gold{color:var(--gold);}
 .lb-rank.silver{color:#94a3b8;}
 .lb-rank.bronze{color:#cd7f32;}
-.lb-avatar{
-  width:32px;height:32px;border-radius:50%;
-  background:var(--red);display:flex;align-items:center;justify-content:center;
-  font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;font-weight:800;color:white;flex-shrink:0;
-}
+.lb-avatar{width:32px;height:32px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;font-weight:800;color:white;flex-shrink:0;}
 .lb-name{font-weight:600;font-size:0.88rem;flex:1;}
 .lb-rev{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:800;color:var(--gold);}
 .lb-meta{font-size:0.7rem;color:var(--muted);}
 
-/* Team members */
 .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.8rem;}
-.team-card{
-  background:var(--card2);border:1px solid var(--border);border-radius:10px;
-  padding:0.8rem;text-align:center;cursor:pointer;transition:all 0.15s;
-}
+.team-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:0.8rem;text-align:center;cursor:pointer;transition:all 0.15s;}
 .team-card:hover{border-color:var(--red);}
 .team-card.selected{border-color:var(--red);background:rgba(192,40,28,0.1);}
-.team-avatar{
-  width:44px;height:44px;border-radius:50%;background:var(--red);
-  display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem;
-  font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;color:white;
-}
+.team-card.archived-card{opacity:0.5;border-style:dashed;}
+.team-avatar{width:44px;height:44px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;margin:0 auto 0.5rem;font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:800;color:white;}
 .team-name{font-size:0.82rem;font-weight:600;}
 
-/* KPI scorecard */
 .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.8rem;margin-bottom:1.5rem;}
 .kpi-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.9rem;}
 .kpi-icon{font-size:1.2rem;margin-bottom:0.3rem;}
@@ -222,51 +213,41 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
 .kpi-value{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:900;margin:0.2rem 0;}
 .kpi-target{font-size:0.68rem;color:var(--muted);}
 
-/* Add member button */
-.btn-add{
-  background:var(--red);color:white;border:none;padding:0.5rem 1rem;border-radius:8px;
-  font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;
-  transition:background 0.2s;
-}
+.btn-add{background:var(--red);color:white;border:none;padding:0.5rem 1rem;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
 .btn-add:hover{background:var(--red-hover);}
-.btn-ghost{
-  background:transparent;color:var(--muted);border:1px solid var(--border);padding:0.4rem 0.9rem;
-  border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.15s;
-  font-family:'Barlow',sans-serif;
-}
+.btn-gold{background:var(--gold);color:#0a0e1a;border:none;padding:0.5rem 1rem;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;transition:background 0.2s;}
+.btn-gold:hover{background:var(--gold-light);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);padding:0.4rem 0.9rem;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:'Barlow',sans-serif;}
 .btn-ghost:hover{border-color:var(--text);color:var(--text);}
+.btn-danger{background:transparent;color:#f87171;border:1px solid rgba(248,113,113,0.4);padding:0.4rem 0.9rem;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:'Barlow',sans-serif;}
+.btn-danger:hover{background:rgba(248,113,113,0.1);}
 
 /* Modal */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;
-  display:flex;align-items:center;justify-content:center;
-}
-.modal-box{
-  background:var(--card);border:1px solid var(--border);border-radius:16px;
-  padding:1.5rem;width:340px;
-}
-.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:800;margin-bottom:1rem;}
-.modal-input{
-  width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);
-  padding:0.7rem 0.9rem;border-radius:8px;font-size:0.95rem;font-family:'Barlow',sans-serif;
-  outline:none;transition:border 0.2s;margin-bottom:0.8rem;
-}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:500;backdrop-filter:blur(4px);}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.8rem;width:420px;max-width:95vw;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:800;margin-bottom:1.2rem;}
+.modal-input{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:0.7rem 0.9rem;border-radius:9px;font-size:0.9rem;font-family:'Barlow',sans-serif;outline:none;margin-bottom:0.8rem;transition:border 0.2s;}
 .modal-input:focus{border-color:var(--red);}
-.modal-actions{display:flex;gap:0.6rem;justify-content:flex-end;}
+.modal-label{font-size:0.7rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem;display:block;}
+.modal-actions{display:flex;gap:0.7rem;justify-content:flex-end;margin-top:1rem;}
+.modal-select{width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:0.7rem 0.9rem;border-radius:9px;font-size:0.9rem;font-family:'Barlow',sans-serif;outline:none;margin-bottom:0.8rem;}
 
-/* Scrollbar */
-#main::-webkit-scrollbar{width:6px;}
-#main::-webkit-scrollbar-track{background:transparent;}
-#main::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
-
-/* Responsive */
-@media(max-width:768px){
-  #sidebar{width:160px;}
-  #main{margin-left:160px;}
-  .stat-grid{grid-template-columns:repeat(2,1fr);}
-  .kpi-grid{grid-template-columns:repeat(2,1fr);}
-  .week-grid{grid-template-columns:repeat(3,1fr);}
-}
+/* Admin styles */
+.admin-table{width:100%;border-collapse:collapse;}
+.admin-table th{padding:0.5rem 0.8rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--border);}
+.admin-table td{padding:0.6rem 0.8rem;border-bottom:1px solid var(--border);font-size:0.85rem;vertical-align:middle;}
+.admin-table tr:last-child td{border-bottom:none;}
+.admin-table tr:hover td{background:rgba(255,255,255,0.02);}
+.code-pill{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:0.2rem 0.6rem;font-family:'Barlow Condensed',sans-serif;font-size:0.9rem;font-weight:700;letter-spacing:0.08em;color:var(--gold);}
+.status-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:0.4rem;}
+.status-dot.active{background:var(--green);}
+.status-dot.archived{background:var(--muted);}
+.tab-bar{display:flex;gap:0.5rem;margin-bottom:1.5rem;border-bottom:1px solid var(--border);padding-bottom:0;}
+.tab-btn{background:transparent;border:none;color:var(--muted);padding:0.6rem 1rem;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;transition:all 0.15s;letter-spacing:0.05em;}
+.tab-btn:hover{color:var(--text);}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--gold);}
+.info-banner{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:10px;padding:0.8rem 1rem;font-size:0.82rem;color:#93c5fd;margin-bottom:1.2rem;}
+.warn-banner{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:10px;padding:0.8rem 1rem;font-size:0.82rem;color:#fca5a5;margin-bottom:1.2rem;}
 </style>
 </head>
 <body>
@@ -274,36 +255,38 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
 <!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <div class="login-box">
-    <div class="login-logo">PREMIUM<span> SURFACE</span></div>
-    <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;font-weight:700;color:var(--gold);letter-spacing:0.12em;margin-bottom:0.2rem;">SOLUTIONS</div>
+    <div class="login-logo">PREMIUM <span>SURFACE</span></div>
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.08em;color:var(--muted);margin-bottom:0.2rem;">SOLUTIONS</div>
     <div class="login-sub">Sales Performance Tracker</div>
     <div class="login-label">Enter Your Access Code</div>
-    <input id="loginInput" class="login-input" type="password" placeholder="••••" maxlength="20" />
-    <div id="loginError" class="login-error"></div>
+    <input id="loginInput" class="login-input" type="password" placeholder="••••" autocomplete="off" />
     <button class="login-btn" onclick="doLogin()">ENTER</button>
+    <div class="login-error" id="loginError"></div>
     <div class="login-footer">Premium Surface Solutions · Utah · Idaho · Colorado</div>
   </div>
 </div>
 
 <!-- APP -->
-<div id="app">
+<div id="app" style="display:none;height:100vh;overflow:hidden;display:none;">
+
   <!-- SIDEBAR -->
   <div id="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-text">PREMIUM<br><span class="accent">SURFACE</span></div>
       <div class="sidebar-logo-sub">Sales Tracker</div>
+      <div id="roleBadgeWrap"></div>
     </div>
 
-    <!-- State selector -->
-    <div class="sidebar-state-section">
+    <!-- State selector (hidden for tech - locked to their state) -->
+    <div class="sidebar-state-section" id="stateSection">
       <div class="sidebar-state-label">Location</div>
       <button class="state-btn" data-state="utah" onclick="selectState('utah')">🏔️ Utah</button>
       <button class="state-btn" data-state="idaho" onclick="selectState('idaho')">🥔 Idaho</button>
       <button class="state-btn" data-state="colorado" onclick="selectState('colorado')">⛰️ Colorado</button>
     </div>
 
-    <!-- Rep selector -->
-    <div class="sidebar-rep-section">
+    <!-- Rep selector (hidden for tech - locked to their rep) -->
+    <div class="sidebar-rep-section" id="repSection">
       <div class="sidebar-rep-label">Active Rep</div>
       <select id="repSelect" onchange="selectRep(this.value)">
         <option value="">— Select Rep —</option>
@@ -325,15 +308,24 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
       <a class="sidebar-link" data-page="mygoals" onclick="navigate('mygoals')">
         <span class="icon">🎯</span> My Goals
       </a>
-      <a class="sidebar-link" data-page="teamreport" onclick="navigate('teamreport')">
+      <a class="sidebar-link" id="teamReportLink" data-page="teamreport" onclick="navigate('teamreport')">
         <span class="icon">👥</span> Team Report
       </a>
-      <a class="sidebar-link" data-page="moneyowed" onclick="navigate('moneyowed')">
+      <a class="sidebar-link" id="moneyOwedLink" data-page="moneyowed" onclick="navigate('moneyowed')">
         <span class="icon">💵</span> Money Owed
       </a>
     </div>
 
+    <!-- Admin nav (only shown for admin role) -->
+    <div class="sidebar-section" id="adminNavSection" style="display:none;">
+      <div class="sidebar-section-label">Admin</div>
+      <a class="sidebar-link admin-link" data-page="admin" onclick="navigate('admin')">
+        <span class="icon">🔐</span> Admin Panel
+      </a>
+    </div>
+
     <div class="sidebar-logout">
+      <div id="loggedInAs" style="font-size:0.68rem;color:var(--muted);margin-bottom:0.5rem;text-align:center;"></div>
       <button class="logout-btn" onclick="doLogout()">Log Out</button>
     </div>
   </div>
@@ -350,9 +342,7 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
         <span class="topbar-date" id="topbarDate"></span>
       </div>
     </div>
-    <div id="content">
-      <!-- Pages rendered here -->
-    </div>
+    <div id="content"></div>
   </div>
 </div>
 
@@ -360,10 +350,62 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
 <div id="addMemberModal" class="modal-overlay" style="display:none;">
   <div class="modal-box">
     <div class="modal-title">Add Team Member</div>
-    <input id="newMemberName" class="modal-input" placeholder="Full Name" />
+    <label class="modal-label">Full Name</label>
+    <input id="newMemberName" class="modal-input" placeholder="e.g. John Smith" />
     <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn-add" onclick="addMember()">Add</button>
+      <button class="btn-ghost" onclick="closeModal('addMemberModal')">Cancel</button>
+      <button class="btn-add" onclick="addMember()">Add Member</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE LOGIN MODAL -->
+<div id="createLoginModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title" id="createLoginTitle">Create Tech Login</div>
+    <div class="info-banner">The tech will use this code to log in. They will only be able to view and edit their own data.</div>
+    <label class="modal-label">Access Code (what the tech types to log in)</label>
+    <input id="newLoginCode" class="modal-input" placeholder="e.g. john123" autocomplete="off" />
+    <label class="modal-label">Role</label>
+    <select id="newLoginRole" class="modal-select" onchange="toggleLoginRepField()">
+      <option value="tech">Tech / Sales Rep</option>
+      <option value="manager">Manager (sees all reps)</option>
+    </select>
+    <div id="loginRepFields">
+      <label class="modal-label">Assign to Rep</label>
+      <select id="newLoginRep" class="modal-select">
+        <option value="">— Select Rep —</option>
+      </select>
+      <label class="modal-label">State</label>
+      <select id="newLoginState" class="modal-select">
+        <option value="utah">🏔️ Utah</option>
+        <option value="idaho">🥔 Idaho</option>
+        <option value="colorado">⛰️ Colorado</option>
+      </select>
+    </div>
+    <label class="modal-label">Display Name (optional)</label>
+    <input id="newLoginName" class="modal-input" placeholder="e.g. John Smith" />
+    <div id="createLoginError" style="color:#f87171;font-size:0.82rem;min-height:1.2rem;margin-bottom:0.5rem;"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('createLoginModal')">Cancel</button>
+      <button class="btn-gold" onclick="saveLogin()">Create Login</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT LOGIN MODAL -->
+<div id="editLoginModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title">Edit Login</div>
+    <input type="hidden" id="editLoginKey" />
+    <label class="modal-label">Access Code</label>
+    <input id="editLoginCode" class="modal-input" placeholder="Access code" autocomplete="off" />
+    <label class="modal-label">Display Name</label>
+    <input id="editLoginName" class="modal-input" placeholder="Display name" />
+    <div id="editLoginError" style="color:#f87171;font-size:0.82rem;min-height:1.2rem;margin-bottom:0.5rem;"></div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal('editLoginModal')">Cancel</button>
+      <button class="btn-gold" onclick="saveEditLogin()">Save Changes</button>
     </div>
   </div>
 </div>
@@ -381,67 +423,159 @@ firebase.initializeApp({
 });
 var db = firebase.database();
 
-// ===== STATE =====
+// ===== GLOBAL STATE =====
 var stateInfo = {
   utah:     {emoji:'🏔️', label:'Utah',     abbr:'UT'},
   idaho:    {emoji:'🥔', label:'Idaho',    abbr:'ID'},
   colorado: {emoji:'⛰️', label:'Colorado', abbr:'CO'}
 };
-var currentState = localStorage.getItem('selectedState') || 'utah';
-var currentRep   = localStorage.getItem('selectedPerson') || null;
+
+// Auth
+var currentUser = null; // {role, code, repId, repName, state, name}
+
+// App state
+var currentState = 'utah';
+var currentRep   = null;
 var currentPage  = 'dashboard';
-var people = [];
+var people = [];       // active (non-archived) reps for current state
+var allPeople = [];    // all reps including archived
 var allLogs = {};
 var teamGoals = {};
 var weeklyGoals = {}, monthlyGoals = {}, yearlyGoals = {};
-var accessCodes = {};
+var allLogins = {};    // all login records from Firebase
 var _peopleRef = null, _teamGoalRef = null, _wgRef = null, _mgRef = null, _ygRef = null;
 
 // ===== LOGIN =====
 function doLogin() {
   var code = document.getElementById('loginInput').value.trim();
   if (!code) return;
-  // Check against Firebase access codes
-  db.ref('accessCodes').once('value', function(s) {
-    var codes = s.val() || {};
-    // Default code if none set
-    var validCodes = Object.values(codes);
-    if (validCodes.length === 0) validCodes = ['pss2024', 'premium', '1111'];
-    if (validCodes.includes(code) || code === 'pss2024' || code === 'premium') {
-      localStorage.setItem('pssAuth', 'true');
+  document.getElementById('loginError').textContent = '';
+
+  // Check admin code first (hardcoded + Firebase override)
+  db.ref('adminCode').once('value', function(s) {
+    var adminCode = s.val() || 'pssadmin';
+    if (code === adminCode) {
+      currentUser = {role:'admin', code:code, name:'Administrator'};
+      localStorage.setItem('pssSession', JSON.stringify(currentUser));
       startApp();
-    } else {
-      document.getElementById('loginError').textContent = 'Invalid access code. Please try again.';
+      return;
     }
+    // Check logins table
+    db.ref('logins').orderByChild('code').equalTo(code).once('value', function(ls) {
+      var found = null;
+      ls.forEach(function(child) { found = Object.assign({key:child.key}, child.val()); });
+      if (found && found.active !== false) {
+        currentUser = {
+          role: found.role || 'tech',
+          code: code,
+          loginKey: found.key,
+          repId: found.repId || null,
+          repName: found.repName || '',
+          state: found.state || 'utah',
+          name: found.name || found.repName || 'User'
+        };
+        localStorage.setItem('pssSession', JSON.stringify(currentUser));
+        startApp();
+      } else if (found && found.active === false) {
+        document.getElementById('loginError').textContent = 'This account has been deactivated.';
+      } else {
+        document.getElementById('loginError').textContent = 'Invalid access code. Please try again.';
+      }
+    });
   });
 }
+
 document.getElementById('loginInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') doLogin();
 });
 
 function doLogout() {
-  localStorage.removeItem('pssAuth');
+  localStorage.removeItem('pssSession');
+  currentUser = null;
   location.reload();
 }
 
 function startApp() {
   document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
+  var appEl = document.getElementById('app');
+  appEl.style.display = 'flex';
   initApp();
 }
 
-// Check auth on load
-if (localStorage.getItem('pssAuth') === 'true') {
-  startApp();
-}
+// Check session on load
+(function() {
+  var sess = localStorage.getItem('pssSession');
+  if (sess) {
+    try {
+      currentUser = JSON.parse(sess);
+      // Re-validate session against Firebase
+      if (currentUser.role !== 'admin' && currentUser.loginKey) {
+        db.ref('logins/'+currentUser.loginKey).once('value', function(s) {
+          var d = s.val();
+          if (!d || d.active === false) {
+            localStorage.removeItem('pssSession');
+            location.reload();
+          } else {
+            startApp();
+          }
+        });
+      } else if (currentUser.role === 'admin') {
+        startApp();
+      } else {
+        startApp();
+      }
+    } catch(e) {
+      localStorage.removeItem('pssSession');
+    }
+  }
+})();
 
 // ===== INIT APP =====
 function initApp() {
   updateTopbarDate();
   setInterval(updateTopbarDate, 60000);
+
+  // Apply role-based UI
+  applyRoleUI();
+
+  // Set initial state
+  if (currentUser.role === 'tech') {
+    currentState = currentUser.state || 'utah';
+    currentRep = currentUser.repId || null;
+  } else {
+    currentState = localStorage.getItem('selectedState') || 'utah';
+    currentRep = localStorage.getItem('selectedPerson') || null;
+  }
+
   selectState(currentState, true);
   loadAllLogs();
+  loadAllLogins();
   navigate('dashboard');
+}
+
+function applyRoleUI() {
+  var role = currentUser.role;
+  // Role badge
+  var badgeMap = {admin:'👑 Admin', manager:'📊 Manager', tech:'🔧 Tech'};
+  document.getElementById('roleBadgeWrap').innerHTML =
+    '<div class="role-badge '+role+'">'+badgeMap[role]+'</div>';
+
+  // Logged in as
+  document.getElementById('loggedInAs').textContent = currentUser.name || currentUser.repName || '';
+
+  // Admin nav
+  if (role === 'admin') {
+    document.getElementById('adminNavSection').style.display = 'block';
+  }
+
+  // Tech: hide state selector and rep selector (locked)
+  if (role === 'tech') {
+    document.getElementById('stateSection').style.display = 'none';
+    document.getElementById('repSection').style.display = 'none';
+    // Also hide team report and money owed from sidebar for techs
+    document.getElementById('teamReportLink').style.display = 'none';
+    document.getElementById('moneyOwedLink').style.display = 'none';
+  }
 }
 
 function updateTopbarDate() {
@@ -452,30 +586,33 @@ function updateTopbarDate() {
 // ===== STATE SELECTION =====
 function selectState(state, init) {
   currentState = state;
-  localStorage.setItem('selectedState', state);
-  // Update state buttons
+  if (currentUser.role !== 'tech') localStorage.setItem('selectedState', state);
   document.querySelectorAll('.state-btn').forEach(function(b) {
     b.classList.toggle('active', b.dataset.state === state);
   });
-  // Update badge
   var info = stateInfo[state];
   document.getElementById('stateBadge').textContent = info.emoji + ' ' + info.label;
-  // Detach old listeners
-  if (_peopleRef) { db.ref(_peopleRef).off(); }
-  if (_teamGoalRef) { db.ref(_teamGoalRef).off(); }
-  if (_wgRef) { db.ref(_wgRef).off(); }
-  if (_mgRef) { db.ref(_mgRef).off(); }
-  if (_ygRef) { db.ref(_ygRef).off(); }
-  people = []; teamGoals = {}; weeklyGoals = {}; monthlyGoals = {}; yearlyGoals = {};
-  // Load people
+
+  if (_peopleRef) db.ref(_peopleRef).off();
+  if (_teamGoalRef) db.ref(_teamGoalRef).off();
+  if (_wgRef) db.ref(_wgRef).off();
+  if (_mgRef) db.ref(_mgRef).off();
+  if (_ygRef) db.ref(_ygRef).off();
+
+  people = []; allPeople = []; teamGoals = {}; weeklyGoals = {}; monthlyGoals = {}; yearlyGoals = {};
+
   _peopleRef = 'salespeople/' + state;
   db.ref(_peopleRef).on('value', function(s) {
     var d = s.val() || {};
-    people = Object.keys(d).map(function(k) { return {id:k, name:d[k].name, color:d[k].color||null}; });
+    allPeople = Object.keys(d).map(function(k) {
+      return {id:k, name:d[k].name, color:d[k].color||null, archived:d[k].archived||false};
+    });
+    // Active = not archived
+    people = allPeople.filter(function(p){return !p.archived;});
     renderRepSelect();
     renderCurrentPage();
   });
-  // Load goals
+
   _teamGoalRef = 'teamMonthlyGoals/' + state;
   db.ref(_teamGoalRef).on('value', function(s) { teamGoals = s.val()||{}; renderCurrentPage(); });
   _wgRef = 'weeklyGoals/' + state;
@@ -484,6 +621,7 @@ function selectState(state, init) {
   db.ref(_mgRef).on('value', function(s) { monthlyGoals = s.val()||{}; renderCurrentPage(); });
   _ygRef = 'yearlyGoals/' + state;
   db.ref(_ygRef).on('value', function(s) { yearlyGoals = s.val()||{}; renderCurrentPage(); });
+
   if (!init) renderCurrentPage();
 }
 
@@ -494,8 +632,23 @@ function loadAllLogs() {
   });
 }
 
+function loadAllLogins() {
+  if (currentUser.role !== 'admin') return;
+  db.ref('logins').on('value', function(s) {
+    allLogins = s.val() || {};
+    if (currentPage === 'admin') renderAdmin();
+  });
+}
+
 // ===== REP SELECTION =====
 function renderRepSelect() {
+  if (currentUser.role === 'tech') {
+    // Tech is locked to their rep — auto-select
+    if (currentUser.repId) {
+      currentRep = currentUser.repId;
+    }
+    return;
+  }
   var sel = document.getElementById('repSelect');
   sel.innerHTML = '<option value="">— Select Rep —</option>';
   people.forEach(function(p) {
@@ -507,6 +660,7 @@ function renderRepSelect() {
 }
 
 function selectRep(id) {
+  if (currentUser.role === 'tech') return; // techs can't change rep
   currentRep = id || null;
   localStorage.setItem('selectedPerson', id);
   renderCurrentPage();
@@ -514,18 +668,27 @@ function selectRep(id) {
 
 // ===== NAVIGATION =====
 function navigate(page) {
+  // Role-based access control
+  if (currentUser.role === 'tech') {
+    var allowed = ['dashboard','logcalls','myreport','mygoals'];
+    if (!allowed.includes(page)) return;
+  }
+  if (page === 'admin' && currentUser.role !== 'admin') return;
+
   currentPage = page;
   document.querySelectorAll('.sidebar-link').forEach(function(l) {
     l.classList.toggle('active', l.dataset.page === page);
   });
   var titles = {
     dashboard:'DASHBOARD', logcalls:'LOG LEADS', myreport:'MY REPORT',
-    mygoals:'MY GOALS', teamreport:'TEAM REPORT', moneyowed:'MONEY OWED'
+    mygoals:'MY GOALS', teamreport:'TEAM REPORT', moneyowed:'MONEY OWED',
+    admin:'ADMIN PANEL'
   };
   var subs = {
     dashboard:'Premium Surface Solutions', logcalls:'Log daily leads & track sales',
     myreport:'Personal performance metrics', mygoals:'Set & track your goals',
-    teamreport:'Leaderboard & team metrics', moneyowed:'Outstanding payments & estimates'
+    teamreport:'Leaderboard & team metrics', moneyowed:'Outstanding payments & estimates',
+    admin:'Manage logins, reps & settings'
   };
   document.getElementById('topbarTitle').textContent = titles[page] || page.toUpperCase();
   document.getElementById('topbarSub').textContent = subs[page] || '';
@@ -540,6 +703,7 @@ function renderCurrentPage() {
     case 'mygoals':    renderMyGoals(); break;
     case 'teamreport': renderTeamReport(); break;
     case 'moneyowed':  renderMoneyOwed(); break;
+    case 'admin':      renderAdmin(); break;
   }
 }
 
@@ -570,7 +734,6 @@ function getWeeksInMonth(date) {
   var y=date.getFullYear(), m=date.getMonth();
   var first=new Date(y,m,1), last=new Date(y,m+1,0);
   var weeks=[], cur=new Date(first);
-  // Align to Monday
   var dow=cur.getDay(); if(dow===0)dow=7;
   cur.setDate(cur.getDate()-(dow-1));
   while(cur<=last) {
@@ -595,7 +758,6 @@ function calcStats(logs) {
   return t;
 }
 function fmt$(n){return'$'+(Math.round(n)||0).toLocaleString();}
-function fmtPct(n){return n+'%';}
 function progressBar(val,goal,color){
   color=color||'var(--red)';
   var pct=goal>0?Math.min(100,Math.round(val/goal*100)):0;
@@ -608,6 +770,9 @@ function avatarColor(name){
   var h=0; for(var i=0;i<(name||'').length;i++)h=((h<<5)-h)+name.charCodeAt(i);
   return colors[Math.abs(h)%colors.length];
 }
+function inputStyle(borderColor) {
+  return 'background:var(--card);border:1px solid '+(borderColor||'var(--border)')+';color:var(--text);padding:0.4rem 0.6rem;border-radius:7px;font-size:0.85rem;font-family:\'Barlow\',sans-serif;outline:none;width:100%;';
+}
 
 // ===== DASHBOARD =====
 var dashDate = new Date();
@@ -618,67 +783,61 @@ function renderDashboard() {
   var todayDates = [today];
   var mk = dashDate.getFullYear()+'-'+String(dashDate.getMonth()+1).padStart(2,'0');
 
-  // Aggregate all reps for this state
+  // For tech: only show their own stats
+  var repList = (currentUser.role === 'tech') ? people.filter(function(p){return p.id===currentRep;}) : people;
+
   var todayStats = {leads:0,sold:0,revenue:0};
   var monthStats = {leads:0,sold:0,revenue:0};
-  var weekStats  = {leads:0,sold:0,revenue:0};
 
-  people.forEach(function(p) {
+  repList.forEach(function(p) {
     var tl = getLogsForRep(p.id, todayDates);
     tl.forEach(function(c){todayStats.leads++;if(c.jobSold){todayStats.sold++;todayStats.revenue+=parseFloat(c.amountSold)||0;}});
     var ml = getLogsForRep(p.id, monthDates);
     ml.forEach(function(c){monthStats.leads++;if(c.jobSold){monthStats.sold++;monthStats.revenue+=parseFloat(c.amountSold)||0;}});
-    var wl = getLogsForRep(p.id, weekDates);
-    wl.forEach(function(c){weekStats.leads++;if(c.jobSold){weekStats.sold++;weekStats.revenue+=parseFloat(c.amountSold)||0;}});
   });
 
   var closeRate = monthStats.leads>0 ? Math.round(monthStats.sold/monthStats.leads*100) : 0;
   var teamGoal = teamGoals[mk] || 0;
 
-  // Weeks in month
   var weeks = getWeeksInMonth(dashDate);
   var weekCards = weeks.map(function(w,i) {
     var wDates=[], d=new Date(w.start);
     while(d<=w.end){wDates.push(new Date(d));d.setDate(d.getDate()+1);}
     var ws={revenue:0,sold:0,leads:0};
-    people.forEach(function(p){
+    repList.forEach(function(p){
       getLogsForRep(p.id,wDates).forEach(function(c){ws.leads++;if(c.jobSold){ws.sold++;ws.revenue+=parseFloat(c.amountSold)||0;}});
     });
     var isCur = today>=w.start && today<=w.end;
     var s=w.start, e=w.end;
     var sLabel=s.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    var eLabel=e.getDate();
     return '<div class="week-card'+(isCur?' current':'')+'">'+
-      '<div class="week-label">WK '+(i+1)+(isCur?' ●':'')+' </div>'+
-      '<div class="week-dates">'+sLabel+'–'+eLabel+'</div>'+
+      '<div class="week-label">WK '+(i+1)+(isCur?' ●':'')+'</div>'+
+      '<div class="week-dates">'+sLabel+'–'+e.getDate()+'</div>'+
       '<div class="week-revenue">'+(ws.revenue>0?fmt$(ws.revenue):'$0')+'</div>'+
       '<div class="week-meta">'+(ws.sold>0?ws.sold+' sold · '+Math.round(ws.sold/(ws.leads||1)*100)+'%':'0 sold · 0%')+'</div>'+
     '</div>';
   }).join('');
 
-  // Leaderboard
-  var repStats = people.map(function(p) {
+  var repStats = repList.map(function(p) {
     var ml = getLogsForRep(p.id, monthDates);
-    var s = calcStats(ml);
-    return {p:p, s:s};
+    return {p:p, s:calcStats(ml)};
   }).sort(function(a,b){return b.s.revenue-a.s.revenue;});
 
   var lbRows = repStats.slice(0,6).map(function(rs,i) {
     var rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    var crown = i===0?'👑 ':'';
     return '<div class="lb-row">'+
       '<div class="lb-rank '+rankClass+'">'+(i+1)+'</div>'+
       '<div class="lb-avatar" style="background:'+avatarColor(rs.p.name)+'">'+avatarInitials(rs.p.name)+'</div>'+
-      '<div style="flex:1"><div class="lb-name">'+crown+rs.p.name+'</div>'+
+      '<div style="flex:1"><div class="lb-name">'+(i===0?'👑 ':'')+rs.p.name+'</div>'+
       '<div class="lb-meta">'+rs.s.sold+' sales · '+rs.s.closeRate+'% close</div></div>'+
       '<div style="text-align:right"><div class="lb-rev">'+(rs.s.revenue>0?fmt$(rs.s.revenue):'—')+'</div></div>'+
     '</div>';
   }).join('');
 
-  // Team members
   var teamCards = people.map(function(p) {
     var sel = p.id===currentRep;
-    return '<div class="team-card'+(sel?' selected':'')+'" onclick="selectRep(\''+ p.id +'\')" >'+
+    var clickable = currentUser.role !== 'tech';
+    return '<div class="team-card'+(sel?' selected':'')+'"'+(clickable?' onclick="selectRep(\''+p.id+'\')"':'')+'>'+
       '<div class="team-avatar" style="background:'+avatarColor(p.name)+'">'+avatarInitials(p.name)+'</div>'+
       '<div class="team-name">'+p.name+'</div>'+
     '</div>';
@@ -686,58 +845,31 @@ function renderDashboard() {
 
   var stateLabel = stateInfo[currentState].emoji+' '+stateInfo[currentState].label;
   var monthLabel = dashDate.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  var canAddMember = currentUser.role === 'admin' || currentUser.role === 'manager';
 
   document.getElementById('content').innerHTML =
   '<div style="font-size:0.72rem;color:var(--muted);margin-bottom:1rem;letter-spacing:0.08em;text-transform:uppercase;">'+stateLabel+' — '+monthLabel+'</div>'+
-
-  // Stat cards
   '<div class="stat-grid">'+
     '<div class="stat-card"><div class="stat-label">Today\'s Leads</div><div class="stat-value stat-blue">'+todayStats.leads+'</div><div class="stat-sub">All reps</div></div>'+
     '<div class="stat-card"><div class="stat-label">Today\'s Revenue</div><div class="stat-value stat-green">'+fmt$(todayStats.revenue)+'</div><div class="stat-sub">Team total</div></div>'+
     '<div class="stat-card"><div class="stat-label">Month Revenue</div><div class="stat-value stat-gold">'+fmt$(monthStats.revenue)+'</div><div class="stat-sub">'+monthStats.sold+' jobs closed</div></div>'+
     '<div class="stat-card"><div class="stat-label">Close Rate</div><div class="stat-value stat-red">'+closeRate+'%</div><div class="stat-sub">'+monthStats.sold+'/'+monthStats.leads+' leads</div></div>'+
   '</div>'+
-
-  // Goal progress
-  (teamGoal>0 ? '<div class="card" style="margin-bottom:1.5rem;">'+
-    '<div class="section-title">Team Goal Progress</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">'+
-      '<div><div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.3rem;">Monthly Goal</div>'+progressBar(monthStats.revenue,teamGoal)+'</div>'+
-    '</div>'+
-  '</div>' : '<div class="card" style="margin-bottom:1.5rem;cursor:pointer;" onclick="navigate(\'teamreport\')">'+
-    '<div style="display:flex;align-items:center;justify-content:space-between;">'+
-    '<div class="section-title" style="margin-bottom:0;">Team Goal Progress</div>'+
-    '<button class="btn-ghost" onclick="navigate(\'teamreport\')">Set Goal</button></div>'+
-    '<div style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem;">No monthly goal set — go to Team Report to set one.</div>'+
-  '</div>')+
-
-  // Quick actions
+  (teamGoal>0 ? '<div class="card" style="margin-bottom:1.5rem;"><div class="section-title">Team Goal Progress</div>'+progressBar(monthStats.revenue,teamGoal)+'</div>' :
+    (canAddMember ? '<div class="card" style="margin-bottom:1.5rem;cursor:pointer;" onclick="navigate(\'teamreport\')"><div style="display:flex;align-items:center;justify-content:space-between;"><div class="section-title" style="margin-bottom:0;">Team Goal Progress</div><button class="btn-ghost">Set Goal</button></div><div style="font-size:0.8rem;color:var(--muted);margin-top:0.5rem;">No monthly goal set.</div></div>' : ''))+
+  (currentUser.role !== 'tech' ?
   '<div class="quick-grid">'+
     '<a class="quick-card" onclick="navigate(\'logcalls\')"><span class="quick-icon">📋</span><div><div class="quick-title">LOG LEADS</div><div class="quick-sub">Add daily leads and track sales</div></div></a>'+
     '<a class="quick-card" onclick="navigate(\'myreport\')"><span class="quick-icon">📈</span><div><div class="quick-title">MY REPORT</div><div class="quick-sub">Personal performance metrics</div></div></a>'+
     '<a class="quick-card" onclick="navigate(\'teamreport\')"><span class="quick-icon">👥</span><div><div class="quick-title">TEAM REPORT</div><div class="quick-sub">Leaderboard & team metrics</div></div></a>'+
     '<a class="quick-card" onclick="navigate(\'moneyowed\')"><span class="quick-icon">💵</span><div><div class="quick-title">MONEY OWED</div><div class="quick-sub">Outstanding payments & estimates</div></div></a>'+
-  '</div>'+
-
-  // Week by week
-  '<div class="card" style="margin-bottom:1.5rem;">'+
-    '<div class="section-title">Week-by-Week — '+monthLabel+'</div>'+
-    '<div class="week-grid">'+weekCards+'</div>'+
-  '</div>'+
-
-  // Leaderboard
+  '</div>' : '')+
+  '<div class="card" style="margin-bottom:1.5rem;"><div class="section-title">Week-by-Week — '+monthLabel+'</div><div class="week-grid">'+weekCards+'</div></div>'+
   '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">'+
-    '<div class="card">'+
-      '<div class="section-title">Monthly Leaderboard</div>'+
-      (lbRows||'<div style="color:var(--muted);font-size:0.85rem;">No data yet</div>')+
-    '</div>'+
-    '<div class="card">'+
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">'+
-        '<div class="section-title" style="margin-bottom:0;">Team Members</div>'+
-        '<button class="btn-add" onclick="openAddMember()">+ Add</button>'+
-      '</div>'+
-      '<div class="team-grid">'+teamCards+'</div>'+
-    '</div>'+
+    '<div class="card"><div class="section-title">Monthly Leaderboard</div>'+(lbRows||'<div style="color:var(--muted);font-size:0.85rem;">No data yet</div>')+'</div>'+
+    '<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;"><div class="section-title" style="margin-bottom:0;">Team Members</div>'+
+    (canAddMember?'<button class="btn-add" onclick="openAddMember()">+ Add</button>':'')+
+    '</div><div class="team-grid">'+teamCards+'</div></div>'+
   '</div>';
 }
 
@@ -745,16 +877,16 @@ function renderDashboard() {
 function openAddMember() {
   document.getElementById('addMemberModal').style.display = 'flex';
   document.getElementById('newMemberName').value = '';
-  document.getElementById('newMemberName').focus();
+  setTimeout(function(){document.getElementById('newMemberName').focus();},50);
 }
-function closeModal() {
-  document.getElementById('addMemberModal').style.display = 'none';
+function closeModal(id) {
+  document.getElementById(id||'addMemberModal').style.display = 'none';
 }
 function addMember() {
   var name = document.getElementById('newMemberName').value.trim();
   if (!name) return;
-  db.ref('salespeople/'+currentState).push({name:name});
-  closeModal();
+  db.ref('salespeople/'+currentState).push({name:name, archived:false});
+  closeModal('addMemberModal');
 }
 
 // ===== LOG LEADS =====
@@ -763,7 +895,9 @@ var logWeekOffset = 0;
 var selectedLogDate = null;
 
 function renderLogCalls() {
-  if (!currentRep) {
+  // For tech: use their rep; for others: require selection
+  var repId = currentUser.role === 'tech' ? currentUser.repId : currentRep;
+  if (!repId) {
     document.getElementById('content').innerHTML =
       '<div class="card" style="text-align:center;padding:3rem;">'+
         '<div style="font-size:2rem;margin-bottom:1rem;">👤</div>'+
@@ -772,10 +906,16 @@ function renderLogCalls() {
       '</div>';
     return;
   }
-  var person = people.find(function(p){return p.id===currentRep;});
+
+  // For tech: ensure we're in the right state
+  if (currentUser.role === 'tech' && currentState !== currentUser.state) {
+    selectState(currentUser.state, false);
+    return;
+  }
+
+  var person = allPeople.find(function(p){return p.id===repId;}) || people.find(function(p){return p.id===repId;});
   var personName = person ? person.name : 'Unknown';
 
-  // Build week
   var today = new Date();
   var baseDate = new Date(today);
   baseDate.setDate(baseDate.getDate() + logWeekOffset*7);
@@ -787,7 +927,7 @@ function renderLogCalls() {
 
   var dayBtns = week.map(function(d) {
     var dStr = dk(d);
-    var key = dataKey(currentRep, d);
+    var key = currentState+'_'+repId+'_'+dStr;
     var hasLogs = allLogs[key] && Object.keys(allLogs[key]).length > 0;
     var isToday = dk(d) === dk(today);
     var isSel = dStr === selectedLogDate;
@@ -795,142 +935,128 @@ function renderLogCalls() {
     return '<button onclick="selectLogDate(\''+dStr+'\')" style="'+
       'flex:1;padding:0.6rem 0.3rem;border-radius:8px;border:2px solid '+(isSel?'var(--red)':isToday?'rgba(192,40,28,0.4)':'var(--border)')+';'+
       'background:'+(isSel?'var(--red)':'transparent')+';color:'+(isSel?'white':'var(--text)')+';'+
-      'font-family:\'Barlow Condensed\',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s;'+
-      'position:relative;">'+
+      'font-family:\'Barlow Condensed\',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;transition:all 0.15s;">'+
       '<div>'+dayNames[d.getDay()]+'</div>'+
       '<div style="font-size:1rem;font-weight:900;">'+d.getDate()+'</div>'+
       (hasLogs?'<div style="width:6px;height:6px;border-radius:50%;background:'+(isSel?'white':'var(--gold)')+';margin:3px auto 0;"></div>':'<div style="height:9px;"></div>')+
     '</button>';
   }).join('');
 
-  // Get leads for selected date
   var selDateObj = new Date(selectedLogDate+'T12:00:00');
-  var key = dataKey(currentRep, selDateObj);
+  var key = currentState+'_'+repId+'_'+selectedLogDate;
   var leads = allLogs[key] ? Object.entries(allLogs[key]).map(function(e){return Object.assign({id:e[0]},e[1]);}) : [];
   leads.sort(function(a,b){return (a.timestamp||0)-(b.timestamp||0);});
-
   var selDateLabel = selDateObj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
 
   var leadsHtml = leads.length === 0 ?
     '<div style="text-align:center;padding:2.5rem;color:var(--muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">📋</div><div>No leads logged for this day</div><div style="font-size:0.8rem;margin-top:0.3rem;">Click "+ Add Lead" to log a new lead</div></div>' :
-    leads.map(function(lead) { return renderLeadCard(lead, key); }).join('');
+    leads.map(function(lead) { return renderLeadCard(lead, key, repId); }).join('');
+
+  // Stats for selected date
+  var dayLogs = leads;
+  var ds = calcStats(dayLogs);
 
   document.getElementById('content').innerHTML =
     '<div style="margin-bottom:0.5rem;font-size:0.8rem;color:var(--muted);">Logging for: <strong style="color:var(--text);">'+personName+'</strong></div>'+
     '<div class="card" style="margin-bottom:1rem;">'+
       '<div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;">'+
         '<button onclick="logWeekNav(-1)" style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;font-size:1rem;">←</button>'+
-        '<div style="flex:1;text-align:center;font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:700;">'+weekLabel+'</div>'+
+        '<div style="flex:1;text-align:center;font-family:\'Barlow Condensed\',sans-serif;font-size:0.95rem;font-weight:700;">'+weekLabel+'</div>'+
         '<button onclick="logWeekNav(1)" style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;font-size:1rem;">→</button>'+
       '</div>'+
       '<div style="display:flex;gap:0.4rem;">'+dayBtns+'</div>'+
     '</div>'+
-    '<div class="card">'+
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">'+
-        '<div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.1rem;font-weight:800;">'+selDateLabel+'</div>'+
-        '<div style="font-size:0.75rem;color:var(--muted);">'+leads.length+' lead'+(leads.length!==1?'s':'')+'</div></div>'+
-        '<button class="btn-add" onclick="addLead()">+ Add Lead</button>'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;">'+
+      '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:800;">'+selDateLabel+'</div>'+
+      '<div style="display:flex;align-items:center;gap:0.6rem;">'+
+        '<span style="font-size:0.78rem;color:var(--muted);">'+ds.leads+' leads · '+ds.sold+' sold · '+fmt$(ds.revenue)+'</span>'+
+        '<button class="btn-add" onclick="addLead(\''+key+'\')">+ Add Lead</button>'+
       '</div>'+
-      '<div id="leadsList">'+leadsHtml+'</div>'+
-    '</div>';
+    '</div>'+
+    leadsHtml;
 }
 
+function logWeekNav(dir) {
+  logWeekOffset += dir;
+  selectedLogDate = null;
+  renderLogCalls();
+}
 function selectLogDate(dStr) {
   selectedLogDate = dStr;
   renderLogCalls();
 }
-function logWeekNav(dir) {
-  logWeekOffset += dir;
-  renderLogCalls();
-}
 
-function renderLeadCard(lead, key) {
-  var sold = lead.jobSold;
-  var owed = (parseFloat(lead.amountSold)||0) - (parseFloat(lead.amountCollected)||0);
-  var projectTypes = [];
+function renderLeadCard(lead, key, repId) {
   var ptMap = {courtPickleball:'🏓 Pickleball',courtTennis:'🎾 Tennis',courtBasketball:'🏀 Basketball',
     courtPadel:'🎾 Padel',courtMulti:'🏟️ Multi-Sport',projectConcrete:'🪨 Concrete',
     projectCoatings:'🎨 Coatings',projectLandscape:'🌿 Landscape'};
-  Object.keys(ptMap).forEach(function(k){if(lead[k])projectTypes.push(ptMap[k]);});
+  var typeChecks = Object.keys(ptMap).map(function(k){
+    return '<div onclick="updateLead(\''+key+'\',\''+lead.id+'\',\''+k+'\','+(!lead[k])+')" style="display:flex;align-items:center;gap:0.4rem;padding:0.3rem 0.5rem;border-radius:6px;border:1px solid '+(lead[k]?'rgba(192,40,28,0.5)':'var(--border)')+';background:'+(lead[k]?'rgba(192,40,28,0.1)':'transparent')+';cursor:pointer;transition:all 0.15s;font-size:0.75rem;font-weight:600;">'+
+      '<div style="width:12px;height:12px;border-radius:3px;border:1.5px solid '+(lead[k]?'var(--red)':'var(--border)')+';background:'+(lead[k]?'var(--red)':'transparent')+';flex-shrink:0;display:flex;align-items:center;justify-content:center;">'+(lead[k]?'<span style="color:white;font-size:0.5rem;">✓</span>':'')+
+      '</div>'+ptMap[k]+'</div>';
+  }).join('');
+  var owed = parseFloat(lead.moneyOwed)||0;
 
-  return '<div id="lead_'+lead.id+'" style="background:var(--card2);border:1px solid '+(sold?'rgba(34,197,94,0.3)':'var(--border)')+';border-radius:12px;padding:1rem;margin-bottom:0.8rem;">'+
-    // Header
+  return '<div class="card" style="margin-bottom:0.8rem;">'+
     '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.8rem;">'+
-      '<div style="flex:1;">'+
-        '<input value="'+(lead.customerName||'')+'" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'customerName\',this.value)" placeholder="Customer Name" style="background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:\'Barlow Condensed\',sans-serif;font-size:1.1rem;font-weight:800;width:100%;outline:none;padding-bottom:2px;margin-bottom:0.3rem;" />'+
-        '<input value="'+(lead.customerPhone||'')+'" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'customerPhone\',this.value)" placeholder="Phone" style="background:transparent;border:none;color:var(--muted);font-size:0.8rem;width:100%;outline:none;" />'+
+      '<div style="display:flex;align-items:center;gap:0.6rem;">'+
+        '<div style="width:36px;height:36px;border-radius:50%;background:'+(lead.jobSold?'var(--green)':lead.jobCancelled?'var(--red)':'var(--card2)')+';display:flex;align-items:center;justify-content:center;font-size:1rem;">'+(lead.jobSold?'✅':lead.jobCancelled?'❌':'📋')+'</div>'+
+        '<div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:800;">'+(lead.customerName||'New Lead')+'</div>'+
+        '<div style="font-size:0.72rem;color:var(--muted);">'+(lead.customerAddress||'No address')+(lead.jobNumber?' · #'+lead.jobNumber:'')+'</div></div>'+
       '</div>'+
-      '<button onclick="deleteLead(\''+key+'\',\''+lead.id+'\')" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:0 0.3rem;margin-left:0.5rem;">✕</button>'+
+      '<button onclick="deleteLead(\''+key+'\',\''+lead.id+'\')" style="background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:0.2rem;" title="Delete lead">🗑️</button>'+
     '</div>'+
-    // Address & job number
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.8rem;">'+
-      '<input value="'+(lead.customerAddress||'')+'" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'customerAddress\',this.value)" placeholder="Property Address" style="'+inputStyle()+'" />'+
-      '<input value="'+(lead.jobNumber||'')+'" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'jobNumber\',this.value)" placeholder="Job / Quote #" style="'+inputStyle()+'" />'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:0.8rem;">'+
+      '<div><label class="modal-label">Customer Name</label><input value="'+(lead.customerName||'')+'" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'customerName\',this.value)" style="'+inputStyle()+'" placeholder="Name" /></div>'+
+      '<div><label class="modal-label">Phone</label><input value="'+(lead.customerPhone||'')+'" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'customerPhone\',this.value)" style="'+inputStyle()+'" placeholder="Phone" /></div>'+
+      '<div><label class="modal-label">Address</label><input value="'+(lead.customerAddress||'')+'" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'customerAddress\',this.value)" style="'+inputStyle()+'" placeholder="Address" /></div>'+
+      '<div><label class="modal-label">Job #</label><input value="'+(lead.jobNumber||'')+'" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'jobNumber\',this.value)" style="'+inputStyle()+'" placeholder="Job number" /></div>'+
     '</div>'+
-    // Lead source
-    '<div style="margin-bottom:0.8rem;">'+
-      '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Lead Source</div>'+
-      '<div style="display:flex;flex-wrap:wrap;gap:0.3rem;">'+
-        ['Door Knock','Referral','Repeat Customer','Online/Web','Yard Sign','Cold Call','Other'].map(function(src){
-          var active=lead.leadSource===src;
-          return '<button onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'leadSource\',\''+(active?'':src)+'\')" style="padding:0.25rem 0.6rem;border-radius:6px;border:1px solid '+(active?'var(--gold)':'var(--border)')+';background:'+(active?'rgba(212,168,67,0.15)':'transparent')+';color:'+(active?'var(--gold)':'var(--muted)')+';font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.15s;">'+src+'</button>';
+    '<div style="margin-bottom:0.8rem;"><label class="modal-label">Lead Source</label>'+
+      '<select onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'leadSource\',this.value)" style="'+inputStyle()+'">'+
+        '<option value="">Select source...</option>'+
+        [['door','🚪 Door Knock'],['referral','👥 Referral'],['online','💻 Online/Web'],['repeat','🔄 Repeat Customer'],['event','🎪 Event'],['other','📌 Other']].map(function(o){
+          return '<option value="'+o[0]+'"'+(lead.leadSource===o[0]?' selected':'')+'>'+o[1]+'</option>';
         }).join('')+
-      '</div>'+
+      '</select>'+
     '</div>'+
-    // Project type
-    '<div style="margin-bottom:0.8rem;">'+
-      '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.4rem;">Project Type</div>'+
-      '<div style="display:flex;flex-wrap:wrap;gap:0.3rem;">'+
-        Object.keys(ptMap).map(function(k){
-          var active=lead[k];
-          return '<button onclick="updateLead(\''+key+'\',\''+lead.id+'\',\''+k+'\','+(active?'false':'true')+')" style="padding:0.25rem 0.6rem;border-radius:6px;border:1px solid '+(active?'var(--red)':'var(--border)')+';background:'+(active?'rgba(192,40,28,0.15)':'transparent')+';color:'+(active?'var(--text)':'var(--muted)')+';font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.15s;">'+ptMap[k]+'</button>';
-        }).join('')+
-      '</div>'+
+    '<div style="margin-bottom:0.8rem;"><label class="modal-label">Project Type</label>'+
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.3rem;">'+typeChecks+'</div>'+
     '</div>'+
-    // Sold toggle
-    '<div style="display:flex;align-items:center;gap:0.8rem;padding:0.7rem;border-radius:10px;border:1px solid '+(sold?'rgba(34,197,94,0.4)':'var(--border)')+';background:'+(sold?'rgba(34,197,94,0.06)':'transparent')+';margin-bottom:0.6rem;cursor:pointer;" onclick="toggleSold(\''+key+'\',\''+lead.id+'\','+(!sold)+')" >'+
-      '<div style="width:22px;height:22px;border-radius:5px;border:2px solid '+(sold?'var(--green)':'var(--border)')+';background:'+(sold?'var(--green)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+
-        (sold?'<span style="color:white;font-size:0.8rem;">✓</span>':'')+
+    '<div style="border-top:1px solid var(--border);padding-top:0.8rem;margin-bottom:0.8rem;">'+
+      '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem;border-radius:8px;border:1px solid '+(lead.jobSold?'var(--green)':'var(--border)')+';background:'+(lead.jobSold?'rgba(34,197,94,0.06)':'transparent')+';cursor:pointer;margin-bottom:0.6rem;" onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'jobSold\','+(!lead.jobSold)+')">'+
+        '<div style="width:18px;height:18px;border-radius:4px;border:2px solid '+(lead.jobSold?'var(--green)':'var(--border)')+';background:'+(lead.jobSold?'var(--green)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+(lead.jobSold?'<span style="color:white;font-size:0.7rem;">✓</span>':'')+
+        '</div><span style="font-size:0.85rem;font-weight:700;">💰 Job Sold</span>'+
       '</div>'+
-      '<span style="font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:800;color:'+(sold?'var(--green)':'var(--text)')+';">✅ JOB SOLD</span>'+
+      (lead.jobSold ?
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-bottom:0.6rem;">'+
+          '<div><label class="modal-label">Amount Sold ($)</label><input type="number" value="'+(lead.amountSold||'')+'" onchange="handleAmtChange(\''+key+'\',\''+lead.id+'\',\'sold\',this.value)" style="'+inputStyle('var(--green)')+'" placeholder="0" /></div>'+
+          '<div><label class="modal-label">Collected ($)</label><input type="number" value="'+(lead.amountCollected||'')+'" onchange="handleAmtChange(\''+key+'\',\''+lead.id+'\',\'collected\',this.value)" style="'+inputStyle()+'" placeholder="0" /></div>'+
+          '<div><label class="modal-label">Money Owed</label><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.3rem;font-weight:900;color:'+(owed>0?'#f87171':'var(--green)')+';padding-top:0.3rem;" id="owed_'+lead.id+'">'+fmt$(owed)+'</div></div>'+
+        '</div>'+
+        '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem;border-radius:8px;border:1px solid var(--border);margin-bottom:0.4rem;cursor:pointer;" onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'soldFromReferral\','+(!lead.soldFromReferral)+')">'+
+          '<div style="width:18px;height:18px;border-radius:4px;border:2px solid '+(lead.soldFromReferral?'#a78bfa':'var(--border)')+';background:'+(lead.soldFromReferral?'#a78bfa':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+(lead.soldFromReferral?'<span style="color:white;font-size:0.7rem;">✓</span>':'')+
+          '</div><span style="font-size:0.82rem;font-weight:600;">🔄 Sold from Internal Referral/Turnover</span>'+
+        '</div>'+
+        (lead.soldFromReferral ?
+          '<select onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'referralFrom\',this.value)" style="'+inputStyle()+';margin-bottom:0.4rem;">'+
+            '<option value="">Select rep...</option>'+
+            people.filter(function(p){return p.id!==repId;}).map(function(p){
+              return '<option value="'+p.id+'"'+(lead.referralFrom===p.id?' selected':'')+'>'+p.name+'</option>';
+            }).join('')+
+          '</select>' : '')
+      : '')+
     '</div>'+
-    (sold ?
-      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem;margin-bottom:0.6rem;">'+
-        '<div><div style="font-size:0.65rem;color:var(--muted);margin-bottom:0.3rem;">Amount Sold</div><input type="number" value="'+(lead.amountSold||'')+'" onchange="handleAmtChange(\''+key+'\',\''+lead.id+'\',\'sold\',this.value)" placeholder="0.00" style="'+inputStyle('var(--green)')+'" /></div>'+
-        '<div><div style="font-size:0.65rem;color:var(--muted);margin-bottom:0.3rem;">Amount Collected</div><input type="number" value="'+(lead.amountCollected||'')+'" onchange="handleAmtChange(\''+key+'\',\''+lead.id+'\',\'collected\',this.value)" placeholder="0.00" style="'+inputStyle('var(--blue)')+'" /></div>'+
-        '<div><div style="font-size:0.65rem;color:var(--muted);margin-bottom:0.3rem;">Money Owed</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.3rem;font-weight:900;color:'+(owed>0?'#f87171':'var(--green)')+';" id="owed_'+lead.id+'">'+fmt$(owed)+'</div></div>'+
-      '</div>'+
-      '<div style="margin-bottom:0.6rem;">'+
-        '<div style="font-size:0.65rem;color:var(--muted);margin-bottom:0.3rem;"># of Courts/Units</div>'+
-        '<input type="number" value="'+(lead.numCourts||1)+'" min="1" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'numCourts\',parseInt(this.value)||1)" style="'+inputStyle()+';width:80px;" />'+
-      '</div>'+
-      // Referral
-      '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem;border-radius:8px;border:1px solid var(--border);margin-bottom:0.6rem;cursor:pointer;" onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'soldFromReferral\','+(!lead.soldFromReferral)+')">'+
-        '<div style="width:18px;height:18px;border-radius:4px;border:2px solid '+(lead.soldFromReferral?'#a78bfa':'var(--border)')+';background:'+(lead.soldFromReferral?'#a78bfa':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+(lead.soldFromReferral?'<span style="color:white;font-size:0.7rem;">✓</span>':'')+
-        '</div><span style="font-size:0.82rem;font-weight:600;">🔄 Sold from Internal Referral/Turnover</span>'+
-      '</div>'+
-      (lead.soldFromReferral ?
-        '<select onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'referralFrom\',this.value)" style="'+inputStyle()+';margin-bottom:0.6rem;">'+
-          '<option value="">Select rep...</option>'+
-          people.filter(function(p){return p.id!==currentRep;}).map(function(p){
-            return '<option value="'+p.id+'"'+(lead.referralFrom===p.id?' selected':'')+'>'+p.name+'</option>';
-          }).join('')+
-        '</select>' : '')+
-    '' : '')+
-    // Estimate
     '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem;border-radius:8px;border:1px solid var(--border);margin-bottom:0.4rem;cursor:pointer;" onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'leftEstimate\','+(!lead.leftEstimate)+')">'+
       '<div style="width:18px;height:18px;border-radius:4px;border:2px solid '+(lead.leftEstimate?'var(--gold)':'var(--border)')+';background:'+(lead.leftEstimate?'var(--gold)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+(lead.leftEstimate?'<span style="color:white;font-size:0.7rem;">✓</span>':'')+
       '</div><span style="font-size:0.82rem;font-weight:600;">📐 Estimate / Quote Left</span>'+
     '</div>'+
-    (lead.leftEstimate ?
-      '<input type="number" value="'+(lead.estimateAmount||'')+'" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'estimateAmount\',parseFloat(this.value)||0)" placeholder="Estimate Amount ($)" style="'+inputStyle('var(--gold)')+';margin-bottom:0.4rem;" />' : '')+
-    // Cancelled
-    '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem;border-radius:8px;border:1px solid var(--border);margin-bottom:0.4rem;cursor:pointer;" onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'jobCancelled\','+(!lead.jobCancelled)+')">'+
+    (lead.leftEstimate ? '<input type="number" value="'+(lead.estimateAmount||'')+'" onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'estimateAmount\',parseFloat(this.value)||0)" placeholder="Estimate Amount ($)" style="'+inputStyle('var(--gold)')+';margin-bottom:0.4rem;" />' : '')+
+    '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem;border-radius:8px;border:1px solid var(--border);margin-bottom:0.6rem;cursor:pointer;" onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'jobCancelled\','+(!lead.jobCancelled)+')">'+
       '<div style="width:18px;height:18px;border-radius:4px;border:2px solid '+(lead.jobCancelled?'var(--red)':'var(--border)')+';background:'+(lead.jobCancelled?'var(--red)':'transparent')+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+(lead.jobCancelled?'<span style="color:white;font-size:0.7rem;">✓</span>':'')+
       '</div><span style="font-size:0.82rem;font-weight:600;">❌ Lead Dead / Cancelled</span>'+
     '</div>'+
-    // Performance metrics
-    '<div style="border-top:1px solid var(--border);padding-top:0.7rem;margin-top:0.5rem;">'+
+    '<div style="border-top:1px solid var(--border);padding-top:0.7rem;margin-top:0.3rem;">'+
       '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">📈 Performance Metrics</div>'+
       '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.3rem;">'+
         [
@@ -955,7 +1081,6 @@ function renderLeadCard(lead, key) {
         }).join('')+
       '</div>'+
     '</div>'+
-    // Objection
     '<div style="margin-top:0.7rem;">'+
       '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.3rem;">Objection (if not sold)</div>'+
       '<select onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'objection\',this.value)" style="'+inputStyle()+';width:100%;">'+
@@ -966,21 +1091,13 @@ function renderLeadCard(lead, key) {
         ].map(function(o){return '<option value="'+o[0]+'"'+(lead.objection===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+
       '</select>'+
     '</div>'+
-    // Notes
     '<div style="margin-top:0.6rem;">'+
-      '<textarea onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'notes\',this.value)" rows="2" placeholder="Notes..." style="'+inputStyle()+';width:100%;resize:vertical;">'+( lead.notes||'')+'</textarea>'+
+      '<textarea onchange="updateLead(\''+key+'\',\''+lead.id+'\',\'notes\',this.value)" rows="2" placeholder="Notes..." style="'+inputStyle()+';width:100%;resize:vertical;">'+(lead.notes||'')+'</textarea>'+
     '</div>'+
   '</div>';
 }
 
-function inputStyle(borderColor) {
-  return 'background:var(--card);border:1px solid '+(borderColor||'var(--border)')+';color:var(--text);padding:0.4rem 0.6rem;border-radius:7px;font-size:0.85rem;font-family:\'Barlow\',sans-serif;outline:none;width:100%;';
-}
-
-function addLead() {
-  if (!currentRep || !selectedLogDate) return;
-  var selDateObj = new Date(selectedLogDate+'T12:00:00');
-  var key = dataKey(currentRep, selDateObj);
+function addLead(key) {
   db.ref('callLogs/'+key).push({
     customerName:'', customerPhone:'', customerAddress:'', jobNumber:'',
     leadSource:'', courtPickleball:false, courtTennis:false, courtBasketball:false,
@@ -995,17 +1112,10 @@ function addLead() {
     timestamp:Date.now()
   });
 }
-
 function updateLead(key, leadId, field, value) {
-  var update = {};
-  update[field] = value;
+  var update = {}; update[field] = value;
   db.ref('callLogs/'+key+'/'+leadId).update(update);
 }
-
-function toggleSold(key, leadId, value) {
-  db.ref('callLogs/'+key+'/'+leadId).update({jobSold:value});
-}
-
 function handleAmtChange(key, leadId, type, value) {
   var lead = allLogs[key] && allLogs[key][leadId] ? allLogs[key][leadId] : {};
   var sold = type==='sold' ? (parseFloat(value)||0) : (parseFloat(lead.amountSold)||0);
@@ -1017,9 +1127,8 @@ function handleAmtChange(key, leadId, type, value) {
   var el = document.getElementById('owed_'+leadId);
   if (el) el.textContent = fmt$(owed);
 }
-
 function deleteLead(key, leadId) {
-  if (confirm('Delete this lead?')) {
+  if (confirm('Delete this lead? This cannot be undone.')) {
     db.ref('callLogs/'+key+'/'+leadId).remove();
   }
 }
@@ -1027,11 +1136,12 @@ function deleteLead(key, leadId) {
 // ===== MY REPORT =====
 var reportDate = new Date();
 function renderMyReport() {
-  if (!currentRep) {
+  var repId = currentUser.role === 'tech' ? currentUser.repId : currentRep;
+  if (!repId) {
     document.getElementById('content').innerHTML = '<div class="card" style="text-align:center;padding:3rem;"><div style="font-size:2rem;margin-bottom:1rem;">👤</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.3rem;font-weight:800;">Select a Rep First</div></div>';
     return;
   }
-  var person = people.find(function(p){return p.id===currentRep;});
+  var person = allPeople.find(function(p){return p.id===repId;}) || people.find(function(p){return p.id===repId;});
   var monthDates = getMonthDates(reportDate);
   var weeks = getWeeksInMonth(reportDate);
   var today = new Date();
@@ -1039,34 +1149,30 @@ function renderMyReport() {
   var yk = reportDate.getFullYear()+'';
   var wk = (function(){var w=getWeekDates(today);return dk(w[0]);})();
 
-  var monthLogs = getLogsForRep(currentRep, monthDates);
+  var monthLogs = getLogsForRep(repId, monthDates);
   var ms = calcStats(monthLogs);
-  var mGoal = monthlyGoals[currentRep+'_'+mk] || 0;
-  var wGoal = weeklyGoals[currentRep+'_'+wk] || 0;
+  var mGoal = monthlyGoals[repId+'_'+mk] || 0;
+  var wGoal = weeklyGoals[repId+'_'+wk] || 0;
 
-  // Year stats
   var yearDates = [];
   for(var m=0;m<12;m++){
-    var md=getMonthDates(new Date(reportDate.getFullYear(),m,1));
-    md.forEach(function(d){yearDates.push(d);});
+    getMonthDates(new Date(reportDate.getFullYear(),m,1)).forEach(function(d){yearDates.push(d);});
   }
-  var yearLogs = getLogsForRep(currentRep, yearDates);
+  var yearLogs = getLogsForRep(repId, yearDates);
   var ys = calcStats(yearLogs);
-  var yGoal = yearlyGoals[currentRep+'_'+yk] || 0;
+  var yGoal = yearlyGoals[repId+'_'+yk] || 0;
 
-  // Week stats
   var weekDates = getWeekDates(today);
-  var weekLogs = getLogsForRep(currentRep, weekDates);
+  var weekLogs = getLogsForRep(repId, weekDates);
   var ws = calcStats(weekLogs);
 
-  // Week by week table
   var wkRows = weeks.map(function(w,i) {
     var wDates=[],d=new Date(w.start);
     while(d<=w.end){wDates.push(new Date(d));d.setDate(d.getDate()+1);}
-    var wl=getLogsForRep(currentRep,wDates), wst=calcStats(wl);
+    var wl=getLogsForRep(repId,wDates), wst=calcStats(wl);
     var isCur=today>=w.start&&today<=w.end;
     return '<tr style="'+(isCur?'background:rgba(192,40,28,0.06);':'')+' border-bottom:1px solid var(--border);">'+
-      '<td style="padding:0.5rem 0.7rem;font-size:0.82rem;color:var(--muted);">Wk '+(i+1)+(isCur?' ←':'')+' </td>'+
+      '<td style="padding:0.5rem 0.7rem;font-size:0.82rem;color:var(--muted);">Wk '+(i+1)+(isCur?' ←':'')+'</td>'+
       '<td style="padding:0.5rem 0.7rem;font-size:0.78rem;color:var(--muted);">'+w.start.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'–'+w.end.getDate()+'</td>'+
       '<td style="padding:0.5rem 0.7rem;font-size:0.82rem;">'+wst.leads+'</td>'+
       '<td style="padding:0.5rem 0.7rem;font-size:0.82rem;color:var(--green);">'+wst.sold+'</td>'+
@@ -1083,110 +1189,105 @@ function renderMyReport() {
       '<button onclick="reportDate=new Date(reportDate.getFullYear(),reportDate.getMonth()-1,1);renderMyReport();" style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;">←</button>'+
       '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.2rem;font-weight:800;">'+monthLabel+'</div>'+
       '<button onclick="reportDate=new Date(reportDate.getFullYear(),reportDate.getMonth()+1,1);renderMyReport();" style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;">→</button>'+
-      '<span style="font-size:0.8rem;color:var(--muted);">— '+(person?person.name:'')+'</span>'+
     '</div>'+
-
-    // Goal cards
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;">'+
-      '<div class="card">'+
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">'+
-          '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Weekly Goal</div>'+
-          '<button onclick="editGoal(\'weekly\')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.2rem 0.5rem;border-radius:5px;font-size:0.7rem;cursor:pointer;">Edit</button>'+
-        '</div>'+
-        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.8rem;font-weight:900;color:var(--gold);">'+fmt$(ws.revenue)+'</div>'+
-        '<div style="font-size:0.72rem;color:var(--muted);">Goal: '+fmt$(wGoal)+'</div>'+
-        (wGoal>0?progressBar(ws.revenue,wGoal):'<div style="font-size:0.72rem;color:var(--muted);margin-top:0.3rem;">No goal set</div>')+
-      '</div>'+
-      '<div class="card">'+
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">'+
-          '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Monthly Goal</div>'+
-          '<button onclick="editGoal(\'monthly\')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.2rem 0.5rem;border-radius:5px;font-size:0.7rem;cursor:pointer;">Edit</button>'+
-        '</div>'+
-        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.8rem;font-weight:900;color:var(--red);">'+fmt$(ms.revenue)+'</div>'+
-        '<div style="font-size:0.72rem;color:var(--muted);">Goal: '+fmt$(mGoal)+'</div>'+
-        (mGoal>0?progressBar(ms.revenue,mGoal,'var(--red)'):'<div style="font-size:0.72rem;color:var(--muted);margin-top:0.3rem;">No goal set</div>')+
-      '</div>'+
-      '<div class="card">'+
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">'+
-          '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Yearly Goal</div>'+
-          '<button onclick="editGoal(\'yearly\')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.2rem 0.5rem;border-radius:5px;font-size:0.7rem;cursor:pointer;">Edit</button>'+
-        '</div>'+
-        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.8rem;font-weight:900;color:var(--blue);">'+fmt$(ys.revenue)+'</div>'+
-        '<div style="font-size:0.72rem;color:var(--muted);">Goal: '+fmt$(yGoal)+'</div>'+
-        (yGoal>0?progressBar(ys.revenue,yGoal,'var(--blue)'):'<div style="font-size:0.72rem;color:var(--muted);margin-top:0.3rem;">No goal set</div>')+
-      '</div>'+
+    '<div class="kpi-grid">'+
+      '<div class="kpi-card"><div class="kpi-icon">📅</div><div class="kpi-label">This Week</div><div class="kpi-value stat-gold">'+fmt$(ws.revenue)+'</div><div class="kpi-target">'+ws.sold+' sold · '+ws.closeRate+'% close'+(wGoal>0?' · Goal: '+fmt$(wGoal):'')+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-icon">📆</div><div class="kpi-label">This Month</div><div class="kpi-value stat-green">'+fmt$(ms.revenue)+'</div><div class="kpi-target">'+ms.sold+' sold · '+ms.closeRate+'% close'+(mGoal>0?' · Goal: '+fmt$(mGoal):'')+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-icon">📊</div><div class="kpi-label">This Year</div><div class="kpi-value stat-blue">'+fmt$(ys.revenue)+'</div><div class="kpi-target">'+ys.sold+' sold · '+ys.closeRate+'% close'+(yGoal>0?' · Goal: '+fmt$(yGoal):'')+'</div></div>'+
+      '<div class="kpi-card"><div class="kpi-icon">⭐</div><div class="kpi-label">Reviews (Month)</div><div class="kpi-value">'+ms.reviews+'</div><div class="kpi-target">'+ms.estimates+' estimates left</div></div>'+
     '</div>'+
-
-    // Week by week table
-    '<div class="card" style="margin-bottom:1.5rem;">'+
-      '<div class="section-title">Week-by-Week Performance — '+monthLabel+'</div>'+
+    (mGoal>0?'<div class="card" style="margin-bottom:1.5rem;"><div class="section-title">Monthly Goal</div>'+progressBar(ms.revenue,mGoal)+'</div>':'')+
+    (yGoal>0?'<div class="card" style="margin-bottom:1.5rem;"><div class="section-title">Yearly Goal</div>'+progressBar(ys.revenue,yGoal,'var(--blue)')+'</div>':'')+
+    '<div class="card">'+
+      '<div class="section-title">Week-by-Week — '+monthLabel+'</div>'+
       '<div style="overflow-x:auto;">'+
         '<table style="width:100%;border-collapse:collapse;">'+
           '<thead><tr style="border-bottom:2px solid var(--border);">'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Week</th>'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Dates</th>'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Leads</th>'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Sold</th>'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Close%</th>'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Revenue</th>'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Reviews</th>'+
+            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Week</th>'+
+            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Dates</th>'+
+            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Leads</th>'+
+            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Sold</th>'+
+            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Close%</th>'+
+            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Revenue</th>'+
+            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Reviews</th>'+
           '</tr></thead>'+
           '<tbody>'+wkRows+'</tbody>'+
         '</table>'+
       '</div>'+
-    '</div>'+
-
-    // KPI cards
-    '<div class="kpi-grid" style="margin-bottom:1.5rem;">'+
-      '<div class="kpi-card"><div class="kpi-icon">🎯</div><div class="kpi-label">Close Rate</div><div class="kpi-value" style="color:var(--red);">'+ms.closeRate+'%</div><div class="kpi-target">'+ms.sold+'/'+ms.leads+' leads</div></div>'+
-      '<div class="kpi-card"><div class="kpi-icon">💰</div><div class="kpi-label">Avg Sale</div><div class="kpi-value" style="color:var(--gold);">'+(ms.sold>0?fmt$(ms.revenue/ms.sold):'—')+'</div><div class="kpi-target">per closed job</div></div>'+
-      '<div class="kpi-card"><div class="kpi-icon">📐</div><div class="kpi-label">Estimates Out</div><div class="kpi-value" style="color:var(--blue);">'+ms.estimates+'</div><div class="kpi-target">this month</div></div>'+
-      '<div class="kpi-card"><div class="kpi-icon">⭐</div><div class="kpi-label">Reviews</div><div class="kpi-value" style="color:var(--green);">'+ms.reviews+'</div><div class="kpi-target">this month</div></div>'+
     '</div>';
-}
-
-function editGoal(type) {
-  var today = new Date();
-  var wk = (function(){var w=getWeekDates(today);return dk(w[0]);})();
-  var mk = reportDate.getFullYear()+'-'+String(reportDate.getMonth()+1).padStart(2,'0');
-  var yk = reportDate.getFullYear()+'';
-  var current = type==='weekly'?weeklyGoals[currentRep+'_'+wk]:type==='monthly'?monthlyGoals[currentRep+'_'+mk]:yearlyGoals[currentRep+'_'+yk];
-  var val = prompt('Set '+type+' goal ($):', current||'');
-  if (val === null) return;
-  var num = parseFloat(val)||0;
-  var path = type==='weekly'?'weeklyGoals/'+currentState+'/'+currentRep+'_'+wk:
-             type==='monthly'?'monthlyGoals/'+currentState+'/'+currentRep+'_'+mk:
-             'yearlyGoals/'+currentState+'/'+currentRep+'_'+yk;
-  db.ref(path).set(num);
 }
 
 // ===== MY GOALS =====
 function renderMyGoals() {
-  // Redirect to myreport which has goals
-  navigate('myreport');
+  var repId = currentUser.role === 'tech' ? currentUser.repId : currentRep;
+  if (!repId) {
+    document.getElementById('content').innerHTML = '<div class="card" style="text-align:center;padding:3rem;"><div style="font-size:2rem;margin-bottom:1rem;">👤</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.3rem;font-weight:800;">Select a Rep First</div></div>';
+    return;
+  }
+  var today = new Date();
+  var mk = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
+  var yk = today.getFullYear()+'';
+  var wk = dk(getWeekDates(today)[0]);
+
+  var wGoal = weeklyGoals[repId+'_'+wk] || 0;
+  var mGoal = monthlyGoals[repId+'_'+mk] || 0;
+  var yGoal = yearlyGoals[repId+'_'+yk] || 0;
+
+  var monthDates = getMonthDates(today);
+  var weekDates = getWeekDates(today);
+  var yearDates = [];
+  for(var m=0;m<12;m++) getMonthDates(new Date(today.getFullYear(),m,1)).forEach(function(d){yearDates.push(d);});
+
+  var ms = calcStats(getLogsForRep(repId, monthDates));
+  var ws = calcStats(getLogsForRep(repId, weekDates));
+  var ys = calcStats(getLogsForRep(repId, yearDates));
+
+  function goalCard(title, icon, current, goal, goalKey, path, color) {
+    return '<div class="card" style="margin-bottom:1rem;">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;">'+
+        '<div class="section-title" style="margin-bottom:0;">'+icon+' '+title+'</div>'+
+        '<button onclick="setGoal(\''+path+'\',\''+goalKey+'\','+goal+')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.3rem 0.7rem;border-radius:6px;font-size:0.78rem;cursor:pointer;">'+(goal>0?'Edit Goal':'Set Goal')+'</button>'+
+      '</div>'+
+      '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:2rem;font-weight:900;color:'+color+';">'+fmt$(current)+'</div>'+
+      (goal>0 ? progressBar(current,goal,color) : '<div style="font-size:0.8rem;color:var(--muted);margin-top:0.3rem;">No goal set — click "Set Goal" to add one.</div>')+
+    '</div>';
+  }
+
+  document.getElementById('content').innerHTML =
+    goalCard('Weekly Goal','📅',ws.revenue,wGoal,repId+'_'+wk,'weeklyGoals/'+currentState,'var(--gold)')+
+    goalCard('Monthly Goal','📆',ms.revenue,mGoal,repId+'_'+mk,'monthlyGoals/'+currentState,'var(--green)')+
+    goalCard('Yearly Goal','📊',ys.revenue,yGoal,repId+'_'+yk,'yearlyGoals/'+currentState,'var(--blue)');
+}
+
+function setGoal(path, key, current) {
+  var val = prompt('Set goal ($):', current||'');
+  if (val === null) return;
+  var update = {}; update[key] = parseFloat(val)||0;
+  db.ref(path).update(update);
 }
 
 // ===== TEAM REPORT =====
 var teamReportDate = new Date();
 function renderTeamReport() {
+  var today = new Date();
   var monthDates = getMonthDates(teamReportDate);
   var weeks = getWeeksInMonth(teamReportDate);
   var mk = teamReportDate.getFullYear()+'-'+String(teamReportDate.getMonth()+1).padStart(2,'0');
-  var teamGoal = teamGoals[mk] || 0;
   var monthLabel = teamReportDate.toLocaleDateString('en-US',{month:'long',year:'numeric'});
 
-  // Aggregate team stats
-  var teamStats = {leads:0,sold:0,revenue:0,reviews:0,estimates:0};
   var repStats = people.map(function(p) {
-    var logs = getLogsForRep(p.id, monthDates);
-    var s = calcStats(logs);
-    teamStats.leads += s.leads; teamStats.sold += s.sold; teamStats.revenue += s.revenue;
-    teamStats.reviews += s.reviews; teamStats.estimates += s.estimates;
-    return {p:p, s:s};
+    return {p:p, s:calcStats(getLogsForRep(p.id, monthDates))};
   }).sort(function(a,b){return b.s.revenue-a.s.revenue;});
-  teamStats.closeRate = teamStats.leads>0?Math.round(teamStats.sold/teamStats.leads*100):0;
 
-  // Week by week
+  var teamStats = {leads:0,sold:0,revenue:0,reviews:0,estimates:0,closeRate:0};
+  repStats.forEach(function(rs){
+    teamStats.leads+=rs.s.leads; teamStats.sold+=rs.s.sold;
+    teamStats.revenue+=rs.s.revenue; teamStats.reviews+=rs.s.reviews;
+    teamStats.estimates+=rs.s.estimates;
+  });
+  teamStats.closeRate = teamStats.leads>0?Math.round(teamStats.sold/teamStats.leads*100):0;
+  var teamGoal = teamGoals[mk] || 0;
+
   var weekCards = weeks.map(function(w,i) {
     var wDates=[],d=new Date(w.start);
     while(d<=w.end){wDates.push(new Date(d));d.setDate(d.getDate()+1);}
@@ -1194,21 +1295,19 @@ function renderTeamReport() {
     people.forEach(function(p){
       getLogsForRep(p.id,wDates).forEach(function(c){ws.leads++;if(c.jobSold){ws.sold++;ws.revenue+=parseFloat(c.amountSold)||0;}});
     });
-    var today=new Date(); var isCur=today>=w.start&&today<=w.end;
+    var isCur=today>=w.start&&today<=w.end;
     return '<div class="week-card'+(isCur?' current':'')+'">'+
-      '<div class="week-label">WK '+(i+1)+(isCur?' ●':'')+' </div>'+
+      '<div class="week-label">WK '+(i+1)+(isCur?' ●':'')+'</div>'+
       '<div class="week-dates">'+w.start.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'–'+w.end.getDate()+'</div>'+
       '<div class="week-revenue">'+(ws.revenue>0?fmt$(ws.revenue):'$0')+'</div>'+
       '<div class="week-meta">'+(ws.sold>0?ws.sold+' sold · '+Math.round(ws.sold/(ws.leads||1)*100)+'%':'0 sold')+'</div>'+
     '</div>';
   }).join('');
 
-  // Leaderboard table
   var lbRows = repStats.map(function(rs,i) {
-    var rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
     return '<tr style="border-bottom:1px solid var(--border);">'+
       '<td style="padding:0.6rem 0.7rem;"><span style="font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:900;color:'+(i===0?'var(--gold)':i===1?'#94a3b8':i===2?'#cd7f32':'var(--muted)')+';">'+(i+1)+'</span></td>'+
-      '<td style="padding:0.6rem 0.7rem;"><div style="display:flex;align-items:center;gap:0.6rem;"><div style="width:28px;height:28px;border-radius:50%;background:'+avatarColor(rs.p.name)+';display:flex;align-items:center;justify-content:center;font-family:\'Barlow Condensed\',sans-serif;font-size:0.8rem;font-weight:800;color:white;">'+avatarInitials(rs.p.name)+'</div>'+rs.p.name+'</div></td>'+
+      '<td style="padding:0.6rem 0.7rem;"><div style="display:flex;align-items:center;gap:0.6rem;"><div style="width:28px;height:28px;border-radius:50%;background:'+avatarColor(rs.p.name)+';display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;color:white;">'+avatarInitials(rs.p.name)+'</div>'+rs.p.name+'</div></td>'+
       '<td style="padding:0.6rem 0.7rem;font-size:0.85rem;">'+rs.s.leads+'</td>'+
       '<td style="padding:0.6rem 0.7rem;font-size:0.85rem;color:var(--green);">'+rs.s.sold+'</td>'+
       '<td style="padding:0.6rem 0.7rem;font-size:0.85rem;color:var(--muted);">'+rs.s.closeRate+'%</td>'+
@@ -1224,16 +1323,12 @@ function renderTeamReport() {
       '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.2rem;font-weight:800;">'+monthLabel+'</div>'+
       '<button onclick="teamReportDate=new Date(teamReportDate.getFullYear(),teamReportDate.getMonth()+1,1);renderTeamReport();" style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:0.4rem 0.8rem;border-radius:8px;cursor:pointer;">→</button>'+
     '</div>'+
-
-    // Team stat cards
     '<div class="stat-grid" style="margin-bottom:1.5rem;">'+
       '<div class="stat-card"><div class="stat-label">Team Revenue</div><div class="stat-value stat-gold">'+fmt$(teamStats.revenue)+'</div><div class="stat-sub">this month</div></div>'+
       '<div class="stat-card"><div class="stat-label">Jobs Closed</div><div class="stat-value stat-green">'+teamStats.sold+'</div><div class="stat-sub">'+teamStats.leads+' total leads</div></div>'+
       '<div class="stat-card"><div class="stat-label">Close Rate</div><div class="stat-value stat-red">'+teamStats.closeRate+'%</div><div class="stat-sub">team average</div></div>'+
       '<div class="stat-card"><div class="stat-label">Reviews</div><div class="stat-value stat-blue">'+teamStats.reviews+'</div><div class="stat-sub">this month</div></div>'+
     '</div>'+
-
-    // Team goal
     '<div class="card" style="margin-bottom:1.5rem;">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;">'+
         '<div class="section-title" style="margin-bottom:0;">Team Goal Progress</div>'+
@@ -1241,14 +1336,7 @@ function renderTeamReport() {
       '</div>'+
       (teamGoal>0?progressBar(teamStats.revenue,teamGoal):'<div style="font-size:0.8rem;color:var(--muted);">No monthly goal set. Click "Edit Goal" to set one.</div>')+
     '</div>'+
-
-    // Week by week
-    '<div class="card" style="margin-bottom:1.5rem;">'+
-      '<div class="section-title">Week-by-Week Team Performance</div>'+
-      '<div class="week-grid">'+weekCards+'</div>'+
-    '</div>'+
-
-    // Leaderboard table
+    '<div class="card" style="margin-bottom:1.5rem;"><div class="section-title">Week-by-Week Team Performance</div><div class="week-grid">'+weekCards+'</div></div>'+
     '<div class="card">'+
       '<div class="section-title">Monthly Leaderboard — '+monthLabel+'</div>'+
       '<div style="overflow-x:auto;">'+
@@ -1280,23 +1368,20 @@ function renderTeamReport() {
 
 function editTeamGoal() {
   var mk = teamReportDate.getFullYear()+'-'+String(teamReportDate.getMonth()+1).padStart(2,'0');
-  var current = teamGoals[mk] || '';
-  var val = prompt('Set team monthly goal ($):', current);
+  var val = prompt('Set team monthly goal ($):', teamGoals[mk]||'');
   if (val === null) return;
   db.ref('teamMonthlyGoals/'+currentState+'/'+mk).set(parseFloat(val)||0);
 }
 
 // ===== MONEY OWED =====
-var moneyFilter = 'all';
 function renderMoneyOwed() {
   var owedEntries = [];
   Object.keys(allLogs).forEach(function(key) {
     var parts = key.split('_');
     if (parts.length < 3) return;
-    var keyState = parts[0];
-    if (keyState !== currentState) return;
+    if (parts[0] !== currentState) return;
     var personId = parts[1];
-    var person = people.find(function(p){return p.id===personId;});
+    var person = allPeople.find(function(p){return p.id===personId;});
     if (!person) return;
     var dayLogs = allLogs[key];
     if (!dayLogs) return;
@@ -1313,12 +1398,10 @@ function renderMoneyOwed() {
   });
 
   owedEntries.sort(function(a,b){return b.owed-a.owed;});
-
   var totalOwed = owedEntries.reduce(function(s,e){return s+e.owed;},0);
   var totalEst  = owedEntries.filter(function(e){return e.estimate>0;}).reduce(function(s,e){return s+e.estimate;},0);
   var unpaidCount = owedEntries.filter(function(e){return e.owed>0;}).length;
 
-  // By rep summary
   var byRep = {};
   owedEntries.forEach(function(e) {
     if (!byRep[e.person.id]) byRep[e.person.id] = {person:e.person,owed:0,count:0,estimates:0};
@@ -1328,20 +1411,20 @@ function renderMoneyOwed() {
   });
   var repSummaryRows = Object.values(byRep).sort(function(a,b){return b.owed-a.owed;}).map(function(r) {
     return '<tr style="border-bottom:1px solid var(--border);">'+
-      '<td style="padding:0.5rem 0.7rem;"><div style="display:flex;align-items:center;gap:0.5rem;"><div style="width:24px;height:24px;border-radius:50%;background:'+avatarColor(r.person.name)+';display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:white;">'+avatarInitials(r.person.name)+'</div>'+r.person.name+'</div></td>'+
+      '<td style="padding:0.5rem 0.7rem;"><div style="display:flex;align-items:center;gap:0.5rem;"><div style="width:24px;height:24px;border-radius:50%;background:'+avatarColor(r.person.name)+';display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:800;color:white;">'+avatarInitials(r.person.name)+'</div>'+r.person.name+(r.person.archived?' <span style="font-size:0.65rem;color:var(--muted);">(archived)</span>':'')+'</div></td>'+
       '<td style="padding:0.5rem 0.7rem;font-size:0.85rem;">'+r.count+'</td>'+
       '<td style="padding:0.5rem 0.7rem;font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:800;color:var(--red);">'+fmt$(r.owed)+'</td>'+
       '<td style="padding:0.5rem 0.7rem;font-size:0.85rem;color:var(--gold);">'+(r.estimates>0?fmt$(r.estimates):'—')+'</td>'+
     '</tr>';
   }).join('');
 
-  // Individual entries
+  var ptMap = {courtPickleball:'🏓 Pickleball',courtTennis:'🎾 Tennis',courtBasketball:'🏀 Basketball',
+    courtPadel:'🎾 Padel',courtMulti:'🏟️ Multi-Sport',projectConcrete:'🪨 Concrete',
+    projectCoatings:'🎨 Coatings',projectLandscape:'🌿 Landscape'};
+
   var entryCards = owedEntries.length === 0 ?
     '<div style="text-align:center;padding:2.5rem;color:var(--muted);"><div style="font-size:2rem;margin-bottom:0.5rem;">✅</div><div>No outstanding balances</div></div>' :
     owedEntries.map(function(e) {
-      var ptMap = {courtPickleball:'🏓 Pickleball',courtTennis:'🎾 Tennis',courtBasketball:'🏀 Basketball',
-        courtPadel:'🎾 Padel',courtMulti:'🏟️ Multi-Sport',projectConcrete:'🪨 Concrete',
-        projectCoatings:'🎨 Coatings',projectLandscape:'🌿 Landscape'};
       var types = Object.keys(ptMap).filter(function(k){return e.lead[k];}).map(function(k){return ptMap[k];});
       return '<div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:0.9rem;margin-bottom:0.6rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;">'+
         '<div style="flex:1;">'+
@@ -1357,36 +1440,405 @@ function renderMoneyOwed() {
     }).join('');
 
   document.getElementById('content').innerHTML =
-    // Summary stats
     '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;">'+
       '<div class="stat-card"><div class="stat-label">Unpaid Jobs</div><div class="stat-value stat-red">'+fmt$(totalOwed)+'</div><div class="stat-sub">'+unpaidCount+' outstanding</div></div>'+
       '<div class="stat-card"><div class="stat-label">Open Estimates</div><div class="stat-value stat-gold">'+fmt$(totalEst)+'</div><div class="stat-sub">pending estimates</div></div>'+
       '<div class="stat-card"><div class="stat-label">Total Exposure</div><div class="stat-value stat-blue">'+fmt$(totalOwed+totalEst)+'</div><div class="stat-sub">combined</div></div>'+
     '</div>'+
-
-    // By rep summary
     (Object.keys(byRep).length > 0 ?
     '<div class="card" style="margin-bottom:1.5rem;">'+
       '<div class="section-title">Outstanding by Rep</div>'+
-      '<div style="overflow-x:auto;">'+
-        '<table style="width:100%;border-collapse:collapse;">'+
-          '<thead><tr style="border-bottom:2px solid var(--border);">'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Rep</th>'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Jobs</th>'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Amount Owed</th>'+
-            '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Estimates</th>'+
-          '</tr></thead>'+
-          '<tbody>'+repSummaryRows+'</tbody>'+
-        '</table>'+
-      '</div>'+
+      '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">'+
+        '<thead><tr style="border-bottom:2px solid var(--border);">'+
+          '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Rep</th>'+
+          '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Jobs</th>'+
+          '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Amount Owed</th>'+
+          '<th style="padding:0.5rem 0.7rem;text-align:left;font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);">Estimates</th>'+
+        '</tr></thead>'+
+        '<tbody>'+repSummaryRows+'</tbody>'+
+      '</table></div>'+
     '</div>' : '')+
+    '<div class="card"><div class="section-title">All Outstanding Jobs</div>'+entryCards+'</div>';
+}
 
-    // Individual entries
+// ===== ADMIN PANEL =====
+var adminTab = 'logins';
+
+function renderAdmin() {
+  if (currentUser.role !== 'admin') return;
+
+  var tabs = [
+    {id:'logins', label:'🔑 Login Management'},
+    {id:'reps',   label:'👥 Rep Management'},
+    {id:'metrics',label:'📊 Manager Metrics'},
+    {id:'settings',label:'⚙️ Settings'}
+  ];
+
+  var tabBar = '<div class="tab-bar">'+tabs.map(function(t){
+    return '<button class="tab-btn'+(adminTab===t.id?' active':'')+'" onclick="switchAdminTab(\''+t.id+'\')">'+t.label+'</button>';
+  }).join('')+'</div>';
+
+  var tabContent = '';
+  if (adminTab === 'logins') tabContent = renderAdminLogins();
+  else if (adminTab === 'reps') tabContent = renderAdminReps();
+  else if (adminTab === 'metrics') tabContent = renderAdminMetrics();
+  else if (adminTab === 'settings') tabContent = renderAdminSettings();
+
+  document.getElementById('content').innerHTML = tabBar + tabContent;
+}
+
+function switchAdminTab(tab) {
+  adminTab = tab;
+  renderAdmin();
+}
+
+function renderAdminLogins() {
+  var loginList = Object.entries(allLogins).map(function(e){return Object.assign({key:e[0]},e[1]);});
+  loginList.sort(function(a,b){return (a.name||'').localeCompare(b.name||'');});
+
+  var rows = loginList.length === 0 ?
+    '<tr><td colspan="6" style="padding:1.5rem;text-align:center;color:var(--muted);">No logins created yet. Click "+ Create Login" to add one.</td></tr>' :
+    loginList.map(function(l) {
+      var isActive = l.active !== false;
+      var stateLabel = l.state ? (stateInfo[l.state]||{emoji:'',label:l.state}).emoji+' '+(stateInfo[l.state]||{label:l.state}).label : '—';
+      return '<tr>'+
+        '<td style="padding:0.6rem
+ 0.8rem;"><span class="code-pill">'+l.code+'</span></td>'+
+        '<td style="padding:0.6rem 0.8rem;font-size:0.88rem;font-weight:600;">'+(l.name||'—')+'</td>'+
+        '<td style="padding:0.6rem 0.8rem;"><span style="font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:12px;background:'+(l.role==='manager'?'rgba(59,130,246,0.15)':'rgba(34,197,94,0.12)')+';color:'+(l.role==='manager'?'var(--blue)':'var(--green)')+';">'+(l.role||'tech')+'</span></td>'+
+        '<td style="padding:0.6rem 0.8rem;font-size:0.82rem;color:var(--muted);">'+(l.repName||'—')+'</td>'+
+        '<td style="padding:0.6rem 0.8rem;font-size:0.82rem;color:var(--muted);">'+stateLabel+'</td>'+
+        '<td style="padding:0.6rem 0.8rem;"><span class="status-dot '+(isActive?'active':'archived')+'"></span>'+(isActive?'Active':'Inactive')+'</td>'+
+        '<td style="padding:0.6rem 0.8rem;">'+
+          '<div style="display:flex;gap:0.4rem;">'+
+            '<button onclick="openEditLogin(\''+l.key+'\')" class="btn-ghost" style="padding:0.25rem 0.6rem;font-size:0.75rem;">Edit</button>'+
+            (isActive ?
+              '<button onclick="deactivateLogin(\''+l.key+'\')" class="btn-danger" style="padding:0.25rem 0.6rem;font-size:0.75rem;">Deactivate</button>' :
+              '<button onclick="reactivateLogin(\''+l.key+'\')" class="btn-ghost" style="padding:0.25rem 0.6rem;font-size:0.75rem;color:var(--green);border-color:rgba(34,197,94,0.4);">Reactivate</button>')+
+            '<button onclick="deleteLogin(\''+l.key+'\')" class="btn-danger" style="padding:0.25rem 0.6rem;font-size:0.75rem;">Delete</button>'+
+          '</div>'+
+        '</td>'+
+      '</tr>';
+    }).join('');
+
+  return '<div class="card">'+
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;">'+
+      '<div class="section-title gold-bar" style="margin-bottom:0;">Login Management</div>'+
+      '<button class="btn-gold" onclick="openCreateLogin()">+ Create Login</button>'+
+    '</div>'+
+    '<div class="info-banner">Each tech logs in with their personal code and can only view and edit their own data. Managers see all reps. Deactivating a login blocks access immediately — all data is preserved.</div>'+
+    '<div style="overflow-x:auto;">'+
+      '<table class="admin-table">'+
+        '<thead><tr>'+
+          '<th>Code</th><th>Name</th><th>Role</th><th>Assigned Rep</th><th>State</th><th>Status</th><th>Actions</th>'+
+        '</tr></thead>'+
+        '<tbody>'+rows+'</tbody>'+
+      '</table>'+
+    '</div>'+
+  '</div>';
+}
+
+function renderAdminReps() {
+  var stateKeys = ['utah','idaho','colorado'];
+  var sections = stateKeys.map(function(st) {
+    // We need to load reps for this state — use allPeople if state matches, else note
+    var isCurrentState = st === currentState;
+    var stateReps = isCurrentState ? allPeople : [];
+
+    var rows = stateReps.length === 0 ?
+      '<tr><td colspan="5" style="padding:1rem;text-align:center;color:var(--muted);">'+(isCurrentState?'No reps in this state yet.':'Switch to this state in the sidebar to manage reps.')+'</td></tr>' :
+      stateReps.map(function(p) {
+        var isArchived = p.archived;
+        // Find login for this rep
+        var repLogin = Object.values(allLogins).find(function(l){return l.repId===p.id;});
+        return '<tr>'+
+          '<td style="padding:0.6rem 0.8rem;">'+
+            '<div style="display:flex;align-items:center;gap:0.6rem;">'+
+              '<div style="width:32px;height:32px;border-radius:50%;background:'+(isArchived?'var(--muted)':avatarColor(p.name))+';display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:800;color:white;opacity:'+(isArchived?0.5:1)+';">'+avatarInitials(p.name)+'</div>'+
+              '<div>'+
+                '<div style="font-weight:600;font-size:0.88rem;">'+(isArchived?'<s>':'')+p.name+(isArchived?'</s>':'')+'</div>'+
+                (isArchived?'<div style="font-size:0.68rem;color:var(--muted);">Archived — data preserved</div>':'')+
+              '</div>'+
+            '</div>'+
+          '</td>'+
+          '<td style="padding:0.6rem 0.8rem;font-size:0.82rem;color:var(--muted);">'+(stateInfo[st]||{emoji:'',label:st}).emoji+' '+(stateInfo[st]||{label:st}).label+'</td>'+
+          '<td style="padding:0.6rem 0.8rem;">'+
+            (repLogin ?
+              '<span class="code-pill">'+repLogin.code+'</span>' :
+              '<span style="font-size:0.78rem;color:var(--muted);">No login</span>')+
+          '</td>'+
+          '<td style="padding:0.6rem 0.8rem;"><span class="status-dot '+(isArchived?'archived':'active')+'"></span>'+(isArchived?'Archived':'Active')+'</td>'+
+          '<td style="padding:0.6rem 0.8rem;">'+
+            '<div style="display:flex;gap:0.4rem;">'+
+              (!repLogin && !isArchived ? '<button onclick="openCreateLoginForRep(\''+p.id+'\',\''+p.name.replace(/'/g,"\\'")  +'\',\''+st+'\')" class="btn-ghost" style="padding:0.25rem 0.6rem;font-size:0.75rem;">+ Login</button>' : '')+
+              (!isArchived ?
+                '<button onclick="archiveRep(\''+p.id+'\',\''+p.name.replace(/'/g,"\\'")+'\')" class="btn-danger" style="padding:0.25rem 0.6rem;font-size:0.75rem;">Archive</button>' :
+                '<button onclick="unarchiveRep(\''+p.id+'\')" class="btn-ghost" style="padding:0.25rem 0.6rem;font-size:0.75rem;color:var(--green);border-color:rgba(34,197,94,0.4);">Restore</button>')+
+            '</div>'+
+          '</td>'+
+        '</tr>';
+      }).join('');
+
+    return '<div class="card" style="margin-bottom:1.2rem;">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">'+
+        '<div class="section-title gold-bar" style="margin-bottom:0;">'+(stateInfo[st]||{emoji:'',label:st}).emoji+' '+(stateInfo[st]||{label:st}).label+' Reps</div>'+
+        (isCurrentState ? '<button class="btn-add" onclick="openAddMember()">+ Add Rep</button>' : '<button class="btn-ghost" onclick="selectState(\''+st+'\')">Switch to '+st.charAt(0).toUpperCase()+st.slice(1)+'</button>')+
+      '</div>'+
+      '<div style="overflow-x:auto;"><table class="admin-table">'+
+        '<thead><tr><th>Rep</th><th>State</th><th>Login Code</th><th>Status</th><th>Actions</th></tr></thead>'+
+        '<tbody>'+rows+'</tbody>'+
+      '</table></div>'+
+    '</div>';
+  }).join('');
+
+  return sections;
+}
+
+function renderAdminMetrics() {
+  // Cross-state metrics for current month
+  var today = new Date();
+  var mk = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
+  var monthLabel = today.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+
+  // Current state metrics (we only have current state's people loaded)
+  var monthDates = getMonthDates(today);
+  var repStats = people.map(function(p) {
+    return {p:p, s:calcStats(getLogsForRep(p.id, monthDates))};
+  }).sort(function(a,b){return b.s.revenue-a.s.revenue;});
+
+  var teamStats = {leads:0,sold:0,revenue:0,reviews:0,estimates:0};
+  repStats.forEach(function(rs){
+    teamStats.leads+=rs.s.leads; teamStats.sold+=rs.s.sold;
+    teamStats.revenue+=rs.s.revenue; teamStats.reviews+=rs.s.reviews;
+    teamStats.estimates+=rs.s.estimates;
+  });
+  teamStats.closeRate = teamStats.leads>0?Math.round(teamStats.sold/teamStats.leads*100):0;
+
+  var lbRows = repStats.map(function(rs,i) {
+    return '<tr style="border-bottom:1px solid var(--border);">'+
+      '<td style="padding:0.6rem 0.8rem;font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:900;color:'+(i===0?'var(--gold)':i===1?'#94a3b8':i===2?'#cd7f32':'var(--muted)')+';">'+(i+1)+'</td>'+
+      '<td style="padding:0.6rem 0.8rem;"><div style="display:flex;align-items:center;gap:0.5rem;"><div style="width:28px;height:28px;border-radius:50%;background:'+avatarColor(rs.p.name)+';display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;color:white;">'+avatarInitials(rs.p.name)+'</div>'+rs.p.name+'</div></td>'+
+      '<td style="padding:0.6rem 0.8rem;font-size:0.85rem;">'+rs.s.leads+'</td>'+
+      '<td style="padding:0.6rem 0.8rem;font-size:0.85rem;color:var(--green);">'+rs.s.sold+'</td>'+
+      '<td style="padding:0.6rem 0.8rem;font-size:0.85rem;color:var(--muted);">'+rs.s.closeRate+'%</td>'+
+      '<td style="padding:0.6rem 0.8rem;font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:800;color:var(--gold);">'+(rs.s.revenue>0?fmt$(rs.s.revenue):'—')+'</td>'+
+      '<td style="padding:0.6rem 0.8rem;font-size:0.85rem;">'+rs.s.reviews+'</td>'+
+      '<td style="padding:0.6rem 0.8rem;font-size:0.85rem;">'+rs.s.estimates+'</td>'+
+    '</tr>';
+  }).join('');
+
+  return '<div class="info-banner">Showing metrics for <strong>'+(stateInfo[currentState]||{label:currentState}).emoji+' '+(stateInfo[currentState]||{label:currentState}).label+'</strong> — '+monthLabel+'. Use the state selector in the sidebar to view other states.</div>'+
+    '<div class="stat-grid" style="margin-bottom:1.5rem;">'+
+      '<div class="stat-card"><div class="stat-label">Team Revenue</div><div class="stat-value stat-gold">'+fmt$(teamStats.revenue)+'</div><div class="stat-sub">this month</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Jobs Closed</div><div class="stat-value stat-green">'+teamStats.sold+'</div><div class="stat-sub">'+teamStats.leads+' total leads</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Close Rate</div><div class="stat-value stat-red">'+teamStats.closeRate+'%</div><div class="stat-sub">team average</div></div>'+
+      '<div class="stat-card"><div class="stat-label">Active Reps</div><div class="stat-value stat-blue">'+people.length+'</div><div class="stat-sub">in '+currentState+'</div></div>'+
+    '</div>'+
     '<div class="card">'+
-      '<div class="section-title">All Outstanding Jobs</div>'+
-      entryCards+
+      '<div class="section-title gold-bar">Leaderboard — '+monthLabel+'</div>'+
+      '<div style="overflow-x:auto;"><table class="admin-table">'+
+        '<thead><tr>'+
+          '<th>Rank</th><th>Rep</th><th>Leads</th><th>Sold</th><th>Close%</th><th>Revenue</th><th>Reviews</th><th>Estimates</th>'+
+        '</tr></thead>'+
+        '<tbody>'+lbRows+'</tbody>'+
+        '<tfoot><tr style="border-top:2px solid var(--border);background:rgba(255,255,255,0.03);">'+
+          '<td colspan="2" style="padding:0.6rem 0.8rem;font-family:\'Barlow Condensed\',sans-serif;font-size:0.9rem;font-weight:800;color:var(--muted);">TEAM TOTAL</td>'+
+          '<td style="padding:0.6rem 0.8rem;font-weight:700;">'+teamStats.leads+'</td>'+
+          '<td style="padding:0.6rem 0.8rem;font-weight:700;color:var(--green);">'+teamStats.sold+'</td>'+
+          '<td style="padding:0.6rem 0.8rem;font-weight:700;color:var(--muted);">'+teamStats.closeRate+'%</td>'+
+          '<td style="padding:0.6rem 0.8rem;font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:900;color:var(--gold);">'+fmt$(teamStats.revenue)+'</td>'+
+          '<td style="padding:0.6rem 0.8rem;font-weight:700;">'+teamStats.reviews+'</td>'+
+          '<td style="padding:0.6rem 0.8rem;font-weight:700;">'+teamStats.estimates+'</td>'+
+        '</tr></tfoot>'+
+      '</table></div>'+
     '</div>';
 }
+
+function renderAdminSettings() {
+  return '<div class="card" style="max-width:480px;">'+
+    '<div class="section-title gold-bar">Admin Settings</div>'+
+    '<div class="info-banner">The admin code is used to access this Admin Panel. Keep it secret — only share with owners/managers who need full admin access.</div>'+
+    '<label class="modal-label">Change Admin Code</label>'+
+    '<div style="display:flex;gap:0.6rem;margin-bottom:1.2rem;">'+
+      '<input id="newAdminCode" class="modal-input" style="margin-bottom:0;flex:1;" placeholder="New admin code" autocomplete="off" />'+
+      '<button class="btn-gold" onclick="saveAdminCode()">Save</button>'+
+    '</div>'+
+    '<div style="border-top:1px solid var(--border);padding-top:1rem;margin-top:0.5rem;">'+
+      '<div style="font-size:0.78rem;color:var(--muted);margin-bottom:0.5rem;">Current session: <strong style="color:var(--text);">'+currentUser.name+'</strong> (Admin)</div>'+
+      '<div style="font-size:0.78rem;color:var(--muted);">To add manager or tech logins, go to the <strong style="color:var(--text);">Login Management</strong> tab.</div>'+
+    '</div>'+
+  '</div>';
+}
+
+function saveAdminCode() {
+  var code = document.getElementById('newAdminCode').value.trim();
+  if (!code) { alert('Please enter a new admin code.'); return; }
+  if (!confirm('Change admin code to "'+code+'"? You will need to use this new code next time you log in as admin.')) return;
+  db.ref('adminCode').set(code, function() {
+    alert('Admin code updated successfully!');
+    document.getElementById('newAdminCode').value = '';
+  });
+}
+
+// ===== LOGIN MANAGEMENT ACTIONS =====
+function openCreateLogin() {
+  document.getElementById('createLoginTitle').textContent = 'Create Login';
+  document.getElementById('newLoginCode').value = '';
+  document.getElementById('newLoginRole').value = 'tech';
+  document.getElementById('newLoginName').value = '';
+  document.getElementById('createLoginError').textContent = '';
+  document.getElementById('loginRepFields').style.display = 'block';
+  populateLoginRepSelect();
+  document.getElementById('createLoginModal').style.display = 'flex';
+}
+
+function openCreateLoginForRep(repId, repName, state) {
+  document.getElementById('createLoginTitle').textContent = 'Create Login for '+repName;
+  document.getElementById('newLoginCode').value = '';
+  document.getElementById('newLoginRole').value = 'tech';
+  document.getElementById('newLoginName').value = repName;
+  document.getElementById('createLoginError').textContent = '';
+  document.getElementById('loginRepFields').style.display = 'block';
+  document.getElementById('newLoginState').value = state;
+  populateLoginRepSelect(repId);
+  document.getElementById('createLoginModal').style.display = 'flex';
+}
+
+function populateLoginRepSelect(preselectId) {
+  var sel = document.getElementById('newLoginRep');
+  sel.innerHTML = '<option value="">— Select Rep —</option>';
+  // Load all reps across all states
+  var allStateReps = [];
+  ['utah','idaho','colorado'].forEach(function(st) {
+    db.ref('salespeople/'+st).once('value', function(s) {
+      var d = s.val() || {};
+      Object.keys(d).forEach(function(k) {
+        if (!d[k].archived) {
+          allStateReps.push({id:k, name:d[k].name, state:st});
+        }
+      });
+      // Re-render after each state loads
+      sel.innerHTML = '<option value="">— Select Rep —</option>';
+      allStateReps.sort(function(a,b){return a.name.localeCompare(b.name);}).forEach(function(p) {
+        var opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.name + ' ('+p.state+')';
+        opt.dataset.state = p.state;
+        if (p.id === preselectId) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    });
+  });
+}
+
+function toggleLoginRepField() {
+  var role = document.getElementById('newLoginRole').value;
+  document.getElementById('loginRepFields').style.display = role === 'tech' ? 'block' : 'none';
+}
+
+function saveLogin() {
+  var code = document.getElementById('newLoginCode').value.trim();
+  var role = document.getElementById('newLoginRole').value;
+  var name = document.getElementById('newLoginName').value.trim();
+  var repSel = document.getElementById('newLoginRep');
+  var repId = repSel.value;
+  var repName = repId ? repSel.options[repSel.selectedIndex].text.replace(/ \(.*\)$/,'') : '';
+  var state = document.getElementById('newLoginState').value;
+  var errEl = document.getElementById('createLoginError');
+
+  if (!code) { errEl.textContent = 'Please enter an access code.'; return; }
+  if (role === 'tech' && !repId) { errEl.textContent = 'Please select a rep to assign.'; return; }
+
+  // Check code uniqueness
+  db.ref('logins').orderByChild('code').equalTo(code).once('value', function(s) {
+    if (s.exists()) { errEl.textContent = 'That code is already in use. Choose a different one.'; return; }
+    // Also check admin code
+    db.ref('adminCode').once('value', function(as) {
+      var adminCode = as.val() || 'pssadmin';
+      if (code === adminCode) { errEl.textContent = 'That code is reserved for admin. Choose a different one.'; return; }
+
+      var loginData = {
+        code: code,
+        role: role,
+        name: name || (role === 'tech' ? repName : 'Manager'),
+        active: true,
+        createdAt: Date.now()
+      };
+      if (role === 'tech') {
+        loginData.repId = repId;
+        loginData.repName = repName;
+        loginData.state = state;
+      }
+      db.ref('logins').push(loginData, function() {
+        closeModal('createLoginModal');
+        renderAdmin();
+      });
+    });
+  });
+}
+
+function openEditLogin(key) {
+  var login = allLogins[key];
+  if (!login) return;
+  document.getElementById('editLoginKey').value = key;
+  document.getElementById('editLoginCode').value = login.code || '';
+  document.getElementById('editLoginName').value = login.name || '';
+  document.getElementById('editLoginError').textContent = '';
+  document.getElementById('editLoginModal').style.display = 'flex';
+}
+
+function saveEditLogin() {
+  var key = document.getElementById('editLoginKey').value;
+  var code = document.getElementById('editLoginCode').value.trim();
+  var name = document.getElementById('editLoginName').value.trim();
+  var errEl = document.getElementById('editLoginError');
+  if (!code) { errEl.textContent = 'Code cannot be empty.'; return; }
+
+  // Check uniqueness (excluding current key)
+  db.ref('logins').orderByChild('code').equalTo(code).once('value', function(s) {
+    var conflict = false;
+    s.forEach(function(child) { if (child.key !== key) conflict = true; });
+    if (conflict) { errEl.textContent = 'That code is already in use.'; return; }
+    db.ref('logins/'+key).update({code:code, name:name}, function() {
+      closeModal('editLoginModal');
+      renderAdmin();
+    });
+  });
+}
+
+function deactivateLogin(key) {
+  if (!confirm('Deactivate this login? The user will be immediately logged out and cannot log back in. Their data is preserved.')) return;
+  db.ref('logins/'+key).update({active:false});
+}
+
+function reactivateLogin(key) {
+  db.ref('logins/'+key).update({active:true});
+}
+
+function deleteLogin(key) {
+  if (!confirm('Permanently delete this login? The user will lose access immediately. Their sales data is NOT deleted.')) return;
+  db.ref('logins/'+key).remove();
+}
+
+// ===== REP MANAGEMENT ACTIONS =====
+function archiveRep(repId, repName) {
+  if (!confirm('Archive '+repName+'?\n\n✅ Their sales data, leads, and history are fully preserved.\n🔒 Their login will be deactivated immediately.\n\nThey will no longer appear in active rep lists.')) return;
+
+  // Archive the rep (mark as archived, do NOT delete)
+  db.ref('salespeople/'+currentState+'/'+repId).update({archived:true});
+
+  // Find and deactivate their login (do NOT delete — preserves audit trail)
+  db.ref('logins').orderByChild('repId').equalTo(repId).once('value', function(s) {
+    s.forEach(function(child) {
+      db.ref('logins/'+child.key).update({active:false});
+    });
+  });
+}
+
+function unarchiveRep(repId) {
+  db.ref('salespeople/'+currentState+'/'+repId).update({archived:false});
+}
+
 </script>
 </body>
 </html>
