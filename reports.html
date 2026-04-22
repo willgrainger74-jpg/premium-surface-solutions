@@ -100,13 +100,20 @@
         <div class="flex items-center justify-between" style="position:relative;z-index:1;">
             <div>
                 <h1 style="font-size:2rem;font-weight:900;line-height:1;">📊 TEAM REPORT</h1>
-                <p style="opacity:0.65;font-size:0.9rem;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;">Premium Surface Solutions – Full Team Performance</p>
+                <p style="opacity:0.65;font-size:0.9rem;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;">Premium Surface Solutions – State Team Performance</p>
+                <div id="stateBadge" style="display:none;margin-top:4px;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:3px 12px;font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;font-weight:700;color:white;"></div>
             </div>
             <a href="index.html" class="back-btn">← Dashboard</a>
         </div>
     </div>
 
     <div class="section-card p-6 mb-6">
+        <!-- State Tabs -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;" id="stateTabs">
+            <button data-state="utah" onclick="switchReportState('utah')" style="display:flex;align-items:center;gap:6px;padding:0.55rem 1.1rem;border-radius:10px;border:2px solid #dde2ea;background:white;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:700;color:#374151;transition:all 0.2s;">🏔️ Utah</button>
+            <button data-state="idaho" onclick="switchReportState('idaho')" style="display:flex;align-items:center;gap:6px;padding:0.55rem 1.1rem;border-radius:10px;border:2px solid #dde2ea;background:white;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:700;color:#374151;transition:all 0.2s;">🥔 Idaho</button>
+            <button data-state="colorado" onclick="switchReportState('colorado')" style="display:flex;align-items:center;gap:6px;padding:0.55rem 1.1rem;border-radius:10px;border:2px solid #dde2ea;background:white;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:700;color:#374151;transition:all 0.2s;">⛰️ Colorado</button>
+        </div>
         <!-- Month Nav -->
         <div class="flex items-center justify-between mb-6">
             <button id="prevMonth" class="cal-btn">← Prev</button>
@@ -193,29 +200,69 @@
         appId: "1:447806728696:web:cbd1fee9128d20d1a34e0d"
     });
 
-    var db = firebase.database();
+       var db = firebase.database();
     var currentDate = new Date();
     var people = [], logs = {}, teamGoals = {};
     var dataReady = { people: false, logs: false, goals: false };
+
+    var stateInfo = {
+        utah:     { emoji: '🏔️', label: 'Utah',     abbr: 'UT' },
+        idaho:    { emoji: '🥔', label: 'Idaho',    abbr: 'ID' },
+        colorado: { emoji: '⛰️', label: 'Colorado', abbr: 'CO' }
+    };
+
+    var reportState = localStorage.getItem('selectedState') || 'utah';
+    var _peopleRef = null, _goalsRef = null;
 
     function tryRender() {
         if (dataReady.people && dataReady.logs && dataReady.goals) renderAll();
     }
 
-    db.ref('salespeople').on('value', function(s) {
-        var d = s.val();
-        people = d ? Object.keys(d).map(function(k) { return { id:k, name:d[k].name }; }) : [];
-        dataReady.people = true; tryRender();
-    });
+    function switchReportState(state) {
+        reportState = state;
+        // Update tab styles
+        document.querySelectorAll('#stateTabs button').forEach(function(t) {
+            var active = t.dataset.state === state;
+            t.style.background = active ? 'linear-gradient(135deg,#0d1b2a,#1e3250)' : 'white';
+            t.style.color = active ? 'white' : '#374151';
+            t.style.borderColor = active ? '#c0281c' : '#dde2ea';
+            t.style.boxShadow = active ? '0 4px 12px rgba(13,27,42,0.25)' : 'none';
+        });
+        // Update badge
+        var info = stateInfo[state];
+        var badge = document.getElementById('stateBadge');
+        badge.style.display = 'inline-flex';
+        badge.textContent = info.emoji + ' ' + info.label + ' (' + info.abbr + ')';
+
+        // Detach old listeners
+        if (_peopleRef) db.ref(_peopleRef).off();
+        if (_goalsRef)  db.ref(_goalsRef).off();
+
+        people = []; teamGoals = {};
+        dataReady.people = false; dataReady.goals = false;
+
+        _peopleRef = 'salespeople/' + state;
+        _goalsRef  = 'teamMonthlyGoals/' + state;
+
+        db.ref(_peopleRef).on('value', function(s) {
+            var d = s.val();
+            people = d ? Object.keys(d).map(function(k) { return { id:k, name:d[k].name }; }) : [];
+            dataReady.people = true; tryRender();
+        });
+        db.ref(_goalsRef).on('value', function(s) { teamGoals = s.val()||{}; dataReady.goals = true; tryRender(); });
+    }
+
+    // Load all logs once
     db.ref('callLogs').on('value', function(s) { logs = s.val()||{}; dataReady.logs = true; tryRender(); });
-    db.ref('teamMonthlyGoals').on('value', function(s) { teamGoals = s.val()||{}; dataReady.goals = true; tryRender(); });
+
+    // Init with saved state
+    switchReportState(reportState);
 
     document.getElementById('prevMonth').onclick = function() { currentDate = new Date(currentDate.getFullYear(),currentDate.getMonth()-1,1); renderAll(); };
     document.getElementById('nextMonth').onclick = function() { currentDate = new Date(currentDate.getFullYear(),currentDate.getMonth()+1,1); renderAll(); };
-
     document.getElementById('teamGoalInput').onchange = function(e) {
         var mk = currentDate.getFullYear()+'-'+String(currentDate.getMonth()+1).padStart(2,'0');
-        db.ref('teamMonthlyGoals/'+mk).set(parseFloat(e.target.value)||0);
+        db.ref('teamMonthlyGoals/'+reportState+'/'+mk).set(parseFloat(e.target.value)||0);
     };
 
     function dk(d) { return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -227,7 +274,8 @@
     }
 
     function getCalls(pid, d) {
-        var l = logs[pid+'_'+dk(d)]; return l ? Object.values(l) : [];
+        // Key: state_personId_YYYY-MM-DD
+        var l = logs[reportState+'_'+pid+'_'+dk(d)]; return l ? Object.values(l) : [];
     }
 
     function calcRep(pid, dates) {
