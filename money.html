@@ -115,7 +115,8 @@
         <div class="flex items-center justify-between" style="position:relative;z-index:1;">
             <div>
                 <h1 style="font-size:2rem;font-weight:900;line-height:1;">💵 MONEY OWED</h1>
-                <p style="opacity:0.65;font-size:0.9rem;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;">Outstanding Balances & Payment Tracking</p>
+                <p style="opacity:0.65;font-size:0.9rem;margin-top:4px;letter-spacing:0.05em;text-transform:uppercase;">Outstanding Balances &amp; Payment Tracking</p>
+                <div id="stateBadge" style="display:none;margin-top:4px;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:3px 12px;font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;font-weight:700;color:white;"></div>
             </div>
             <a href="index.html" class="back-btn">← Dashboard</a>
         </div>
@@ -147,6 +148,12 @@
 
     <!-- Filter Controls -->
     <div class="section-card p-5 mb-6">
+        <!-- State Tabs -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem;" id="stateTabs">
+            <button data-state="utah" onclick="switchMoneyState('utah')" style="display:flex;align-items:center;gap:6px;padding:0.55rem 1.1rem;border-radius:10px;border:2px solid #dde2ea;background:white;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:700;color:#374151;transition:all 0.2s;">🏔️ Utah</button>
+            <button data-state="idaho" onclick="switchMoneyState('idaho')" style="display:flex;align-items:center;gap:6px;padding:0.55rem 1.1rem;border-radius:10px;border:2px solid #dde2ea;background:white;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:700;color:#374151;transition:all 0.2s;">🥔 Idaho</button>
+            <button data-state="colorado" onclick="switchMoneyState('colorado')" style="display:flex;align-items:center;gap:6px;padding:0.55rem 1.1rem;border-radius:10px;border:2px solid #dde2ea;background:white;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:0.95rem;font-weight:700;color:#374151;transition:all 0.2s;">⛰️ Colorado</button>
+        </div>
         <div class="flex flex-wrap gap-4 items-end">
             <div>
                 <label class="stat-label" style="color:#374151;display:block;margin-bottom:6px;">Filter by Rep</label>
@@ -207,20 +214,57 @@
         appId: "1:447806728696:web:cbd1fee9128d20d1a34e0d"
     });
 
-    var db = firebase.database();
+     var db = firebase.database();
     var people = [], logs = {};
     var dataReady = { people: false, logs: false };
 
+    var stateInfo = {
+        utah:     { emoji: '🏔️', label: 'Utah',     abbr: 'UT' },
+        idaho:    { emoji: '🥔', label: 'Idaho',    abbr: 'ID' },
+        colorado: { emoji: '⛰️', label: 'Colorado', abbr: 'CO' }
+    };
+
+    var moneyState = localStorage.getItem('selectedState') || 'utah';
+    var _mPeopleRef = null;
+
     function tryRender() { if (dataReady.people && dataReady.logs) { populateRepFilter(); renderOwed(); } }
 
-    db.ref('salespeople').on('value', function(s) {
-        var d = s.val();
-        people = d ? Object.keys(d).map(function(k) { return { id:k, name:d[k].name }; }) : [];
-        dataReady.people = true; tryRender();
-    });
+    function switchMoneyState(state) {
+        moneyState = state;
+        // Update tabs
+        document.querySelectorAll('#stateTabs button').forEach(function(t) {
+            var active = t.dataset.state === state;
+            t.style.background = active ? 'linear-gradient(135deg,#0d1b2a,#1e3250)' : 'white';
+            t.style.color = active ? 'white' : '#374151';
+            t.style.borderColor = active ? '#c0281c' : '#dde2ea';
+            t.style.boxShadow = active ? '0 4px 12px rgba(13,27,42,0.25)' : 'none';
+        });
+        // Update badge
+        var info = stateInfo[state];
+        var badge = document.getElementById('stateBadge');
+        badge.style.display = 'inline-flex';
+        badge.textContent = info.emoji + ' ' + info.label + ' (' + info.abbr + ')';
+
+        // Detach old people listener
+        if (_mPeopleRef) db.ref(_mPeopleRef).off();
+        people = [];
+        dataReady.people = false;
+
+        _mPeopleRef = 'salespeople/' + state;
+        db.ref(_mPeopleRef).on('value', function(s) {
+            var d = s.val();
+            people = d ? Object.keys(d).map(function(k) { return { id:k, name:d[k].name }; }) : [];
+            dataReady.people = true; tryRender();
+        });
+    }
+
+    // Load all logs once
     db.ref('callLogs').on('value', function(s) {
         logs = s.val()||{}; dataReady.logs = true; tryRender();
     });
+
+    // Init with saved state
+    switchMoneyState(moneyState);
 
     function populateRepFilter() {
         var sel = document.getElementById('repFilter');
@@ -254,13 +298,15 @@
         var monthKey = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0');
 
         var owedEntries = [];
-        Object.keys(logs).forEach(function(key) {
+         Object.keys(logs).forEach(function(key) {
+            // Key format: state_personId_YYYY-MM-DD
             var parts = key.split('_');
-            if (parts.length < 2) return;
-            var personId = parts[0];
-            var dateStr = parts[1];
+            if (parts.length < 3) return;
+            var keyState = parts[0];
+            var personId = parts[1];
+            var dateStr = parts.slice(2).join('_');
+            if (keyState !== moneyState) return;
             if (!personId || !dateStr) return;
-
             var person = people.find(function(p) { return p.id === personId; });
             if (!person) return;
             if (repFilter !== 'all' && personId !== repFilter) return;
