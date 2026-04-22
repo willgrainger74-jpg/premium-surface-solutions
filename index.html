@@ -99,6 +99,62 @@
             box-shadow: 0 2px 12px rgba(13,27,42,0.07);
         }
 
+        /* ===== STATE SELECTOR ===== */
+        .state-selector-wrap {
+            background: linear-gradient(135deg, #f0f4f8, #e8edf5);
+            border: 2px solid #c7d2e8;
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        .state-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 1.4rem 1rem;
+            border-radius: 14px;
+            border: 3px solid var(--gray-border);
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #374151;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: center;
+            width: 100%;
+        }
+        .state-btn:hover {
+            border-color: var(--red);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 24px rgba(13,27,42,0.18);
+        }
+        .state-btn.selected {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+            border-color: var(--red);
+            color: white;
+            box-shadow: 0 10px 28px rgba(13,27,42,0.4);
+            transform: translateY(-4px);
+        }
+        .state-btn .state-emoji { font-size: 2.6rem; line-height: 1; }
+        .state-btn .state-name  { font-size: 1.2rem; font-weight: 900; letter-spacing: 0.04em; }
+        .state-btn .state-sub   { font-size: 0.72rem; opacity: 0.55; letter-spacing: 0.06em; text-transform: uppercase; }
+        .state-btn.selected .state-sub { opacity: 0.65; }
+        .state-btn .state-count { font-size: 0.8rem; font-weight: 700; margin-top: 2px; }
+
+        .state-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.9rem; font-weight: 700;
+            color: white; margin-top: 6px;
+        }
+
         /* Person buttons */
         .person-btn-selected {
             background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%) !important;
@@ -243,6 +299,7 @@
                         <div>
                             <h1 style="font-size:2.6rem; font-weight:900; line-height:1; letter-spacing:0.02em;">PREMIUM SURFACE SOLUTIONS</h1>
                             <p style="font-family:'Barlow',sans-serif; font-size:0.95rem; opacity:0.65; letter-spacing:0.08em; text-transform:uppercase; margin-top:2px;">Sales Performance Tracker</p>
+                            <div id="headerStateBadge" style="display:none;" class="state-badge"></div>
                         </div>
                     </div>
                 </div>
@@ -253,94 +310,126 @@
             </div>
         </div>
 
-        <!-- Today's Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div class="stat-card stat-navy">
-                <p style="font-size:0.8rem; font-weight:600; opacity:0.7; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">📋 Today's Leads</p>
-                <p id="todayCalls" style="font-family:'Barlow Condensed',sans-serif; font-size:3.2rem; font-weight:900; line-height:1;">0</p>
-                <p style="font-size:0.72rem; opacity:0.5; margin-top:4px;">All reps</p>
-                <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.12;">📋</div>
-            </div>
-            <div class="stat-card stat-red">
-                <p style="font-size:0.8rem; font-weight:600; opacity:0.85; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">💰 Today's Revenue</p>
-                <p id="todayRevenue" style="font-family:'Barlow Condensed',sans-serif; font-size:3.2rem; font-weight:900; line-height:1;">$0</p>
-                <p style="font-size:0.72rem; opacity:0.7; margin-top:4px;">Closed today</p>
-                <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.15;">💰</div>
-            </div>
-            <div class="stat-card stat-gold">
-                <p style="font-size:0.8rem; font-weight:600; opacity:0.85; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">🏗️ Courts Sold</p>
-                <p id="todayCourts" style="font-family:'Barlow Condensed',sans-serif; font-size:3.2rem; font-weight:900; line-height:1;">0</p>
-                <p style="font-size:0.72rem; opacity:0.7; margin-top:4px;">Today</p>
-                <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.15;">🏗️</div>
-            </div>
-            <div class="stat-card stat-deep">
-                <p style="font-size:0.8rem; font-weight:600; opacity:0.7; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">📊 Month Revenue</p>
-                <p id="monthRevenue" style="font-family:'Barlow Condensed',sans-serif; font-size:3rem; font-weight:900; line-height:1;">$0</p>
-                <p style="font-size:0.72rem; opacity:0.5; margin-top:4px;">All reps</p>
-                <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.12;">📊</div>
+        <!-- ===== STATE SELECTOR ===== -->
+        <div class="section-card p-8 mb-8">
+            <h2 class="section-title mb-2" style="font-family:'Barlow Condensed',sans-serif; font-size:1.7rem; font-weight:800; color:var(--navy);">
+                Select Your State
+            </h2>
+            <p style="color:#6b7280; font-size:0.9rem; margin-bottom:1.25rem;">Tap your state to view and log sales for that region. Each state has its own reps, leads, and goals.</p>
+            <div class="state-selector-wrap">
+                <div class="grid grid-cols-3 gap-5" id="stateList">
+                    <button class="state-btn" data-state="utah" onclick="selectState('utah')">
+                        <span class="state-emoji">🏔️</span>
+                        <span class="state-name">UTAH</span>
+                        <span class="state-sub">UT Region</span>
+                        <span id="stateCount_utah" class="state-count" style="color:inherit;opacity:0.7;"></span>
+                    </button>
+                    <button class="state-btn" data-state="idaho" onclick="selectState('idaho')">
+                        <span class="state-emoji">🥔</span>
+                        <span class="state-name">IDAHO</span>
+                        <span class="state-sub">ID Region</span>
+                        <span id="stateCount_idaho" class="state-count" style="color:inherit;opacity:0.7;"></span>
+                    </button>
+                    <button class="state-btn" data-state="colorado" onclick="selectState('colorado')">
+                        <span class="state-emoji">⛰️</span>
+                        <span class="state-name">COLORADO</span>
+                        <span class="state-sub">CO Region</span>
+                        <span id="stateCount_colorado" class="state-count" style="color:inherit;opacity:0.7;"></span>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Select Rep -->
-        <div class="section-card p-8 mb-8">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-gray-800 section-title" style="font-family:'Barlow Condensed',sans-serif; font-size:1.7rem;">Select Sales Rep</h2>
-                <button id="addBtn" class="btn-primary">+ Add Rep</button>
-            </div>
-
-            <div id="addForm" class="add-form-wrap" style="display:none;">
-                <div class="flex gap-3">
-                    <input id="nameInput" type="text" placeholder="Enter rep name" />
-                    <button id="saveBtn" class="btn-save">Add</button>
-                    <button id="cancelBtn" class="btn-cancel">Cancel</button>
+        <!-- Today's Stats (shown after state selected) -->
+        <div id="statsSection" style="display:none;">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="stat-card stat-navy">
+                    <p style="font-size:0.8rem; font-weight:600; opacity:0.7; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">📋 Today's Leads</p>
+                    <p id="todayCalls" style="font-family:'Barlow Condensed',sans-serif; font-size:3.2rem; font-weight:900; line-height:1;">0</p>
+                    <p style="font-size:0.72rem; opacity:0.5; margin-top:4px;">All reps in state</p>
+                    <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.12;">📋</div>
+                </div>
+                <div class="stat-card stat-red">
+                    <p style="font-size:0.8rem; font-weight:600; opacity:0.85; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">💰 Today's Revenue</p>
+                    <p id="todayRevenue" style="font-family:'Barlow Condensed',sans-serif; font-size:3.2rem; font-weight:900; line-height:1;">$0</p>
+                    <p style="font-size:0.72rem; opacity:0.7; margin-top:4px;">Closed today</p>
+                    <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.15;">💰</div>
+                </div>
+                <div class="stat-card stat-gold">
+                    <p style="font-size:0.8rem; font-weight:600; opacity:0.85; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">🏗️ Jobs Sold</p>
+                    <p id="todayCourts" style="font-family:'Barlow Condensed',sans-serif; font-size:3.2rem; font-weight:900; line-height:1;">0</p>
+                    <p style="font-size:0.72rem; opacity:0.7; margin-top:4px;">Today</p>
+                    <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.15;">🏗️</div>
+                </div>
+                <div class="stat-card stat-deep">
+                    <p style="font-size:0.8rem; font-weight:600; opacity:0.7; letter-spacing:0.05em; text-transform:uppercase; margin-bottom:4px;">📊 Month Revenue</p>
+                    <p id="monthRevenue" style="font-family:'Barlow Condensed',sans-serif; font-size:3rem; font-weight:900; line-height:1;">$0</p>
+                    <p style="font-size:0.72rem; opacity:0.5; margin-top:4px;">All reps in state</p>
+                    <div class="absolute bottom-3 right-4" style="font-size:2rem; opacity:0.12;">📊</div>
                 </div>
             </div>
 
-            <div id="peopleList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
-            <div id="emptyMsg" style="display:none;" class="text-center py-12 text-gray-400 font-semibold text-xl">Loading reps...</div>
-        </div>
+            <!-- Select Rep -->
+            <div class="section-card p-8 mb-8">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="section-title" style="font-family:'Barlow Condensed',sans-serif; font-size:1.7rem; font-weight:800; color:var(--navy);">Select Sales Rep</h2>
+                    <button id="addBtn" class="btn-primary">+ Add Rep</button>
+                </div>
 
-        <!-- Navigation -->
-        <div id="navigation" style="display:none;">
-            <h2 class="mb-5 section-title" style="font-family:'Barlow Condensed',sans-serif; font-size:1.7rem; font-weight:700; color:#1a1a2e;">Quick Actions</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <a href="calls.html" class="nav-card nc-navy">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 style="font-size:1.6rem; font-weight:800;">📋 Log Leads</h3>
+                <div id="addForm" class="add-form-wrap" style="display:none;">
+                    <div class="flex gap-3">
+                        <input id="nameInput" type="text" placeholder="Enter rep name" />
+                        <button id="saveBtn" class="btn-save">Add</button>
+                        <button id="cancelBtn" class="btn-cancel">Cancel</button>
                     </div>
-                    <p style="opacity:0.75; margin-bottom:0.75rem; font-size:0.95rem;">Track daily leads, estimates &amp; sales</p>
-                    <div style="font-size:0.8rem; opacity:0.5;">✓ Calendar view &nbsp;•&nbsp; ✓ Court types &nbsp;•&nbsp; ✓ Lead source</div>
-                    <div class="bg-icon">📋</div>
-                </a>
-                <a href="goals.html" class="nav-card nc-red">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 style="font-size:1.6rem; font-weight:800;">🎯 My Report</h3>
-                    </div>
-                    <p style="opacity:0.8; margin-bottom:0.75rem; font-size:0.95rem;">Personal metrics, goals &amp; forecasts</p>
-                    <div style="font-size:0.8rem; opacity:0.6;">✓ Weekly/Monthly/Yearly &nbsp;•&nbsp; ✓ Close rate</div>
-                    <div class="bg-icon">🎯</div>
-                </a>
-                <a href="reports.html" class="nav-card nc-deep">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 style="font-size:1.6rem; font-weight:800;">📊 Team Report</h3>
-                    </div>
-                    <p style="opacity:0.75; margin-bottom:0.75rem; font-size:0.95rem;">Leaderboard &amp; team performance</p>
-                    <div style="font-size:0.8rem; opacity:0.5;">✓ Leaderboard &nbsp;•&nbsp; ✓ Court breakdown &nbsp;•&nbsp; ✓ Team goals</div>
-                    <div class="bg-icon">📊</div>
-                </a>
-                <a href="money.html" class="nav-card nc-gold">
-                    <div class="flex items-center justify-between mb-3">
-                        <h3 style="font-size:1.6rem; font-weight:800;">💵 Money Owed</h3>
-                    </div>
-                    <p style="opacity:0.8; margin-bottom:0.75rem; font-size:0.95rem;">Outstanding payments &amp; follow-ups</p>
-                    <div style="font-size:0.8rem; opacity:0.6;">✓ By rep &nbsp;•&nbsp; ✓ By court type &nbsp;•&nbsp; ✓ Aging</div>
-                    <div class="bg-icon">💵</div>
-                </a>
+                </div>
+
+                <div id="peopleList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
+                <div id="emptyMsg" style="display:none;" class="text-center py-12 text-gray-400 font-semibold text-xl">No reps for this state yet. Add one above!</div>
             </div>
-        </div>
 
-        <div id="selectMsg" style="display:none;" class="select-msg mt-6">
-            <p style="font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:700; color:var(--navy);">👆 Select a sales rep above to continue</p>
+            <!-- Navigation -->
+            <div id="navigation" style="display:none;">
+                <h2 class="mb-5 section-title" style="font-family:'Barlow Condensed',sans-serif; font-size:1.7rem; font-weight:700; color:#1a1a2e;">Quick Actions</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <a href="calls.html" class="nav-card nc-navy">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 style="font-size:1.6rem; font-weight:800;">📋 Log Leads</h3>
+                        </div>
+                        <p style="opacity:0.75; margin-bottom:0.75rem; font-size:0.95rem;">Track daily leads, estimates &amp; sales</p>
+                        <div style="font-size:0.8rem; opacity:0.5;">✓ Calendar view &nbsp;•&nbsp; ✓ Court types &nbsp;•&nbsp; ✓ Lead source</div>
+                        <div class="bg-icon">📋</div>
+                    </a>
+                    <a href="goals.html" class="nav-card nc-red">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 style="font-size:1.6rem; font-weight:800;">🎯 My Report</h3>
+                        </div>
+                        <p style="opacity:0.8; margin-bottom:0.75rem; font-size:0.95rem;">Personal metrics, goals &amp; forecasts</p>
+                        <div style="font-size:0.8rem; opacity:0.6;">✓ Weekly/Monthly/Yearly &nbsp;•&nbsp; ✓ Close rate</div>
+                        <div class="bg-icon">🎯</div>
+                    </a>
+                    <a href="reports.html" class="nav-card nc-deep">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 style="font-size:1.6rem; font-weight:800;">📊 Team Report</h3>
+                        </div>
+                        <p style="opacity:0.75; margin-bottom:0.75rem; font-size:0.95rem;">Leaderboard &amp; team performance</p>
+                        <div style="font-size:0.8rem; opacity:0.5;">✓ Leaderboard &nbsp;•&nbsp; ✓ Court breakdown &nbsp;•&nbsp; ✓ Team goals</div>
+                        <div class="bg-icon">📊</div>
+                    </a>
+                    <a href="money.html" class="nav-card nc-gold">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 style="font-size:1.6rem; font-weight:800;">💵 Money Owed</h3>
+                        </div>
+                        <p style="opacity:0.8; margin-bottom:0.75rem; font-size:0.95rem;">Outstanding payments &amp; follow-ups</p>
+                        <div style="font-size:0.8rem; opacity:0.6;">✓ By rep &nbsp;•&nbsp; ✓ By court type &nbsp;•&nbsp; ✓ Aging</div>
+                        <div class="bg-icon">💵</div>
+                    </a>
+                </div>
+            </div>
+
+            <div id="selectMsg" style="display:none;" class="select-msg mt-6">
+                <p style="font-family:'Barlow Condensed',sans-serif; font-size:1.4rem; font-weight:700; color:var(--navy);">👆 Select a sales rep above to continue</p>
+            </div>
         </div>
 
     </div>
@@ -359,55 +448,121 @@
         var db = firebase.database();
         var people = [];
         var selected = localStorage.getItem('selectedPerson') || null;
+        var selectedState = localStorage.getItem('selectedState') || null;
         var logs = {};
+
+        var stateInfo = {
+            utah:     { emoji: '🏔️', label: 'Utah',     abbr: 'UT' },
+            idaho:    { emoji: '🥔', label: 'Idaho',    abbr: 'ID' },
+            colorado: { emoji: '⛰️', label: 'Colorado', abbr: 'CO' }
+        };
+
+        // Active Firebase listeners (so we can detach on state change)
+        var peopleListener = null;
+        var logsListener = null;
 
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
-        document.getElementById('addBtn').onclick = function() {
-            document.getElementById('addForm').style.display = 'block';
-            document.getElementById('nameInput').focus();
-        };
-        document.getElementById('cancelBtn').onclick = function() {
-            document.getElementById('addForm').style.display = 'none';
-            document.getElementById('nameInput').value = '';
-        };
-        document.getElementById('saveBtn').onclick = function() {
-            var name = document.getElementById('nameInput').value.trim();
-            if (name) {
-                db.ref('salespeople').push().set({ name: name });
-                document.getElementById('nameInput').value = '';
+        // Load rep counts for all states to show on state buttons
+        ['utah','idaho','colorado'].forEach(function(state) {
+            db.ref('salespeople/' + state).on('value', function(s) {
+                var d = s.val();
+                var count = d ? Object.keys(d).length : 0;
+                var el = document.getElementById('stateCount_' + state);
+                if (el) el.textContent = count > 0 ? count + ' rep' + (count !== 1 ? 's' : '') : 'No reps yet';
+            });
+        });
+
+        // Restore state selection on load
+        if (selectedState) {
+            applyStateSelection(selectedState);
+        }
+
+        function selectState(state) {
+            selectedState = state;
+            localStorage.setItem('selectedState', state);
+            // Reset selected person when switching states
+            selected = null;
+            localStorage.removeItem('selectedPerson');
+            applyStateSelection(state);
+        }
+
+        function applyStateSelection(state) {
+            // Update state button styles
+            document.querySelectorAll('.state-btn').forEach(function(btn) {
+                btn.classList.toggle('selected', btn.dataset.state === state);
+            });
+
+            // Update header badge
+            var info = stateInfo[state];
+            var badge = document.getElementById('headerStateBadge');
+            badge.style.display = 'inline-flex';
+            badge.innerHTML = info.emoji + ' ' + info.label + ' (' + info.abbr + ')';
+
+            // Show stats + rep section
+            document.getElementById('statsSection').style.display = 'block';
+
+            // Detach old listeners
+            if (peopleListener) { db.ref(peopleListener).off(); }
+            if (logsListener)   { db.ref(logsListener).off(); }
+
+            var peoplePath = 'salespeople/' + state;
+            var logsPath   = 'callLogs';
+            peopleListener = peoplePath;
+            logsListener   = logsPath;
+
+            people = [];
+            logs = {};
+
+            db.ref(peoplePath).on('value', function(snapshot) {
+                var data = snapshot.val();
+                people = data ? Object.keys(data).map(function(k) { return { id: k, name: data[k].name }; }) : [];
+                if (!selected && people.length) {
+                    selected = people[0].id;
+                    localStorage.setItem('selectedPerson', selected);
+                }
+                renderPeople();
+                renderNavigation();
+                renderStats();
+            });
+
+            db.ref(logsPath).on('value', function(snapshot) {
+                logs = snapshot.val() || {};
+                renderStats();
+            });
+
+            // Wire up add rep form for this state
+            document.getElementById('addBtn').onclick = function() {
+                document.getElementById('addForm').style.display = 'block';
+                document.getElementById('nameInput').focus();
+            };
+            document.getElementById('cancelBtn').onclick = function() {
                 document.getElementById('addForm').style.display = 'none';
-            }
-        };
-        document.getElementById('nameInput').onkeypress = function(e) {
-            if (e.key === 'Enter') document.getElementById('saveBtn').click();
-        };
-
-        db.ref('salespeople').on('value', function(snapshot) {
-            var data = snapshot.val();
-            people = data ? Object.keys(data).map(function(k) { return { id: k, name: data[k].name }; }) : [];
-            if (!selected && people.length) {
-                selected = people[0].id;
-                localStorage.setItem('selectedPerson', selected);
-            }
-            renderPeople();
-            renderNavigation();
-            renderStats();
-        });
-
-        db.ref('callLogs').on('value', function(snapshot) {
-            logs = snapshot.val() || {};
-            renderStats();
-        });
+                document.getElementById('nameInput').value = '';
+            };
+            document.getElementById('saveBtn').onclick = function() {
+                var name = document.getElementById('nameInput').value.trim();
+                if (name) {
+                    db.ref('salespeople/' + state).push().set({ name: name });
+                    document.getElementById('nameInput').value = '';
+                    document.getElementById('addForm').style.display = 'none';
+                }
+            };
+            document.getElementById('nameInput').onkeypress = function(e) {
+                if (e.key === 'Enter') document.getElementById('saveBtn').click();
+            };
+        }
 
         function renderStats() {
+            if (!selectedState) return;
             var today = new Date();
             var todayKey = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
             var monthKey = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0');
             var totalLeads = 0, totalRevenue = 0, totalCourts = 0, monthRev = 0;
 
             people.forEach(function(p) {
-                var dayData = logs[p.id + '_' + todayKey];
+                // Today's stats: key = state_personId_YYYY-MM-DD
+                var dayData = logs[selectedState + '_' + p.id + '_' + todayKey];
                 if (dayData) {
                     var arr = Object.values(dayData);
                     totalLeads += arr.length;
@@ -418,8 +573,9 @@
                         }
                     });
                 }
+                // Month revenue: scan all keys for this state + person + month
                 Object.keys(logs).forEach(function(key) {
-                    if (key.startsWith(p.id + '_') && key.indexOf(monthKey) > -1) {
+                    if (key.startsWith(selectedState + '_' + p.id + '_') && key.indexOf(monthKey) > -1) {
                         var mData = logs[key];
                         if (mData) {
                             Object.values(mData).forEach(function(c) {
@@ -433,7 +589,7 @@
             document.getElementById('todayCalls').textContent = totalLeads;
             document.getElementById('todayRevenue').textContent = '$' + totalRevenue.toLocaleString();
             document.getElementById('todayCourts').textContent = totalCourts;
-            document.getElementById('monthRevenue').textContent = '$' + Math.round(monthRev/1000) + 'k';
+            document.getElementById('monthRevenue').textContent = '$' + Math.round(monthRev / 1000) + 'k';
         }
 
         function renderPeople() {
@@ -464,29 +620,36 @@
                     renderNavigation();
                 };
             });
-            document.querySelectorAll('.person-container').forEach(function(c) {
-                var del = c.querySelector('.delete-btn');
-                c.onmouseenter = function() { del.style.opacity = '1'; };
-                c.onmouseleave = function() { del.style.opacity = '0'; };
-                del.onclick = function(e) {
+
+            document.querySelectorAll('.person-container').forEach(function(container) {
+                var deleteBtn = container.querySelector('.delete-btn');
+                container.onmouseenter = function() { deleteBtn.style.opacity = '1'; };
+                container.onmouseleave = function() { deleteBtn.style.opacity = '0'; };
+                deleteBtn.onclick = function(e) {
                     e.stopPropagation();
-                    var p = people.find(function(x) { return x.id === del.dataset.id; });
-                    if (confirm('Remove ' + p.name + ' from the team?')) {
-                        db.ref('salespeople/' + del.dataset.id).remove();
-                        if (selected === del.dataset.id) { selected = null; localStorage.removeItem('selectedPerson'); }
+                    var pid = deleteBtn.dataset.id;
+                    var person = people.find(function(p) { return p.id === pid; });
+                    if (confirm('Remove ' + (person ? person.name : 'this rep') + ' from ' + stateInfo[selectedState].label + '?')) {
+                        db.ref('salespeople/' + selectedState + '/' + pid).remove();
+                        if (selected === pid) {
+                            selected = null;
+                            localStorage.removeItem('selectedPerson');
+                        }
                     }
                 };
             });
         }
 
         function renderNavigation() {
-            if (!selected) {
-                document.getElementById('navigation').style.display = 'none';
-                document.getElementById('selectMsg').style.display = people.length > 0 ? 'block' : 'none';
-                return;
+            var nav = document.getElementById('navigation');
+            var msg = document.getElementById('selectMsg');
+            if (selected) {
+                nav.style.display = 'block';
+                msg.style.display = 'none';
+            } else {
+                nav.style.display = 'none';
+                msg.style.display = 'block';
             }
-            document.getElementById('navigation').style.display = 'block';
-            document.getElementById('selectMsg').style.display = 'none';
         }
     </script>
 </body>
