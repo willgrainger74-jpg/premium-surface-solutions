@@ -746,13 +746,16 @@ function getWeeksInMonth(date) {
 function calcStats(logs) {
   var t={leads:0,sold:0,revenue:0,estimates:0,reviews:0,siteVisits:0,referrals:0,moneyOwed:0,
          inPersonLeads:0,inPersonSold:0,inPersonRevenue:0,
-         phoneLeads:0,phoneSold:0,phoneRevenue:0};
+         phoneLeads:0,phoneSold:0,phoneRevenue:0,
+         contractorLeads:0,contractorSold:0,contractorRevenue:0};
   logs.forEach(function(c){
     t.leads++;
     var isPhone = c.saleType === 'phone';
-    var isInPerson = !isPhone; // default to in-person if not set
+    var isInPerson = !isPhone;
+    var isCont = c.isContractor === true;
     if(isInPerson){t.inPersonLeads++;if(c.jobSold){t.inPersonSold++;t.inPersonRevenue+=parseFloat(c.amountSold)||0;}}
     else{t.phoneLeads++;if(c.jobSold){t.phoneSold++;t.phoneRevenue+=parseFloat(c.amountSold)||0;}}
+    if(isCont){t.contractorLeads++;if(c.jobSold){t.contractorSold++;t.contractorRevenue+=parseFloat(c.amountSold)||0;}}
     if(c.jobSold){t.sold++;t.revenue+=parseFloat(c.amountSold)||0;t.moneyOwed+=parseFloat(c.moneyOwed)||0;}
     if(c.leftEstimate)t.estimates++;
     if(c.reviewCompleted)t.reviews++;
@@ -762,6 +765,7 @@ function calcStats(logs) {
   t.closeRate = t.leads>0 ? Math.round(t.sold/t.leads*100) : 0;
   t.inPersonCloseRate = t.inPersonLeads>0 ? Math.round(t.inPersonSold/t.inPersonLeads*100) : 0;
   t.phoneCloseRate = t.phoneLeads>0 ? Math.round(t.phoneSold/t.phoneLeads*100) : 0;
+  t.contractorCloseRate = t.contractorLeads>0 ? Math.round(t.contractorSold/t.contractorLeads*100) : 0;
   return t;
 }
 function fmt$(n){return'$'+(Math.round(n)||0).toLocaleString();}
@@ -807,15 +811,17 @@ function renderDashboard() {
   var teamGoal = teamGoals[mk] || 0;
 
   // Sale type breakdown for the month
-  var typeStats = {inPersonLeads:0,inPersonSold:0,inPersonRevenue:0,phoneLeads:0,phoneSold:0,phoneRevenue:0};
+  var typeStats = {inPersonLeads:0,inPersonSold:0,inPersonRevenue:0,phoneLeads:0,phoneSold:0,phoneRevenue:0,contractorLeads:0,contractorSold:0,contractorRevenue:0};
   repList.forEach(function(p) {
     var ml = getLogsForRep(p.id, monthDates);
     var s = calcStats(ml);
     typeStats.inPersonLeads+=s.inPersonLeads; typeStats.inPersonSold+=s.inPersonSold; typeStats.inPersonRevenue+=s.inPersonRevenue;
     typeStats.phoneLeads+=s.phoneLeads; typeStats.phoneSold+=s.phoneSold; typeStats.phoneRevenue+=s.phoneRevenue;
+    typeStats.contractorLeads+=s.contractorLeads; typeStats.contractorSold+=s.contractorSold; typeStats.contractorRevenue+=s.contractorRevenue;
   });
   typeStats.inPersonCloseRate = typeStats.inPersonLeads>0 ? Math.round(typeStats.inPersonSold/typeStats.inPersonLeads*100) : 0;
   typeStats.phoneCloseRate = typeStats.phoneLeads>0 ? Math.round(typeStats.phoneSold/typeStats.phoneLeads*100) : 0;
+  typeStats.contractorCloseRate = typeStats.contractorLeads>0 ? Math.round(typeStats.contractorSold/typeStats.contractorLeads*100) : 0;
 
   var weeks = getWeeksInMonth(dashDate);
   var weekCards = weeks.map(function(w,i) {
@@ -875,7 +881,7 @@ function renderDashboard() {
   '</div>'+
   '<div class="card" style="margin-bottom:1.5rem;">'+
     '<div class="section-title gold-bar" style="margin-bottom:1rem;">📊 Close Rate by Sale Type — '+monthLabel+'</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">'+
       '<div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:1.2rem;text-align:center;">'+
         '<div style="font-size:1.8rem;margin-bottom:0.3rem;">🤝</div>'+
         '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:800;letter-spacing:0.05em;color:var(--green);margin-bottom:0.6rem;">IN PERSON</div>'+
@@ -897,6 +903,17 @@ function renderDashboard() {
           '<div><div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Sold</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.3rem;font-weight:800;color:var(--blue);">'+typeStats.phoneSold+'</div></div>'+
         '</div>'+
         '<div style="margin-top:0.5rem;"><div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Revenue</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.2rem;font-weight:800;color:var(--gold);">'+fmt$(typeStats.phoneRevenue)+'</div></div>'+
+      '</div>'+
+      '<div style="background:rgba(212,168,67,0.06);border:1px solid rgba(212,168,67,0.2);border-radius:12px;padding:1.2rem;text-align:center;">'+
+        '<div style="font-size:1.8rem;margin-bottom:0.3rem;">🔨</div>'+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1rem;font-weight:800;letter-spacing:0.05em;color:var(--gold);margin-bottom:0.6rem;">CONTRACTOR</div>'+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:2.8rem;font-weight:900;color:var(--gold);line-height:1;">'+typeStats.contractorCloseRate+'%</div>'+
+        '<div style="font-size:0.75rem;color:var(--muted);margin-top:0.3rem;">close rate</div>'+
+        '<div style="margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid rgba(212,168,67,0.15);display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">'+
+          '<div><div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Leads</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.3rem;font-weight:800;">'+typeStats.contractorLeads+'</div></div>'+
+          '<div><div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Sold</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.3rem;font-weight:800;color:var(--gold);">'+typeStats.contractorSold+'</div></div>'+
+        '</div>'+
+        '<div style="margin-top:0.5rem;"><div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Revenue</div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.2rem;font-weight:800;color:var(--gold);">'+fmt$(typeStats.contractorRevenue)+'</div></div>'+
       '</div>'+
     '</div>'+
   '</div>'+
@@ -1044,16 +1061,25 @@ function renderLeadCard(lead, key, repId) {
 
   var saleType = lead.saleType || 'inperson';
   var isPhone = saleType === 'phone';
-  var borderColor = isPhone ? 'var(--blue)' : 'var(--green)';
+  var isContractor = lead.isContractor === true;
 
-  return '<div class="card" style="margin-bottom:0.8rem;border-top:3px solid '+(isPhone?'var(--blue)':'var(--green)')+';">'+
-    '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;padding:0.5rem;background:'+(isPhone?'rgba(59,130,246,0.05)':'rgba(34,197,94,0.05)')+';border-radius:8px;border:1px solid '+(isPhone?'rgba(59,130,246,0.2)':'rgba(34,197,94,0.2)')+';">'+
+  return '<div class="card" style="margin-bottom:0.8rem;border-top:3px solid '+(isPhone?'var(--blue)':'var(--green)')+'">'+
+    '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;padding:0.5rem;background:'+(isPhone?'rgba(59,130,246,0.05)':'rgba(34,197,94,0.05)')+';border-radius:8px;border:1px solid '+(isPhone?'rgba(59,130,246,0.2)':'rgba(34,197,94,0.2)')+'">'+
       '<div style="font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);flex-shrink:0;">Sale Type:</div>'+
-      '<button onclick="updateLead(\''+key+'\''+',\''+lead.id+'\''+',\'saleType\',\'inperson\')" style="flex:1;padding:0.45rem 0.3rem;border-radius:7px;border:2px solid '+(!isPhone?'var(--green)':'var(--border)')+';background:'+(!isPhone?'rgba(34,197,94,0.15)':'transparent')+';color:'+(!isPhone?'var(--green)':'var(--muted)')+';font-family:\'Barlow Condensed\',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;transition:all 0.15s;">'+
+      '<button onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'saleType\',\'inperson\')" style="flex:1;padding:0.45rem 0.3rem;border-radius:7px;border:2px solid '+(!isPhone?'var(--green)':'var(--border)')+';background:'+(!isPhone?'rgba(34,197,94,0.15)':'transparent')+';color:'+(!isPhone?'var(--green)':'var(--muted)')+';font-family:\'Barlow Condensed\',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;transition:all 0.15s;">'+
         '🤝 IN PERSON'+
       '</button>'+
-      '<button onclick="updateLead(\''+key+'\''+',\''+lead.id+'\''+',\'saleType\',\'phone\')" style="flex:1;padding:0.45rem 0.3rem;border-radius:7px;border:2px solid '+(isPhone?'var(--blue)':'var(--border)')+';background:'+(isPhone?'rgba(59,130,246,0.15)':'transparent')+';color:'+(isPhone?'var(--blue)':'var(--muted)')+';font-family:\'Barlow Condensed\',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;transition:all 0.15s;">'+
+      '<button onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'saleType\',\'phone\')" style="flex:1;padding:0.45rem 0.3rem;border-radius:7px;border:2px solid '+(isPhone?'var(--blue)':'var(--border)')+';background:'+(isPhone?'rgba(59,130,246,0.15)':'transparent')+';color:'+(isPhone?'var(--blue)':'var(--muted)')+';font-family:\'Barlow Condensed\',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;transition:all 0.15s;">'+
         '📞 PHONE'+
+      '</button>'+
+    '</div>'+
+    '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem;padding:0.4rem 0.5rem;border-radius:8px;border:1px solid '+(isContractor?'rgba(212,168,67,0.35)':'var(--border)')+';background:'+(isContractor?'rgba(212,168,67,0.08)':'transparent')+'">'+
+      '<div style="font-size:0.62rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);flex-shrink:0;">Lead Type:</div>'+
+      '<button onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'isContractor\',false)" style="flex:1;padding:0.4rem 0.3rem;border-radius:7px;border:2px solid '+(!isContractor?'var(--muted)':'var(--border)')+';background:'+(!isContractor?'rgba(122,138,170,0.15)':'transparent')+';color:'+(!isContractor?'var(--text)':'var(--muted)')+';font-family:\'Barlow Condensed\',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;transition:all 0.15s;">'+
+        '🏠 HOMEOWNER'+
+      '</button>'+
+      '<button onclick="updateLead(\''+key+'\',\''+lead.id+'\',\'isContractor\',true)" style="flex:1;padding:0.4rem 0.3rem;border-radius:7px;border:2px solid '+(isContractor?'var(--gold)':'var(--border)')+';background:'+(isContractor?'rgba(212,168,67,0.15)':'transparent')+';color:'+(isContractor?'var(--gold)':'var(--muted)')+';font-family:\'Barlow Condensed\',sans-serif;font-size:0.88rem;font-weight:800;cursor:pointer;transition:all 0.15s;">'+
+        '🔨 CONTRACTOR'+
       '</button>'+
     '</div>'+
     '<div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.8rem;">'+
@@ -1159,6 +1185,7 @@ function addLead(key) {
   db.ref('callLogs/'+key).push({
     customerName:'', customerPhone:'', customerAddress:'', jobNumber:'',
     saleType:'inperson',
+    isContractor:false,
     leadSource:'', courtPickleball:false, courtTennis:false, courtBasketball:false,
     courtPadel:false, courtMulti:false, projectConcrete:false, projectCoatings:false,
     projectLandscape:false, jobSold:false, amountSold:0, amountCollected:0, moneyOwed:0,
