@@ -313,6 +313,9 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
       <a class="sidebar-link" id="moneyOwedLink" data-page="moneyowed" onclick="navigate('moneyowed')">
         <span class="icon">💵</span> Money Owed
       </a>
+      <a class="sidebar-link" id="allStatesLink" data-page="allstates" onclick="navigate('allstates')" style="display:none;">
+        <span class="icon">🌎</span> All States
+      </a>
     </div>
 
     <!-- Admin nav (only shown for admin role) -->
@@ -567,6 +570,12 @@ function applyRoleUI() {
     document.getElementById('adminNavSection').style.display = 'block';
   }
 
+  // All States link for admin/manager
+  if (role === 'admin' || role === 'manager') {
+    var asl = document.getElementById('allStatesLink');
+    if (asl) asl.style.display = 'flex';
+  }
+
   // Tech: hide state selector and rep selector (locked)
   if (role === 'tech') {
     document.getElementById('stateSection').style.display = 'none';
@@ -632,6 +641,9 @@ function loadAllLogs() {
 }
 
 function loadAllLogins() {
+  if (currentUser.role === 'admin' || currentUser.role === 'manager') {
+    loadAllStatesData();
+  }
   if (currentUser.role !== 'admin') return;
   db.ref('logins').on('value', function(s) {
     allLogins = s.val() || {};
@@ -681,13 +693,13 @@ function navigate(page) {
   var titles = {
     dashboard:'DASHBOARD', logcalls:'LOG LEADS', myreport:'MY REPORT',
     mygoals:'MY GOALS', teamreport:'TEAM REPORT', moneyowed:'MONEY OWED',
-    admin:'ADMIN PANEL'
+    admin:'ADMIN PANEL', allstates:'ALL STATES OVERVIEW'
   };
   var subs = {
     dashboard:'Premium Surface Solutions', logcalls:'Log daily leads & track sales',
     myreport:'Personal performance metrics', mygoals:'Set & track your goals',
     teamreport:'Leaderboard & team metrics', moneyowed:'Outstanding payments & estimates',
-    admin:'Manage logins, reps & settings'
+    admin:'Manage logins, reps & settings', allstates:'Utah · Idaho · Colorado — side by side'
   };
   document.getElementById('topbarTitle').textContent = titles[page] || page.toUpperCase();
   document.getElementById('topbarSub').textContent = subs[page] || '';
@@ -703,7 +715,55 @@ function renderCurrentPage() {
     case 'teamreport': renderTeamReport(); break;
     case 'moneyowed':  renderMoneyOwed(); break;
     case 'admin':      renderAdmin(); break;
+    case 'allstates':  renderAllStates(); break;
   }
+}
+
+// ===== ALL STATES DATA =====
+var allStatesData = {}; // {utah:{people:[], goals:{}}, idaho:{...}, colorado:{...}}
+var _allStatesPeopleRefs = {};
+
+function loadAllStatesData() {
+  ['utah','idaho','colorado'].forEach(function(st) {
+    allStatesData[st] = {people:[], goals:{}};
+    if (_allStatesPeopleRefs[st]) db.ref('salespeople/'+st).off();
+    db.ref('salespeople/'+st).on('value', function(s) {
+      var d = s.val() || {};
+      allStatesData[st].people = Object.keys(d).map(function(k) {
+        return {id:k, name:d[k].name, archived:d[k].archived||false};
+      }).filter(function(p){return !p.archived;});
+      if (currentPage === 'allstates') renderAllStates();
+    });
+    db.ref('teamMonthlyGoals/'+st).on('value', function(s) {
+      allStatesData[st].goals = s.val() || {};
+      if (currentPage === 'allstates') renderAllStates();
+    });
+  });
+}
+
+function getLogsForRepInState(state, pid, dates) {
+  var out = [];
+  dates.forEach(function(d) {
+    var key = state+'_'+pid+'_'+dk(d);
+    var l = allLogs[key];
+    if (l) Object.values(l).forEach(function(log){out.push(log);});
+  });
+  return out;
+}
+
+function calcStateStats(state, dates) {
+  var stPeople = allStatesData[state] ? allStatesData[state].people : [];
+  var allStateLogs = [];
+  stPeople.forEach(function(p) {
+    getLogsForRepInState(state, p.id, dates).forEach(function(l){allStateLogs.push(l);});
+  });
+  var s = calcStats(allStateLogs);
+  // top reps
+  s.topReps = stPeople.map(function(p) {
+    return {p:p, s:calcStats(getLogsForRepInState(state, p.id, dates))};
+  }).sort(function(a,b){return b.s.revenue-a.s.revenue;}).slice(0,5);
+  s.repCount = stPeople.length;
+  return s;
 }
 
 // ===== HELPERS =====
@@ -933,6 +993,191 @@ function renderDashboard() {
     (canAddMember?'<button class="btn-add" onclick="openAddMember()">+ Add</button>':'')+
     '</div><div class="team-grid">'+teamCards+'</div></div>'+
   '</div>';
+}
+
+// ===== ALL STATES OVERVIEW =====
+var allStatesDashDate = new Date();
+
+function renderAllStates() {
+  var today = new Date();
+  var monthDates = getMonthDates(allStatesDashDate);
+  var mk = allStatesDashDate.getFullYear()+'-'+String(allStatesDashDate.getMonth()+1).padStart(2,'0');
+  var monthLabel = allStatesDashDate.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+
+  var states = ['utah','idaho','colorado'];
+  var stateStats = {};
+  states.forEach(function(st) { stateStats[st] = calcStateStats(st, monthDates); });
+
+  // Combined totals
+  var combined = {leads:0,sold:0,revenue:0,inPersonLeads:0,inPersonSold:0,phoneLeads:0,phoneSold:0,contractorLeads:0,contractorSold:0};
+  states.forEach(function(st) {
+    var s = stateStats[st];
+    combined.leads+=s.leads; combined.sold+=s.sold; combined.revenue+=s.revenue;
+    combined.inPersonLeads+=s.inPersonLeads; combined.inPersonSold+=s.inPersonSold;
+    combined.phoneLeads+=s.phoneLeads; combined.phoneSold+=s.phoneSold;
+    combined.contractorLeads+=s.contractorLeads; combined.contractorSold+=s.contractorSold;
+  });
+  combined.closeRate = combined.leads>0?Math.round(combined.sold/combined.leads*100):0;
+  combined.inPersonCloseRate = combined.inPersonLeads>0?Math.round(combined.inPersonSold/combined.inPersonLeads*100):0;
+  combined.phoneCloseRate = combined.phoneLeads>0?Math.round(combined.phoneSold/combined.phoneLeads*100):0;
+  combined.contractorCloseRate = combined.contractorLeads>0?Math.round(combined.contractorSold/combined.contractorLeads*100):0;
+
+  // Month nav
+  var prevM = new Date(allStatesDashDate); prevM.setMonth(prevM.getMonth()-1);
+  var nextM = new Date(allStatesDashDate); nextM.setMonth(nextM.getMonth()+1);
+  var isCurrentMonth = allStatesDashDate.getMonth()===today.getMonth() && allStatesDashDate.getFullYear()===today.getFullYear();
+
+  function stateCard(st) {
+    var s = stateStats[st];
+    var info = stateInfo[st];
+    var stGoal = (allStatesData[st]&&allStatesData[st].goals) ? (allStatesData[st].goals[mk]||0) : 0;
+    var goalPct = stGoal>0 ? Math.min(100,Math.round(s.revenue/stGoal*100)) : 0;
+
+    var lbRows = s.topReps.slice(0,5).map(function(rs,i) {
+      var medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
+      return '<div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">'+
+        '<div style="width:22px;text-align:center;font-size:0.8rem;font-weight:800;color:var(--muted);">'+(medal||(i+1))+'</div>'+
+        '<div style="width:28px;height:28px;border-radius:50%;background:'+avatarColor(rs.p.name)+';display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:white;flex-shrink:0;">'+avatarInitials(rs.p.name)+'</div>'+
+        '<div style="flex:1;min-width:0;"><div style="font-size:0.8rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+rs.p.name+'</div>'+
+        '<div style="font-size:0.68rem;color:var(--muted);">'+rs.s.sold+' sold · '+rs.s.closeRate+'% close</div></div>'+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.95rem;font-weight:800;color:var(--gold);">'+(rs.s.revenue>0?fmt$(rs.s.revenue):'—')+'</div>'+
+      '</div>';
+    }).join('');
+
+    return '<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.3rem;display:flex;flex-direction:column;gap:0.8rem;">'+
+      // Header
+      '<div style="display:flex;align-items:center;justify-content:space-between;">'+
+        '<div style="display:flex;align-items:center;gap:0.6rem;">'+
+          '<div style="font-size:1.8rem;">'+info.emoji+'</div>'+
+          '<div><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.4rem;font-weight:900;letter-spacing:0.05em;">'+info.label.toUpperCase()+'</div>'+
+          '<div style="font-size:0.68rem;color:var(--muted);">'+s.repCount+' active rep'+(s.repCount!==1?'s':'')+'</div></div>'+
+        '</div>'+
+        '<button onclick="selectState(\''+st+'\');navigate(\'dashboard\')" style="background:var(--card2);border:1px solid var(--border);color:var(--text);padding:0.3rem 0.7rem;border-radius:6px;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:\'Barlow\',sans-serif;">View →</button>'+
+      '</div>'+
+      // Revenue + close rate
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">'+
+        '<div style="background:var(--card2);border-radius:10px;padding:0.8rem;text-align:center;">'+
+          '<div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem;">Month Revenue</div>'+
+          '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.6rem;font-weight:900;color:var(--gold);">'+fmt$(s.revenue)+'</div>'+
+          '<div style="font-size:0.68rem;color:var(--muted);">'+s.sold+' jobs closed</div>'+
+        '</div>'+
+        '<div style="background:var(--card2);border-radius:10px;padding:0.8rem;text-align:center;">'+
+          '<div style="font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.2rem;">Close Rate</div>'+
+          '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.6rem;font-weight:900;color:var(--red);">'+s.closeRate+'%</div>'+
+          '<div style="font-size:0.68rem;color:var(--muted);">'+s.sold+'/'+s.leads+' leads</div>'+
+        '</div>'+
+      '</div>'+
+      // Goal progress
+      (stGoal>0 ?
+        '<div>'+
+          '<div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted);margin-bottom:0.3rem;">'+
+            '<span>Team Goal Progress</span><span>'+goalPct+'% · '+fmt$(s.revenue)+' / '+fmt$(stGoal)+'</span>'+
+          '</div>'+
+          '<div style="background:var(--card2);border-radius:4px;height:6px;overflow:hidden;">'+
+            '<div style="height:100%;width:'+goalPct+'%;background:var(--red);border-radius:4px;transition:width 0.5s;"></div>'+
+          '</div>'+
+        '</div>' : '') +
+      // Sale type breakdown
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.4rem;">'+
+        '<div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:8px;padding:0.5rem;text-align:center;">'+
+          '<div style="font-size:0.9rem;">🤝</div>'+
+          '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.1rem;font-weight:900;color:var(--green);">'+s.inPersonCloseRate+'%</div>'+
+          '<div style="font-size:0.6rem;color:var(--muted);">In Person</div>'+
+          '<div style="font-size:0.68rem;color:var(--muted);">'+s.inPersonSold+'/'+s.inPersonLeads+'</div>'+
+        '</div>'+
+        '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:8px;padding:0.5rem;text-align:center;">'+
+          '<div style="font-size:0.9rem;">📞</div>'+
+          '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.1rem;font-weight:900;color:var(--blue);">'+s.phoneCloseRate+'%</div>'+
+          '<div style="font-size:0.6rem;color:var(--muted);">Phone</div>'+
+          '<div style="font-size:0.68rem;color:var(--muted);">'+s.phoneSold+'/'+s.phoneLeads+'</div>'+
+        '</div>'+
+        '<div style="background:rgba(212,168,67,0.06);border:1px solid rgba(212,168,67,0.15);border-radius:8px;padding:0.5rem;text-align:center;">'+
+          '<div style="font-size:0.9rem;">🔨</div>'+
+          '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.1rem;font-weight:900;color:var(--gold);">'+s.contractorCloseRate+'%</div>'+
+          '<div style="font-size:0.6rem;color:var(--muted);">Contractor</div>'+
+          '<div style="font-size:0.68rem;color:var(--muted);">'+s.contractorSold+'/'+s.contractorLeads+'</div>'+
+        '</div>'+
+      '</div>'+
+      // Leaderboard
+      '<div>'+
+        '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Top Reps</div>'+
+        (lbRows||'<div style="font-size:0.8rem;color:var(--muted);text-align:center;padding:0.5rem;">No data yet</div>')+
+      '</div>'+
+    '</div>';
+  }
+
+  // Rank states by revenue
+  var ranked = states.slice().sort(function(a,b){return stateStats[b].revenue-stateStats[a].revenue;});
+  var rankBadge = {0:'🥇 #1',1:'🥈 #2',2:'🥉 #3'};
+
+  document.getElementById('content').innerHTML =
+  // Month nav
+  '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;">'+
+    '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:1.4rem;font-weight:900;">'+monthLabel+'</div>'+
+    '<div style="display:flex;gap:0.5rem;">'+
+      '<button onclick="allStatesPrevMonth()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:0.35rem 0.8rem;border-radius:7px;cursor:pointer;font-size:0.85rem;">‹ Prev</button>'+
+      (!isCurrentMonth?'<button onclick="allStatesNextMonth()" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:0.35rem 0.8rem;border-radius:7px;cursor:pointer;font-size:0.85rem;">Next ›</button>':'')+
+    '</div>'+
+  '</div>'+
+
+  // Combined totals banner
+  '<div style="background:linear-gradient(135deg,var(--navy-mid),var(--navy-light));border:1px solid var(--border);border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">'+
+    '<div style="font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem;">🌎 Company Total — All States Combined</div>'+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">'+
+      '<div style="text-align:center;">'+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:2rem;font-weight:900;color:var(--gold);">'+fmt$(combined.revenue)+'</div>'+
+        '<div style="font-size:0.68rem;color:var(--muted);">Total Revenue</div>'+
+      '</div>'+
+      '<div style="text-align:center;">'+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:2rem;font-weight:900;color:var(--green);">'+combined.sold+'</div>'+
+        '<div style="font-size:0.68rem;color:var(--muted);">Jobs Closed</div>'+
+      '</div>'+
+      '<div style="text-align:center;">'+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:2rem;font-weight:900;color:var(--blue);">'+combined.leads+'</div>'+
+        '<div style="font-size:0.68rem;color:var(--muted);">Total Leads</div>'+
+      '</div>'+
+      '<div style="text-align:center;">'+
+        '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:2rem;font-weight:900;color:var(--red);">'+combined.closeRate+'%</div>'+
+        '<div style="font-size:0.68rem;color:var(--muted);">Avg Close Rate</div>'+
+      '</div>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid rgba(255,255,255,0.07);">'+
+      '<div style="text-align:center;"><span style="font-size:0.8rem;">🤝</span> <span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;color:var(--green);">'+combined.inPersonCloseRate+'%</span> <span style="font-size:0.65rem;color:var(--muted);">In Person ('+combined.inPersonSold+'/'+combined.inPersonLeads+')</span></div>'+
+      '<div style="text-align:center;"><span style="font-size:0.8rem;">📞</span> <span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;color:var(--blue);">'+combined.phoneCloseRate+'%</span> <span style="font-size:0.65rem;color:var(--muted);">Phone ('+combined.phoneSold+'/'+combined.phoneLeads+')</span></div>'+
+      '<div style="text-align:center;"><span style="font-size:0.8rem;">🔨</span> <span style="font-family:\'Barlow Condensed\',sans-serif;font-weight:800;color:var(--gold);">'+combined.contractorCloseRate+'%</span> <span style="font-size:0.65rem;color:var(--muted);">Contractor ('+combined.contractorSold+'/'+combined.contractorLeads+')</span></div>'+
+    '</div>'+
+  '</div>'+
+
+  // Ranking banner
+  '<div style="display:flex;gap:0.6rem;margin-bottom:1.5rem;">'+
+    ranked.map(function(st,i){
+      var s=stateStats[st], info=stateInfo[st];
+      return '<div style="flex:1;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:0.6rem 0.8rem;display:flex;align-items:center;gap:0.5rem;">'+
+        '<div style="font-size:1.2rem;">'+info.emoji+'</div>'+
+        '<div style="flex:1;"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:0.9rem;font-weight:800;">'+info.label+'</div>'+
+        '<div style="font-size:0.68rem;color:var(--gold);">'+fmt$(s.revenue)+'</div></div>'+
+        '<div style="font-size:0.75rem;font-weight:800;color:var(--muted);">'+rankBadge[i]+'</div>'+
+      '</div>';
+    }).join('')+
+  '</div>'+
+
+  // 3-column state cards
+  '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1.5rem;">'+
+    stateCard('utah')+
+    stateCard('idaho')+
+    stateCard('colorado')+
+  '</div>';
+}
+
+function allStatesPrevMonth() {
+  allStatesDashDate = new Date(allStatesDashDate);
+  allStatesDashDate.setMonth(allStatesDashDate.getMonth()-1);
+  renderAllStates();
+}
+function allStatesNextMonth() {
+  allStatesDashDate = new Date(allStatesDashDate);
+  allStatesDashDate.setMonth(allStatesDashDate.getMonth()+1);
+  renderAllStates();
 }
 
 // ===== ADD MEMBER =====
