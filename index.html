@@ -248,6 +248,134 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
 .tab-btn.active{color:var(--text);border-bottom-color:var(--gold);}
 .info-banner{background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:10px;padding:0.8rem 1rem;font-size:0.82rem;color:#93c5fd;margin-bottom:1.2rem;}
 .warn-banner{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:10px;padding:0.8rem 1rem;font-size:0.82rem;color:#fca5a5;margin-bottom:1.2rem;}
+
+/* ===== MOBILE BOTTOM NAV ===== */
+#bottomNav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--card);border-top:1px solid var(--border);
+  z-index:200;padding-bottom:env(safe-area-inset-bottom,0);
+}
+.bnav-inner{display:flex;align-items:stretch;}
+.bnav-btn{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:0.5rem 0.2rem;background:transparent;border:none;cursor:pointer;
+  color:var(--muted);font-size:0.58rem;font-weight:700;letter-spacing:0.05em;
+  text-transform:uppercase;font-family:'Barlow',sans-serif;gap:2px;
+  min-height:56px;transition:color 0.15s;
+}
+.bnav-btn .bicon{font-size:1.3rem;line-height:1;}
+.bnav-btn.active{color:var(--red);}
+.bnav-btn.gold.active{color:var(--gold);}
+
+/* Mobile drawer overlay */
+#drawerOverlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;
+  backdrop-filter:blur(3px);
+}
+#drawer{
+  position:fixed;left:0;top:0;bottom:0;width:280px;max-width:90vw;
+  background:var(--card);border-right:1px solid var(--border);
+  z-index:400;overflow-y:auto;transform:translateX(-100%);
+  transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+#drawer.open{transform:translateX(0);}
+.drawer-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem;border-bottom:1px solid var(--border);
+}
+.drawer-close{background:transparent;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;padding:0.2rem 0.5rem;}
+
+/* Mobile topbar hamburger */
+#menuBtn{
+  display:none;background:transparent;border:1px solid var(--border);
+  color:var(--text);padding:0.4rem 0.6rem;border-radius:8px;cursor:pointer;
+  font-size:1.1rem;line-height:1;
+}
+
+/* ===== RESPONSIVE BREAKPOINTS ===== */
+@media(max-width:768px){
+  /* Hide desktop sidebar */
+  #sidebar{display:none !important;}
+
+  /* Show mobile elements */
+  #menuBtn{display:flex;align-items:center;justify-content:center;}
+  #bottomNav{display:block;}
+
+  /* Main content: no left margin, add bottom padding for nav */
+  #main{margin-left:0 !important;padding-bottom:64px;}
+  #content{padding:0.9rem;}
+
+  /* Topbar: compact */
+  #topbar{padding:0.55rem 0.9rem;}
+  .topbar-title{font-size:1.1rem;}
+  .topbar-sub{font-size:0.65rem;}
+  .topbar-date{display:none;}
+  .state-badge{font-size:0.72rem;padding:0.2rem 0.5rem;}
+
+  /* Stat grid: 2 columns on mobile */
+  .stat-grid{grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;}
+  .stat-value{font-size:1.6rem;}
+
+  /* KPI grid: 2 columns */
+  .kpi-grid{grid-template-columns:1fr 1fr;gap:0.6rem;}
+
+  /* Week grid: horizontal scroll */
+  .week-grid{
+    display:flex;overflow-x:auto;gap:0.6rem;padding-bottom:0.5rem;
+    scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+    margin-bottom:1rem;
+  }
+  .week-card{min-width:110px;flex-shrink:0;scroll-snap-align:start;}
+
+  /* Quick grid: 2 columns, smaller */
+  .quick-grid{grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;}
+  .quick-card{padding:0.8rem;}
+  .quick-icon{font-size:1.1rem;}
+  .quick-title{font-size:0.88rem;}
+  .quick-sub{font-size:0.65rem;}
+
+  /* Cards: slightly less padding */
+  .card{padding:0.9rem;}
+
+  /* Team grid: 2 columns */
+  .team-grid{grid-template-columns:repeat(2,1fr);}
+
+  /* Buttons: larger tap targets */
+  .btn-add,.btn-gold,.btn-ghost,.btn-danger{padding:0.6rem 1rem;font-size:0.88rem;}
+
+  /* Modal: full width on mobile */
+  .modal-box{width:100%;max-width:100%;border-radius:16px 16px 0 0;position:fixed;bottom:0;left:0;right:0;max-height:90vh;}
+  .modal-overlay{align-items:flex-end;}
+
+  /* Tab bar: scrollable */
+  .tab-bar{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;gap:0;}
+  .tab-btn{white-space:nowrap;padding:0.6rem 0.8rem;font-size:0.85rem;}
+
+  /* Admin table: hide on mobile, show card view instead */
+  .admin-table{font-size:0.78rem;}
+  .admin-table th,.admin-table td{padding:0.4rem 0.5rem;}
+
+  /* All states: single column */
+  div[style*="grid-template-columns:1fr 1fr 1fr"]{
+    grid-template-columns:1fr !important;
+  }
+  div[style*="grid-template-columns:repeat(4,1fr)"]{
+    grid-template-columns:1fr 1fr !important;
+  }
+  div[style*="grid-template-columns:repeat(3,1fr)"]{
+    grid-template-columns:1fr 1fr !important;
+  }
+
+  /* Login box: full width */
+  .login-box{width:95vw;padding:2rem 1.2rem;}
+}
+
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:1fr 1fr;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  #content{padding:0.7rem;}
+}
 </style>
 </head>
 <body>
@@ -335,9 +463,12 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
   <!-- MAIN -->
   <div id="main">
     <div id="topbar">
-      <div>
-        <div class="topbar-title" id="topbarTitle">DASHBOARD</div>
-        <div class="topbar-sub" id="topbarSub">Premium Surface Solutions</div>
+      <div style="display:flex;align-items:center;gap:0.7rem;">
+        <button id="menuBtn" onclick="openDrawer()" aria-label="Menu">☰</button>
+        <div>
+          <div class="topbar-title" id="topbarTitle">DASHBOARD</div>
+          <div class="topbar-sub" id="topbarSub">Premium Surface Solutions</div>
+        </div>
       </div>
       <div class="topbar-right">
         <span class="state-badge" id="stateBadge">🏔️ Utah</span>
@@ -345,6 +476,73 @@ h1,h2,h3,h4,h5{font-family:'Barlow Condensed',sans-serif;}
       </div>
     </div>
     <div id="content"></div>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div id="bottomNav">
+  <div class="bnav-inner">
+    <button class="bnav-btn active" id="bn-dashboard" onclick="navigate('dashboard')">
+      <span class="bicon">📊</span>Home
+    </button>
+    <button class="bnav-btn" id="bn-logcalls" onclick="navigate('logcalls')">
+      <span class="bicon">📋</span>Leads
+    </button>
+    <button class="bnav-btn" id="bn-myreport" onclick="navigate('myreport')">
+      <span class="bicon">📈</span>My Stats
+    </button>
+    <button class="bnav-btn" id="bn-teamreport" onclick="navigate('teamreport')">
+      <span class="bicon">👥</span>Team
+    </button>
+    <button class="bnav-btn gold" id="bn-more" onclick="openDrawer()">
+      <span class="bicon">⋯</span>More
+    </button>
+  </div>
+</div>
+
+<!-- MOBILE DRAWER OVERLAY -->
+<div id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- MOBILE DRAWER -->
+<div id="drawer">
+  <div class="drawer-header">
+    <img src="" id="drawerLogo" style="height:36px;display:none;" />
+    <div style="font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:900;">PSS Tracker</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+
+  <!-- Role badge in drawer -->
+  <div style="padding:0.6rem 1rem;border-bottom:1px solid var(--border);">
+    <div id="drawerRoleBadge"></div>
+    <div id="drawerLoggedInAs" style="font-size:0.7rem;color:var(--muted);margin-top:0.3rem;"></div>
+  </div>
+
+  <!-- State selector -->
+  <div id="drawerStateSection" style="padding:0.8rem 1rem;border-bottom:1px solid var(--border);">
+    <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Location</div>
+    <button class="state-btn" data-state="utah" onclick="selectState('utah');closeDrawer()">🏔️ Utah</button>
+    <button class="state-btn" data-state="idaho" onclick="selectState('idaho');closeDrawer()">🥔 Idaho</button>
+    <button class="state-btn" data-state="colorado" onclick="selectState('colorado');closeDrawer()">⛰️ Colorado</button>
+  </div>
+
+  <!-- Rep selector -->
+  <div id="drawerRepSection" style="padding:0.8rem 1rem;border-bottom:1px solid var(--border);">
+    <div style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;">Active Rep</div>
+    <select id="repSelectDrawer" onchange="selectRep(this.value);closeDrawer()" style="width:100%;background:var(--card2);border:1px solid var(--border);color:var(--text);padding:0.5rem 0.7rem;border-radius:8px;font-size:0.9rem;font-family:'Barlow',sans-serif;outline:none;">
+      <option value="">— Select Rep —</option>
+    </select>
+  </div>
+
+  <!-- Extra nav links -->
+  <div style="padding:0.5rem 0;">
+    <a class="sidebar-link" data-page="mygoals" onclick="navigate('mygoals');closeDrawer()"><span class="icon">🎯</span> My Goals</a>
+    <a class="sidebar-link" id="drawerMoneyOwed" data-page="moneyowed" onclick="navigate('moneyowed');closeDrawer()"><span class="icon">💵</span> Money Owed</a>
+    <a class="sidebar-link" id="drawerAllStates" data-page="allstates" onclick="navigate('allstates');closeDrawer()" style="display:none;"><span class="icon">🌎</span> All States</a>
+    <a class="sidebar-link" id="drawerAdmin" data-page="admin" onclick="navigate('admin');closeDrawer()" style="display:none;"><span class="icon">🔐</span> Admin Panel</a>
+  </div>
+
+  <div style="padding:1rem;margin-top:auto;border-top:1px solid var(--border);">
+    <button class="logout-btn" onclick="doLogout()">Log Out</button>
   </div>
 </div>
 
@@ -583,7 +781,32 @@ function applyRoleUI() {
     // Also hide team report and money owed from sidebar for techs
     document.getElementById('teamReportLink').style.display = 'none';
     document.getElementById('moneyOwedLink').style.display = 'none';
+    // Hide in drawer too
+    var dm = document.getElementById('drawerMoneyOwed');
+    if (dm) dm.style.display = 'none';
+    var ds = document.getElementById('drawerStateSection');
+    if (ds) ds.style.display = 'none';
+    var dr = document.getElementById('drawerRepSection');
+    if (dr) dr.style.display = 'none';
+    // Hide team report bottom nav button
+    var btn = document.getElementById('bn-teamreport');
+    if (btn) btn.style.display = 'none';
   }
+  // Show admin in drawer
+  if (role === 'admin') {
+    var da = document.getElementById('drawerAdmin');
+    if (da) da.style.display = 'flex';
+  }
+  // Show all states in drawer for admin/manager
+  if (role === 'admin' || role === 'manager') {
+    var das = document.getElementById('drawerAllStates');
+    if (das) das.style.display = 'flex';
+  }
+  // Sync drawer role badge and name
+  var drb = document.getElementById('drawerRoleBadge');
+  if (drb) drb.innerHTML = document.getElementById('roleBadgeWrap').innerHTML;
+  var dla = document.getElementById('drawerLoggedInAs');
+  if (dla) dla.textContent = document.getElementById('loggedInAs').textContent;
 }
 
 function updateTopbarDate() {
@@ -668,6 +891,12 @@ function renderRepSelect() {
     if (p.id === currentRep) opt.selected = true;
     sel.appendChild(opt);
   });
+  // Sync drawer select
+  var drawerSel = document.getElementById('repSelectDrawer');
+  if (drawerSel) {
+    drawerSel.innerHTML = sel.innerHTML;
+    drawerSel.value = currentRep || '';
+  }
 }
 
 function selectRep(id) {
@@ -703,6 +932,15 @@ function navigate(page) {
   };
   document.getElementById('topbarTitle').textContent = titles[page] || page.toUpperCase();
   document.getElementById('topbarSub').textContent = subs[page] || '';
+  // Sync bottom nav active state
+  var bnPages = ['dashboard','logcalls','myreport','teamreport'];
+  bnPages.forEach(function(p) {
+    var btn = document.getElementById('bn-'+p);
+    if (btn) btn.classList.toggle('active', p === page);
+  });
+  // Highlight "more" if on a non-main page
+  var moreBtn = document.getElementById('bn-more');
+  if (moreBtn) moreBtn.classList.toggle('active', !bnPages.includes(page));
   renderCurrentPage();
 }
 
@@ -764,6 +1002,21 @@ function calcStateStats(state, dates) {
   }).sort(function(a,b){return b.s.revenue-a.s.revenue;}).slice(0,5);
   s.repCount = stPeople.length;
   return s;
+}
+
+// ===== MOBILE DRAWER =====
+function openDrawer() {
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOverlay').style.display = 'block';
+  // Sync drawer rep select with main rep select
+  var mainSel = document.getElementById('repSelect');
+  var drawerSel = document.getElementById('repSelectDrawer');
+  drawerSel.innerHTML = mainSel.innerHTML;
+  drawerSel.value = mainSel.value;
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').style.display = 'none';
 }
 
 // ===== HELPERS =====
